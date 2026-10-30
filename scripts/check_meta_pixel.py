@@ -69,9 +69,20 @@ window.fbq.callMethod=function(){window.__metaCalls.push(Array.from(arguments));
             enabled = {'enabled': True, 'pixelId': FAKE_ID, 'consentVersion': 1}
             ctx, stats = context()
             page = ctx.new_page(); page.goto(base+'/pharmacy/', wait_until='networkidle')
+            actual=page.evaluate('window.UK_META_PIXEL_CONFIG')
+            assert actual['enabled'] is True and actual['pixelId'].isdigit()
+            assert page.locator('.uk-meta-panel').is_visible() and stats['meta_requests']==0
+            page.get_by_role('button',name='허용',exact=True).click()
+            page.wait_for_function("(window.__metaCalls||[]).some(x=>x[0]==='track')")
+            assert ['init',actual['pixelId']] in page.evaluate('window.__metaCalls')
+            assert [x for x in page.evaluate('window.__metaCalls') if x[0]=='track']==[['track','PageView']]
+            ctx.close();passed('configured production ID initializes only after consent with the mocked Meta library')
+
+            ctx, stats = context({'enabled':False,'pixelId':FAKE_ID,'consentVersion':1})
+            page = ctx.new_page(); page.goto(base+'/pharmacy/', wait_until='networkidle')
             assert page.locator('#uk-meta-consent').count() == 0 and stats['meta_requests'] == 0
             assert page.locator('#consultation-form').is_visible()
-            ctx.close(); passed('production configuration is disabled: no Meta, no consent popup, consultation intact')
+            ctx.close(); passed('disabled configuration: no Meta, no consent popup, consultation intact')
 
             for invalid in [{'enabled':True,'pixelId':'','consentVersion':1},
                             {'enabled':True,'pixelId':123456789012345,'consentVersion':1},
