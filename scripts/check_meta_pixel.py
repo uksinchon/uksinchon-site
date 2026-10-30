@@ -179,6 +179,15 @@ window.fbq.callMethod=function(){window.__metaCalls.push(Array.from(arguments));
             assert [x for x in page.evaluate('window.__metaCalls') if x[0]=='track']==[['track','PageView']]
             ctx.close();passed('home-to-pharmacy navigation preserves consent and records one view per document')
 
+            ctx,stats=context(enabled);page=ctx.new_page()
+            page.goto(base+'/seminar-2027/#apply',wait_until='networkidle')
+            assert stats['meta_requests']==0
+            page.get_by_role('button',name='허용',exact=True).click()
+            page.wait_for_function("(window.__metaCalls||[]).some(x=>x[0]==='track')")
+            assert [x for x in page.evaluate('window.__metaCalls') if x[0]=='track']==[['track','PageView']]
+            assert page.locator('[data-registration-link]').get_attribute('href').endswith('#seminar')
+            ctx.close();passed('seminar page and application anchor support consented PageView without a false Lead')
+
             ctx,stats=context(enabled);page=ctx.new_page();page.goto(base+'/pharmacy/',wait_until='networkidle')
             for version,at in [(1,1),(999,int(time.time()*1000)),(1,9999999999999)]:
                 page.evaluate('(x)=>localStorage.setItem(x.key,JSON.stringify(x.data))',{'key':KEY,'data':{

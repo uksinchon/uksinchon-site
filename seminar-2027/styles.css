@@ -1,0 +1,59 @@
+:root{--navy:#162a4b;--red:#c83b29;--ink:#262c34;--muted:#66717f;--line:#e2e5ea;--gold:#b7953d}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:104px}
+body{margin:0;background:#fff;color:var(--ink);font-family:Pretendard,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif;font-size:16px;line-height:1.85;word-break:keep-all;overflow-wrap:anywhere}
+a{color:#1e6597;text-decoration:none}
+a:hover{text-decoration:underline;text-underline-offset:4px}
+a:focus-visible,button:focus-visible{outline:3px solid #227bb7;outline-offset:4px}
+.container{width:min(1120px,calc(100% - 48px));margin-inline:auto}
+.skip-link{position:absolute;top:8px;left:8px;z-index:20;padding:8px 18px;background:var(--navy);color:#fff;transform:translateY(-160%)}
+.skip-link:focus{transform:translateY(0)}
+.site-header{position:sticky;top:0;z-index:10;background:#fff;border-bottom:1px solid var(--line)}
+.header-inner{min-height:88px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.brand{display:flex;align-items:center;gap:12px;color:var(--navy);font-weight:800;font-size:18px;line-height:1.4}
+.brand:hover{text-decoration:none}
+.brand img{width:54px;height:43px;object-fit:contain}
+.brand small{display:block;font-size:9px;letter-spacing:1.3px;margin-top:5px;color:var(--muted)}
+.site-nav{display:flex;align-items:center;gap:26px;font-size:14px;font-weight:650}
+.site-nav a{color:var(--navy)}
+.site-nav .nav-apply{padding:10px 18px;border:1px solid #ccd4df;border-radius:5px}
+.page-banner{position:relative;min-height:190px;display:flex;align-items:center;justify-content:center;background:linear-gradient(#10233a88,#10233a88),url('./images/banner.jpg') center 48%/cover;color:#fff;text-align:center}
+.page-banner p{font-size:13px;letter-spacing:1px;margin:0 0 6px}
+.page-banner h2{font-size:32px;line-height:1.4;font-weight:500;margin:0}
+.breadcrumbs{display:flex;gap:12px;align-items:center;max-width:960px;margin:28px auto 0;font-size:13px;color:var(--muted)}
+.breadcrumbs a{color:var(--muted)}
+.event-article{max-width:960px;margin:32px auto 56px}
+.event-article>h1{font-size:30px;line-height:1.5;font-weight:600;color:#222;margin:0 0 30px;letter-spacing:-.6px}
+.event-article>img,.event-article figure img{display:block;width:100%;height:auto}
+.event-article figure{margin:24px auto;max-width:900px}
+.event-article h2{font-size:26px;line-height:1.55;font-weight:600;margin:26px 0 18px}
+.event-article h4{font-size:21px;font-weight:600;line-height:1.6;margin:16px 0 8px}
+.event-article p{margin:0 0 10px;line-height:1.85}
+.event-article ul,.event-article ol{padding-left:26px;margin:8px 0 18px}
+.event-article li{margin-bottom:6px;line-height:1.8}
+.seminar-info{max-width:768px;margin:32px auto;padding:20px 16px;border-style:solid;border-width:2px 0 1px;border-color:var(--gold)}
+.seminar-info .overview{font-size:18px;line-height:1.65;color:var(--navy);margin-bottom:20px}
+.seminar-info .detail{display:flex;align-items:baseline;gap:16px;line-height:1.65;margin-bottom:10px}
+.seminar-info .detail>label{flex:0 0 40px;color:#617084}
+.seminar-info .detail:last-child{margin-bottom:0}
+.apply-card{padding:32px;border:3px solid #d2d7df;background:#fdfbee;text-align:center;scroll-margin-top:104px}
+.event-article .apply-card h2{margin:0 0 12px;color:var(--navy)}
+.apply-card p{color:#515f70}
+.apply-buttons{display:flex;align-items:center;justify-content:center;gap:12px;flex-wrap:wrap;margin:24px 0 16px}
+.button{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:12px 24px;border-radius:5px;font-size:16px;font-weight:700;line-height:1.6}
+.button:hover{text-decoration:none;filter:brightness(.95)}
+.button-primary{background:var(--red);color:white}
+.button-kakao{background:#fee500;color:#241e00}
+.apply-card .application-note{font-size:13px;line-height:1.8;margin:0}
+.source-note{max-width:960px;margin:0 auto 48px;border-top:1px solid var(--line);padding-top:20px;font-size:13px;color:var(--muted)}
+.source-note a{color:var(--muted);text-decoration:underline}
+.site-footer{background:var(--navy);color:white;padding:34px 0}
+.footer-inner{display:flex;align-items:flex-start;justify-content:space-between;gap:28px}
+.site-footer strong{font-size:16px}
+.site-footer p{font-size:12px;line-height:1.9;color:#c5cfdf;margin:12px 0 0}
+.footer-links{display:flex;flex-wrap:wrap;gap:22px;font-size:13px}
+.footer-links a{color:white}
+.mobile-apply{display:none}
+@media(max-width:720px){html{scroll-padding-top:88px}.container{width:calc(100% - 36px)}.header-inner{min-height:74px;gap:12px}.brand{gap:8px;font-size:14px}.brand img{width:40px;height:32px}.brand small{font-size:7px;letter-spacing:.6px}.site-nav{gap:8px;font-size:11px}.site-nav .nav-secondary{display:none}.site-nav .nav-apply{padding:8px 11px}.page-banner{min-height:130px}.page-banner h2{font-size:26px}.page-banner p{font-size:11px}.breadcrumbs{margin-top:20px;font-size:12px}.event-article{margin:24px auto 36px;font-size:15px}.event-article>h1{font-size:23px;line-height:1.55;margin-bottom:22px;letter-spacing:-.4px}.event-article h2{font-size:22px}.event-article h4{font-size:19px}.seminar-info{padding:18px 0;margin:24px auto}.seminar-info .overview{font-size:16px}.seminar-info .detail{gap:10px;font-size:14px}.seminar-info .detail>label{flex-basis:34px}.event-article figure{margin:20px auto}.apply-card{padding:24px 16px}.button{font-size:14px;padding:12px 16px;min-height:50px}.apply-buttons{gap:10px}.source-note{margin-bottom:32px;font-size:12px}.footer-inner{flex-direction:column;gap:24px}.site-footer{padding-bottom:108px}.footer-links{gap:18px}.mobile-apply{display:flex;position:fixed;bottom:0;left:0;right:0;z-index:20;padding:10px 18px calc(10px + env(safe-area-inset-bottom));gap:10px;background:white;border-top:1px solid var(--line)}.mobile-apply a{flex:1;display:flex;align-items:center;justify-content:center;padding:11px;min-height:46px;font-size:14px;font-weight:700;border:1px solid #c5cfdb;border-radius:5px;color:var(--navy)}.mobile-apply a:last-child{flex:2;border-color:var(--red);background:var(--red);color:white}}
+@media(max-width:360px){.brand{font-size:12px}.brand small{font-size:6px}.brand img{width:32px;height:26px}.site-nav .nav-apply{padding:8px;font-size:10px}.apply-buttons{flex-direction:column}.apply-buttons a{width:100%}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}}

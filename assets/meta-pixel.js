@@ -27,8 +27,8 @@
   function safePage() {
     // Meta's PageView includes the URL. Suppress tracking on unexpected URLs
     // rather than forwarding unknown query parameters or private hash values.
-    if (!['/', '/index.html', '/pharmacy/', '/pharmacy/index.html'].includes(location.pathname)) return false;
-    if (!['', '#main', '#guide', '#consultation'].includes(location.hash)) return false;
+    if (!['/', '/index.html', '/pharmacy/', '/pharmacy/index.html', '/seminar-2027/', '/seminar-2027/index.html'].includes(location.pathname)) return false;
+    if (!['', '#main', '#guide', '#consultation', '#apply', '#seminar'].includes(location.hash)) return false;
     const url = new URL(location.href);
     for (const [name, value] of url.searchParams) {
       if (name === 'fbclid' && /^[A-Za-z0-9_.~-]{1,600}$/.test(value)) continue;

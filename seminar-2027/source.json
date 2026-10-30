@@ -1,0 +1,65 @@
+{
+  "source_url": "https://www.ukcentre.co.kr/notice/2027-%EC%98%81%EA%B5%AD-%EB%8C%80%ED%95%99%EB%8C%80%ED%95%99%EC%9B%90-%EC%9E%85%ED%95%99-%EC%84%A4%EB%AA%85%ED%9A%8C-%EC%8B%A0%EC%B4%8C/",
+  "checked_date": "2026-10-30",
+  "source_article_sha256": "bbb5ba87bbcb545613d1059b7810fd88e773efad55095ace3483182cd482645e",
+  "official_registration_url": "https://www.ukcentre.co.kr/notice/2027-%EC%98%81%EA%B5%AD-%EB%8C%80%ED%95%99%EB%8C%80%ED%95%99%EC%9B%90-%EC%9E%85%ED%95%99-%EC%84%A4%EB%AA%85%ED%9A%8C-%EC%8B%A0%EC%B4%8C/#seminar",
+  "official_event_form_id": 219,
+  "event_start": "2026-11-04T17:00:00+09:00",
+  "venue": "파고다어학원 신촌 3층 304호",
+  "adaptations": [
+    "HTML 내 신촌점 명칭 통일; 연사 직함 유지",
+    "공식 신청서로 연결; 원본 세션·CSRF 토큰 복제 없음",
+    "원본 이미지 바이트 보존",
+    "신촌점 공통 머리말·바닥글·선택 기반 Meta 픽셀 적용"
+  ],
+  "assets": [
+    {
+      "source": "https://www.ukcentre.co.kr/files/bbs/notice/5f96e24d5c6da2cc27915892b2178ac9.png",
+      "file": "images/5f96e24d5c6da2cc27915892b2178ac9.png",
+      "bytes": 557027,
+      "sha256": "455b3d11d832e9717da15ab864adaf883071458e97d742992c006a7744b14605"
+    },
+    {
+      "source": "https://www.ukcentre.co.kr/files/image/ed964cd86500c121c15bc7bcbf49d057.gif",
+      "file": "images/ed964cd86500c121c15bc7bcbf49d057.gif",
+      "bytes": 771219,
+      "sha256": "b40cd31727dde365bf0b527a0707d474eb0893869a5f55ca888a24722e6d486b"
+    },
+    {
+      "source": "https://www.ukcentre.co.kr/files/image/766397978c8a4c8e7727c71468d3ecd9.gif",
+      "file": "images/766397978c8a4c8e7727c71468d3ecd9.gif",
+      "bytes": 767044,
+      "sha256": "d949db65d4f0225cbe7520ee05028765186ecf550c050d276f2615224f27e295"
+    },
+    {
+      "source": "https://www.ukcentre.co.kr/files/image/8dca4d1f384264cbb9f3cd8701fdb15c.gif",
+      "file": "images/8dca4d1f384264cbb9f3cd8701fdb15c.gif",
+      "bytes": 746940,
+      "sha256": "07c15946cd6d084f8efd574df2c58790d194fa4930ba43c8ecb7068d4e0ea911"
+    },
+    {
+      "source": "https://www.ukcentre.co.kr/files/image/f5d65b65f91fe5d363844c352066042e.gif",
+      "file": "images/f5d65b65f91fe5d363844c352066042e.gif",
+      "bytes": 617883,
+      "sha256": "a3ef512269b1b82330fccef354e5ea0435032e608ae6db2f31b6e8372810bdc9"
+    },
+    {
+      "source": "https://www.ukcentre.co.kr/files/image/3bd9ac994839d93fb8ff3f4475e766b7.gif",
+      "file": "images/3bd9ac994839d93fb8ff3f4475e766b7.gif",
+      "bytes": 1114161,
+      "sha256": "7a961daf7084ef417ce6446dfa94508a7b2650cc32201cc1686468a5c47385a7"
+    },
+    {
+      "source": "https://www.ukcentre.co.kr/files/image/7d63713eff7c16017d876e51a72a4bc8.gif",
+      "file": "images/7d63713eff7c16017d876e51a72a4bc8.gif",
+      "bytes": 1077049,
+      "sha256": "ab27b2b304964ae79f6a7f1c980613a059b152ad0e94ce934df422541f05bf54"
+    },
+    {
+      "source": "https://www.ukcentre.co.kr/files/image/menu/1fd8c0b1650f1a7e2b7b28345b9230dd.jpg",
+      "file": "images/banner.jpg",
+      "bytes": 35458,
+      "sha256": "70a0d35be072e878c0a72f0b0d99064319cc9e40dbab0f9e1e2f8781722b81bb"
+    }
+  ]
+}
