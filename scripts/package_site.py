@@ -10,7 +10,8 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_FILES = (
     'index.html', 'logo.png', 'favicon.ico', 'apple-icon.png',
     'pharmacy/index.html', 'pharmacy/styles.css', 'pharmacy/consultation.js',
-    'docs/PHARMACY_LANDING.md',
+    'assets/meta-pixel-config.js', 'assets/meta-pixel.js', 'assets/meta-pixel.css',
+    'docs/PHARMACY_LANDING.md', 'docs/META_PIXEL.md',
 )
 
 
@@ -25,6 +26,11 @@ def single_file_preview():
     html = html.replace(stylesheet, '<style>\n' + css + '\n</style>')
     # Inline scripts do not honor defer: run after the form exists instead.
     html = html.replace(script, '')
+    # A portable/offline preview must not contact Meta, even after activation.
+    for tracking in ['meta-pixel-config.js', 'meta-pixel.js']:
+        tag = '<script src="../assets/' + tracking + '" defer></script>'
+        assert html.count(tag) == 1
+        html = html.replace(tag, '')
     html = html.replace('</body>', '<script>\n' + js + '\n</script>\n</body>')
     for file, mime in [('logo.png', 'image/png'), ('favicon.ico', 'image/x-icon'), ('apple-icon.png', 'image/png')]:
         encoded = base64.b64encode((ROOT / file).read_bytes()).decode('ascii')
