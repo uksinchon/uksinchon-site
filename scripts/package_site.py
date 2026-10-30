@@ -10,7 +10,7 @@ ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_FILES = (
     'index.html', 'logo.png', 'favicon.ico', 'apple-icon.png',
     'pharmacy/index.html', 'pharmacy/styles.css', 'pharmacy/consultation.js',
-    'assets/meta-pixel-config.js', 'assets/meta-pixel.js', 'assets/meta-pixel.css',
+    'assets/meta-pixel-config.js', 'assets/meta-pixel.js',
     'seminar-2027/index.html', 'seminar-2027/styles.css', 'seminar-2027/source.json',
     'docs/PHARMACY_LANDING.md', 'docs/META_PIXEL.md', 'docs/SEMINAR_2027.md',
     *(str(p.relative_to(ROOT)) for p in sorted((ROOT / 'seminar-2027/images').iterdir())

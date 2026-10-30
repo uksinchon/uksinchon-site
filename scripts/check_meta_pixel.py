@@ -1,10 +1,9 @@
-"""Browser checks with a fake ID and mocked Meta library; sends no real events.
+"""Browser checks with a mocked Meta library; sends no real events.
 
-Requires the development environment's Playwright and /usr/bin/chromium.
+Requires Playwright and /usr/bin/chromium.
 Run: python3 scripts/check_meta_pixel.py
 """
 import json
-import time
 from functools import partial
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
@@ -37,8 +36,8 @@ def run():
         with sync_playwright() as p:
             browser = p.chromium.launch(executable_path='/usr/bin/chromium', headless=True, args=['--no-sandbox'])
 
-            def context(config=None, storage_blocked=False, delayed=False):
-                ctx = browser.new_context(viewport={'width':390,'height':950}, reduced_motion='reduce')
+            def context(config=None, storage_blocked=False, delayed=False, failed=False, javascript=True):
+                ctx = browser.new_context(viewport={'width':390,'height':950}, java_script_enabled=javascript)
                 stats = {'meta_requests': 0, 'unexpected': []}
                 if config is not None:
                     ctx.route('**/assets/meta-pixel-config.js', lambda route: route.fulfill(
@@ -51,7 +50,9 @@ window.fbq.callMethod=function(){window.__metaCalls.push(Array.from(arguments));
                     url = route.request.url
                     if url == 'https://connect.facebook.net/en_US/fbevents.js':
                         stats['meta_requests'] += 1
-                        if delayed:
+                        if failed:
+                            route.abort()
+                        elif delayed:
                             stats['held_route'] = route
                             stats['held_body'] = mock
                         else:
@@ -66,135 +67,102 @@ window.fbq.callMethod=function(){window.__metaCalls.push(Array.from(arguments));
                     ctx.add_init_script("Object.defineProperty(window,'localStorage',{get(){throw new Error('test: storage blocked');}})")
                 return ctx, stats
 
-            enabled = {'enabled': True, 'pixelId': FAKE_ID, 'consentVersion': 1}
-            ctx, stats = context()
-            page = ctx.new_page(); page.goto(base+'/pharmacy/', wait_until='networkidle')
+            def calls(page, pixel_id=FAKE_ID):
+                page.wait_for_function("(window.__metaCalls||[]).some(x=>x[0]==='track')")
+                actual = page.evaluate('window.__metaCalls')
+                assert actual == [['set','autoConfig','false',pixel_id],['init',pixel_id],['track','PageView']], actual
+                assert page.locator('#uk-meta-consent, .uk-meta-panel, .uk-meta-settings').count() == 0
+                assert '맞춤 광고를 위한 방문 정보 사용' not in page.locator('body').inner_text()
+                return actual
+
+            enabled = {'enabled': True, 'pixelId': FAKE_ID}
+            ctx,stats=context();page=ctx.new_page();page.goto(base+'/',wait_until='networkidle')
             actual=page.evaluate('window.UK_META_PIXEL_CONFIG')
-            assert actual['enabled'] is True and actual['pixelId'].isdigit()
-            assert page.locator('.uk-meta-panel').is_visible() and stats['meta_requests']==0
-            page.get_by_role('button',name='허용',exact=True).click()
-            page.wait_for_function("(window.__metaCalls||[]).some(x=>x[0]==='track')")
-            assert ['init',actual['pixelId']] in page.evaluate('window.__metaCalls')
-            assert [x for x in page.evaluate('window.__metaCalls') if x[0]=='track']==[['track','PageView']]
-            ctx.close();passed('configured production ID initializes only after consent with the mocked Meta library')
+            assert actual == {'enabled':True,'pixelId':'1634770791440664'}
+            calls(page, actual['pixelId']);assert stats['meta_requests']==1
+            ctx.close();passed('production ID starts automatically with no banner or fabricated consent call')
 
-            ctx, stats = context({'enabled':False,'pixelId':FAKE_ID,'consentVersion':1})
-            page = ctx.new_page(); page.goto(base+'/pharmacy/', wait_until='networkidle')
-            assert page.locator('#uk-meta-consent').count() == 0 and stats['meta_requests'] == 0
-            assert page.locator('#consultation-form').is_visible()
-            ctx.close(); passed('disabled configuration: no Meta, no consent popup, consultation intact')
+            ctx,stats=context({'enabled':False,'pixelId':FAKE_ID})
+            page=ctx.new_page();page.goto(base+'/pharmacy/',wait_until='networkidle')
+            assert stats['meta_requests']==0 and page.locator('#consultation-form').is_visible()
+            assert page.locator('#uk-meta-consent').count()==0
+            ctx.close();passed('disabled configuration leaves consultation usable without Meta requests')
 
-            for invalid in [{'enabled':True,'pixelId':'','consentVersion':1},
-                            {'enabled':True,'pixelId':123456789012345,'consentVersion':1},
-                            {'enabled':True,'pixelId':'0'*15,'consentVersion':1}]:
-                ctx, stats = context(invalid)
-                page=ctx.new_page();page.goto(base+'/pharmacy/',wait_until='networkidle')
-                assert stats['meta_requests']==0 and page.locator('#uk-meta-consent').count()==0
+            for invalid in [{}, {'enabled':True,'pixelId':''}, {'enabled':True,'pixelId':123456789012345},
+                            {'enabled':True,'pixelId':'0'*15}]:
+                ctx,stats=context(invalid);page=ctx.new_page();page.goto(base+'/pharmacy/',wait_until='networkidle')
+                assert stats['meta_requests']==0
                 ctx.close()
             passed('missing, numeric and invalid pixel IDs cannot initialize tracking')
 
-            ctx, stats = context(enabled)
-            page=ctx.new_page(); page.goto(base+'/pharmacy/', wait_until='networkidle')
-            assert page.locator('.uk-meta-panel').is_visible() and stats['meta_requests']==0
-            assert not page.evaluate('document.documentElement.scrollWidth>innerWidth')
-            assert page.locator('.uk-meta-panel').bounding_box()['y']>=0
-            page.get_by_role('button', name='허용 안 함', exact=True).click()
-            assert stats['meta_requests']==0 and page.evaluate('typeof window.fbq')=='undefined'
-            page.reload(wait_until='networkidle')
-            assert not page.locator('.uk-meta-panel').is_visible() and stats['meta_requests']==0
-            assert page.locator('.uk-meta-settings').is_visible()
-            passed('before consent and after persisted refusal: no Meta script; mobile preference access works')
+            ctx,stats=context(enabled);page=ctx.new_page()
+            for suffix in ['/', '/index.html', '/pharmacy/', '/pharmacy/index.html', '/seminar-2027/', '/seminar-2027/index.html#apply']:
+                page.goto(base+suffix,wait_until='networkidle');calls(page)
+                assert not page.evaluate('document.documentElement.scrollWidth>innerWidth')
+            assert stats['meta_requests']==6
+            assert page.locator('[data-registration-link]').get_attribute('href').endswith('#seminar')
+            ctx.close();passed('home, pharmacy and seminar routes initialize one PageView each without mobile overlays')
 
-            page.get_by_role('button',name='광고 쿠키 설정').click()
-            page.get_by_role('button',name='허용',exact=True).click()
-            page.wait_for_function("(window.__metaCalls||[]).some(x=>x[0]==='track')")
-            calls=page.evaluate('window.__metaCalls')
-            assert calls==[['consent','grant'],['set','autoConfig','false',FAKE_ID],['init',FAKE_ID],['track','PageView']],calls
-            assert stats['meta_requests']==1
-            saved=page.evaluate('(key)=>JSON.parse(localStorage.getItem(key))',KEY)
-            assert set(saved)=={'version','pixelId','choice','at'} and saved['choice']=='granted'
-            passed('explicit grant: one script, automatic logging disabled, init without user matching, one PageView')
-
+            ctx,stats=context(enabled);page=ctx.new_page();page.goto(base+'/pharmacy/',wait_until='networkidle')
+            expected=calls(page)
             page.locator('#student-name').fill('가상 개인정보')
             page.locator('#education').select_option(label='아직 미정')
             page.locator('#entry').select_option(label='아직 미정')
             page.locator('#message').fill('가상 상담 자유 입력')
             page.get_by_role('button',name='상담 내용 만들기').click()
-            assert page.evaluate('window.__metaCalls')==calls
-            assert page.locator('#message-result').is_visible()
-            passed('consultation content creation sends no input fields, Lead or extra Meta event')
+            assert page.evaluate('window.__metaCalls')==expected
+            assert page.locator('#message-result').is_visible() and stats['unexpected']==[]
+            assert page.evaluate('localStorage.length')==0
+            ctx.close();passed('consultation still works and sends no fields, Lead or extra event; no consent record is written')
 
-            page.evaluate("document.cookie='_fbp=test-only; Path=/'; document.cookie='_fbc=test-only; Path=/'")
-            page.get_by_role('button',name='광고 쿠키 설정').click()
-            page.get_by_role('button',name='허용 안 함',exact=True).click()
-            assert page.evaluate('window.__metaCalls').pop()==['consent','revoke']
-            assert '_fbp=' not in page.evaluate('document.cookie') and '_fbc=' not in page.evaluate('document.cookie')
-            assert page.locator('#message').input_value()=='가상 상담 자유 입력'
-            page.reload(wait_until='networkidle')
-            assert stats['meta_requests']==1
-            ctx.close(); passed('withdrawal revokes consent and expires first-party pixel cookies without erasing the form')
-
-            for suffix in ['/pharmacy/?email=private%40example.test','/pharmacy/#private-student-data']:
+            for suffix in ['/pharmacy/?email=private%40example.test','/pharmacy/#private-student-data',
+                           '/pharmacy/styles.css', '/pharmacy/?utm_source=private%40example.test']:
                 ctx,stats=context(enabled);page=ctx.new_page();page.goto(base+suffix,wait_until='networkidle')
-                page.get_by_role('button',name='허용',exact=True).click()
                 assert stats['meta_requests']==0
                 ctx.close()
-            passed('unexpected query and hash values suppress Meta requests even after grant')
+            passed('unexpected URL queries, hashes and paths suppress Meta requests')
 
             ctx,stats=context(enabled);page=ctx.new_page()
             page.goto(base+'/pharmacy/?utm_source=studygroup&utm_medium=paid_social&fbclid=test_click_id',wait_until='networkidle')
-            page.get_by_role('button',name='허용',exact=True).click()
-            page.wait_for_function("(window.__metaCalls||[]).some(x=>x[0]==='track')")
-            assert stats['meta_requests']==1
-            assert page.evaluate('window.__metaCalls').pop()==['track','PageView']
-            ctx.close();passed('normal campaign and click identifiers support consented PageView')
+            calls(page);assert stats['meta_requests']==1
+            ctx.close();passed('valid campaign tags and click identifiers support automatic PageView')
 
             ctx,stats=context(enabled,storage_blocked=True);page=ctx.new_page()
-            page.goto(base+'/pharmacy/',wait_until='networkidle')
-            page.get_by_role('button',name='허용 안 함',exact=True).click()
-            assert not page.locator('.uk-meta-panel').is_visible() and stats['meta_requests']==0
+            page.goto(base+'/pharmacy/',wait_until='networkidle');calls(page)
             assert page.locator('#consultation-form').is_visible()
-            page.reload(wait_until='networkidle')
-            assert page.locator('.uk-meta-panel').is_visible() and stats['meta_requests']==0
-            ctx.close();passed('blocked browser storage keeps refusal usable and never defaults to consent')
+            ctx.close();passed('automatic initialization works with browser storage blocked')
+
+            ctx,stats=context(enabled);page=ctx.new_page();page.goto(base+'/',wait_until='networkidle');calls(page)
+            for choice in ['denied','granted']:
+                saved={'version':1,'pixelId':FAKE_ID,'choice':choice,'at':1}
+                page.evaluate('(x)=>localStorage.setItem(x.key,JSON.stringify(x.data))', {'key':KEY,'data':saved})
+                page.reload(wait_until='networkidle');calls(page)
+                assert page.evaluate('(key)=>JSON.parse(localStorage.getItem(key))',KEY)==saved
+            ctx.close();passed('legacy choice records are not read or rewritten as a visitor permission')
 
             ctx,stats=context(enabled,delayed=True);page=ctx.new_page()
-            page.goto(base+'/pharmacy/',wait_until='networkidle')
-            page.get_by_role('button',name='허용',exact=True).click()
-            page.get_by_role('button',name='광고 쿠키 설정').click()
-            page.get_by_role('button',name='허용 안 함',exact=True).click()
+            page.goto(base+'/pharmacy/',wait_until='domcontentloaded')
+            page.wait_for_function("document.querySelector('script[src*=fbevents]') !== null")
+            page.wait_for_timeout(100)
             assert stats.get('held_route') is not None
+            page.evaluate("history.replaceState(null,'','?email=private%40example.test')")
             stats['held_route'].fulfill(status=200,content_type='application/javascript',body=stats['held_body'])
             page.wait_for_function('window.__metaCalls !== undefined')
             assert page.evaluate('window.__metaCalls')==[]
-            ctx.close();passed('withdrawal during library download prevents later init and PageView')
+            ctx.close();passed('URL is rechecked after a delayed library download before initializing')
 
-            ctx,stats=context(enabled);page=ctx.new_page();page.goto(base+'/',wait_until='networkidle')
-            page.get_by_role('button',name='허용',exact=True).click()
-            page.wait_for_function("(window.__metaCalls||[]).some(x=>x[0]==='track')")
-            page.locator('.pharmacy-link').click()
-            page.wait_for_function("(window.__metaCalls||[]).some(x=>x[0]==='track')")
-            assert not page.locator('.uk-meta-panel').is_visible()
-            assert stats['meta_requests']==2
-            assert [x for x in page.evaluate('window.__metaCalls') if x[0]=='track']==[['track','PageView']]
-            ctx.close();passed('home-to-pharmacy navigation preserves consent and records one view per document')
+            ctx,stats=context(enabled,failed=True);page=ctx.new_page();errors=[]
+            page.on('pageerror',lambda error:errors.append(str(error)))
+            page.goto(base+'/pharmacy/',wait_until='networkidle')
+            assert page.locator('#consultation-form').is_visible() and not errors
+            ctx.close();passed('a blocked Meta library does not break the consultation page')
 
-            ctx,stats=context(enabled);page=ctx.new_page()
-            page.goto(base+'/seminar-2027/#apply',wait_until='networkidle')
+            ctx,stats=context(enabled,javascript=False);page=ctx.new_page()
+            page.goto(base+'/seminar-2027/',wait_until='networkidle')
             assert stats['meta_requests']==0
-            page.get_by_role('button',name='허용',exact=True).click()
-            page.wait_for_function("(window.__metaCalls||[]).some(x=>x[0]==='track')")
-            assert [x for x in page.evaluate('window.__metaCalls') if x[0]=='track']==[['track','PageView']]
-            assert page.locator('[data-registration-link]').get_attribute('href').endswith('#seminar')
-            ctx.close();passed('seminar page and application anchor support consented PageView without a false Lead')
-
-            ctx,stats=context(enabled);page=ctx.new_page();page.goto(base+'/pharmacy/',wait_until='networkidle')
-            for version,at in [(1,1),(999,int(time.time()*1000)),(1,9999999999999)]:
-                page.evaluate('(x)=>localStorage.setItem(x.key,JSON.stringify(x.data))',{'key':KEY,'data':{
-                    'choice':'granted','version':version,'pixelId':FAKE_ID,'at':at}})
-                page.reload(wait_until='networkidle')
-                assert page.locator('.uk-meta-panel').is_visible() and stats['meta_requests']==0
-            ctx.close();passed('expired, changed-policy and invalid future consent records do not auto-track')
+            assert page.locator('[data-registration-link]').is_visible()
+            assert page.locator('#uk-meta-consent').count()==0
+            ctx.close();passed('JavaScript-disabled seminar retains official application link without a tracking image')
             browser.close()
     finally:
         server.shutdown();server.server_close();worker.join(timeout=5)
