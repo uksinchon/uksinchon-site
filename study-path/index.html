@@ -1,0 +1,1152 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="theme-color" content="#1A2E5A">
+<meta name="description" content="학부·석사·박사·중고등·조기유학까지, 1분 진단으로 나에게 맞는 영국 유학 경로를 정리해 드려요. 영국유학센터 신촌지사">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://uksinchon.com/study-path/">
+<meta property="og:title" content="Your UK path starts here. 영국 정규유학 사전 진단">
+<meta property="og:description" content="몇 번만 고르면 나에게 맞는 영국 유학 경로를 상담 전에 미리 정리해 드려요. 미정이어도 괜찮아요. 영국유학센터 신촌지사">
+<meta property="og:image" content="https://uksinchon.com/study-path/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-icon.png">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);box-sizing:border-box}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>영국 정규유학 사전 진단 | 영국유학센터 신촌지사</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,500;1,9..144,700&family=Plus+Jakarta+Sans:wght@400..800&family=Noto+Sans+KR:wght@400..800&display=swap">
+<style>
+/* Layout: one-screen phone app for 정규유학 상담 전 진단. Path progress on top (KR → UK, cap icon),
+   outlined step numeral behind, a deck of warm-paper question cards. First card picks the course branch;
+   each branch keeps the same system and only shifts the scene hue. Finish = "UK Study Profile" with a wax-style seal.
+   Deliberate single look: deep scene colors are the design. */
+:root{
+  --navy:#1A2E5A; --coral:#E8432B; --gold:#D9A441; --gold-soft:#F3D58E;
+  --ink:#16203A; --muted:#6C7287; --line:#E9E5DC; --paper:#FFFDF9; --paper2:#FBF8F2;
+  --scene:#1A2E5A; --deep:#1A2E5A; --accent:#1A2E5A; --blobA:#3A5BA8; --blobB:#E8432B; --tint:#EEF1F8;
+  --display:"Plus Jakarta Sans","Noto Sans KR","Pretendard","Apple SD Gothic Neo","Malgun Gothic",system-ui,sans-serif;
+  --serif:"Fraunces",Georgia,"Times New Roman",serif;
+  --ease:cubic-bezier(.22,1,.36,1);
+  --spring:cubic-bezier(.34,1.4,.64,1);
+  --glass:rgba(255,255,255,.11);
+  --glass-line:rgba(255,255,255,.2);
+  color-scheme:light;
+}
+html,body{height:100%}
+body{background:var(--navy);color:var(--ink);font-family:var(--display);letter-spacing:-.012em;word-break:keep-all;-webkit-font-smoothing:antialiased;overflow:hidden;-webkit-tap-highlight-color:transparent}
+button{font:inherit;color:inherit}
+:focus-visible{outline:3px solid var(--gold-soft);outline-offset:3px}
+.q:focus{outline:none}
+
+/* ---------- atmosphere ---------- */
+.app{position:relative;height:100%;overflow:hidden;overflow:clip;background:var(--scene)}
+.wipe{position:absolute;inset:0;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);pointer-events:none;transition:background-color 1.2s var(--ease),transform 1.8s var(--ease)}
+.blob.a{width:76vmax;height:76vmax;top:-40vmax;right:-36vmax;background:var(--blobA);opacity:.5;transform:translate(var(--ax,0),var(--ay,0));animation:orbitA 19s ease-in-out infinite alternate}
+.blob.b{width:60vmax;height:60vmax;bottom:-36vmax;left:-32vmax;background:var(--blobB);opacity:.32;transform:translate(var(--bx,0),var(--by,0));animation:orbitB 23s ease-in-out infinite alternate}
+.grain{position:absolute;inset:0;pointer-events:none;opacity:.15;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+.lines{position:absolute;inset:0;pointer-events:none;opacity:.07;
+  background-image:linear-gradient(rgba(255,255,255,.9) 1px,transparent 1px);background-size:100% 34px;
+  -webkit-mask-image:linear-gradient(180deg,#000,transparent 65%);mask-image:linear-gradient(180deg,#000,transparent 65%)}
+.vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(120% 80% at 50% 40%,transparent 55%,rgba(5,10,30,.38))}
+
+.num{position:absolute;top:56px;right:max(4px,calc(50% - 246px));width:1.25em;height:1.02em;overflow:hidden;z-index:1;pointer-events:none;
+  font-family:var(--serif);font-style:italic;font-weight:500;font-size:clamp(130px,40vw,186px);line-height:1;letter-spacing:-.04em;
+  color:transparent;-webkit-text-stroke:1.2px rgba(255,255,255,.36);transition:opacity .6s var(--ease)}
+.num.hide{opacity:0}
+.num span{position:absolute;right:0;top:0}
+
+.floaties{position:absolute;inset:0;pointer-events:none;z-index:1}
+.floaties span{position:absolute;display:flex;align-items:center;gap:6px;padding:8px 13px 8px 10px;border-radius:999px;background:var(--glass);box-shadow:inset 0 0 0 1px var(--glass-line),0 12px 24px -12px rgba(0,0,0,.4);
+  -webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);color:#fff;font-size:12.5px;font-weight:600;white-space:nowrap;
+  animation:chipIn .9s var(--spring) both,drift 8s ease-in-out infinite;animation-delay:var(--d0),var(--d1)}
+.floaties span em{font-style:normal;font-size:16px}
+
+.shell{position:relative;z-index:2;height:100%;max-width:460px;margin:0 auto;display:flex;flex-direction:column;padding:14px 16px 18px;box-sizing:border-box}
+
+/* ---------- top bar ---------- */
+.topbar{display:flex;align-items:center;gap:10px;height:44px;flex:none}
+.topbar > *{transition:opacity .5s var(--ease),transform .5s var(--ease)}
+.topbar.hide > :not(.snd){opacity:0;transform:translateY(-8px);pointer-events:none}
+.glassbtn{border:0;background:var(--glass);box-shadow:inset 0 0 0 1px var(--glass-line);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#fff;cursor:pointer;transition:background .2s,transform .25s var(--spring)}
+@media (hover:hover){.glassbtn:hover{background:rgba(255,255,255,.22)}}
+.glassbtn:active{transform:scale(.92)}
+.back{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none}
+.snd{flex:none;height:36px;border-radius:999px;padding:0 12px 0 10px;display:flex;align-items:center;gap:7px;font-size:11px;font-weight:800;letter-spacing:.1em}
+.snd .eq{display:flex;align-items:flex-end;gap:2px;height:13px}
+.snd .eq b{width:3px;height:4px;border-radius:2px;background:currentColor;opacity:.6}
+.snd[aria-pressed="true"]{background:#fff;color:var(--navy);box-shadow:0 8px 20px -8px rgba(0,0,0,.4)}
+.snd[aria-pressed="true"] .eq b{opacity:1;animation:eq .9s ease-in-out infinite}
+.snd[aria-pressed="true"] .eq b:nth-child(2){animation-delay:-.3s}
+.snd[aria-pressed="true"] .eq b:nth-child(3){animation-delay:-.6s}
+.snd .st{opacity:.6}
+.route{flex:1;min-width:0;display:flex;align-items:center;gap:9px;color:#fff;font-weight:800;font-size:11px;letter-spacing:.14em}
+.track{position:relative;flex:1;height:2px;background:rgba(255,255,255,.18);border-radius:2px}
+.track .fill{position:absolute;left:0;top:0;height:2px;width:var(--p,0%);border-radius:2px;background:linear-gradient(90deg,rgba(243,213,142,.15),var(--gold-soft));transition:width 1s var(--ease)}
+.track i{position:absolute;top:50%;width:5px;height:5px;margin:-2.5px 0 0 -2.5px;border-radius:50%;background:rgba(255,255,255,.3);transition:background .4s,box-shadow .4s,transform .4s var(--spring)}
+.track i.lit{background:var(--gold-soft);box-shadow:0 0 0 3px rgba(243,213,142,.18);transform:scale(1.15)}
+.track .cap{position:absolute;top:50%;left:var(--p,0%);width:22px;height:22px;transform:translate(-50%,-62%);transition:left 1s var(--ease);color:#fff;filter:drop-shadow(0 3px 6px rgba(0,0,0,.35));z-index:1}
+.track .cap svg{width:100%;height:100%;animation:bob 2.6s ease-in-out infinite}
+.count{color:#fff;font-size:11px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.06em;white-space:nowrap}
+.count b{font-weight:800}
+.count span{opacity:.55}
+
+/* ---------- reaction toast ---------- */
+.cheerzone{height:60px;flex:none;position:relative;display:flex;align-items:center;justify-content:center;z-index:5}
+.cheer{display:flex;align-items:center;gap:10px;max-width:100%;padding:6px 16px 6px 6px;border-radius:999px;color:#fff;
+  background:rgba(14,20,44,.5);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16),0 16px 34px -14px rgba(0,0,0,.5);
+  -webkit-backdrop-filter:blur(16px) saturate(1.4);backdrop-filter:blur(16px) saturate(1.4);
+  opacity:0;transform:translateY(-12px) scale(.92);transition:opacity .3s,transform .5s var(--spring)}
+.cheer.show{opacity:1;transform:none}
+.cheer .av{width:34px;height:34px;border-radius:50%;background:var(--coral);color:#fff;display:grid;place-items:center;font-size:10.5px;font-weight:800;flex:none;box-shadow:inset 0 0 0 2px rgba(255,255,255,.25)}
+.cheer .t{font-size:14px;font-weight:700;line-height:1.3;min-width:0}
+.cheer .msg{display:block;animation:msgIn .35s var(--ease) both}
+.cheer .t small{display:block;font-size:11.5px;font-weight:600;color:var(--gold-soft)}
+.typing{display:inline-flex;gap:4px;padding:6px 2px}
+.typing b{width:6px;height:6px;border-radius:50%;background:#fff;opacity:.35;animation:blink 1s infinite}
+.typing b:nth-child(2){animation-delay:.15s}.typing b:nth-child(3){animation-delay:.3s}
+
+/* ---------- stage & deck ---------- */
+.stage{flex:1;min-height:0;position:relative;display:flex;flex-direction:column;justify-content:center;padding-bottom:20px}
+.view{position:relative;width:100%;box-sizing:border-box}
+.deck{max-height:100%;display:flex;flex-direction:column}
+.ghost{position:absolute;inset:0;border-radius:28px;background:var(--paper);transform-origin:50% 100%;pointer-events:none;
+  transform:translateY(calc(var(--g) * 11px)) scale(calc(1 - var(--g) * .055));opacity:calc(.28 - var(--g) * .09)}
+.cardbox{position:relative;z-index:1;min-height:0;max-height:100%;display:flex;flex-direction:column}
+.card{position:relative;min-height:0;overflow-y:auto;box-sizing:border-box;border-radius:28px;padding:26px 18px 18px;
+  background:linear-gradient(180deg,var(--paper),var(--paper2));
+  box-shadow:inset 0 1px 0 #fff,0 34px 60px -26px rgba(6,12,34,.6),0 12px 24px -14px rgba(6,12,34,.3);scrollbar-width:none}
+.card::-webkit-scrollbar{display:none}
+.badge{position:absolute;top:-22px;right:18px;z-index:2;width:54px;height:54px;border-radius:17px;display:grid;place-items:center;font-size:26px;
+  background:var(--paper);box-shadow:0 14px 26px -12px rgba(6,12,34,.55),inset 0 0 0 1px rgba(22,32,58,.06);
+  animation:badgeIn .8s .28s var(--spring) both,badgeFloat 5s 1.1s ease-in-out infinite}
+.eyebrow{display:inline-flex;align-items:center;gap:7px;font-size:10.5px;font-weight:800;letter-spacing:.16em;color:var(--ink);
+  padding:6px 11px 6px 9px;border-radius:999px;background:var(--tint);animation:rise .55s .05s var(--ease) both}
+.eyebrow .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px rgba(255,255,255,.7)}
+.eyebrow i{font-style:normal;font-weight:700;letter-spacing:.02em;color:var(--muted)}
+.q{font-size:clamp(24px,6.7vw,30px);font-weight:800;line-height:1.26;letter-spacing:-.04em;margin:14px 0 6px;text-wrap:balance}
+.w{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.06em;margin-bottom:-.06em}
+.w > span{display:inline-block;animation:wordUp .75s var(--ease) both;animation-delay:calc(.14s + var(--d))}
+.hint{color:var(--muted);font-size:14px;font-weight:500;margin:0 0 18px;animation:rise .6s .34s var(--ease) both}
+
+/* ---------- options ---------- */
+.opts{display:grid;gap:9px;perspective:900px}
+.opts.grid{grid-template-columns:1fr 1fr}
+.opt{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;gap:12px;text-align:left;cursor:pointer;
+  border:1.5px solid var(--line);background:#fff;border-radius:18px;padding:11px 14px;
+  box-shadow:0 1px 2px rgba(22,32,58,.05);transform-origin:50% 0;
+  transition:transform .3s var(--spring),border-color .25s,color .3s,box-shadow .3s,opacity .35s,filter .35s;
+  animation:optIn .65s var(--spring) both;animation-delay:calc(.42s + var(--i) * .055s)}
+.opts.grid .opt{flex-direction:column;align-items:flex-start;gap:10px;min-height:112px;padding:13px 14px}
+.opts.grid .opt.wide{grid-column:1/-1;flex-direction:row;align-items:center;min-height:0}
+.opt.soft{border-style:dashed;background:var(--paper2)}
+.opt::before{content:"";position:absolute;z-index:-1;left:var(--x,50%);top:var(--y,50%);width:320%;aspect-ratio:1;border-radius:50%;
+  background:var(--deep);transform:translate(-50%,-50%) scale(0);transition:transform .65s var(--ease)}
+.opt::after{content:"";position:absolute;top:10px;right:10px;width:22px;height:22px;border-radius:50%;
+  background:var(--gold) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='3.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5'/%3E%3C/svg%3E") center/13px no-repeat;
+  transform:scale(0) rotate(-90deg);transition:transform .5s .12s var(--spring)}
+@media (hover:hover){
+  .opt:hover{border-color:rgba(22,32,58,.35);box-shadow:0 14px 26px -16px rgba(22,32,58,.45);transform:translateY(-2px)}
+  .opt:hover .emo{transform:rotate(-6deg) scale(1.05)}
+}
+.opt:active{transform:scale(.97)}
+.opt.on{color:#fff;border-color:transparent;border-style:solid;box-shadow:0 18px 30px -16px rgba(6,12,34,.6);animation:pick .55s var(--spring) both}
+.opt.on::before{transform:translate(-50%,-50%) scale(1)}
+.opt.on::after{transform:none}
+.opts.dim .opt:not(.on){opacity:.38;transform:scale(.97);filter:saturate(.4)}
+.opts.locked .opt{pointer-events:none}
+.emo{width:42px;height:42px;border-radius:13px;display:grid;place-items:center;font-size:21px;flex:none;
+  background:linear-gradient(145deg,#fff,var(--tint));box-shadow:inset 0 0 0 1px rgba(22,32,58,.06),0 6px 12px -8px rgba(22,32,58,.35);
+  transition:background .3s,box-shadow .3s,transform .45s var(--spring)}
+.opt.soft .emo{background:transparent;box-shadow:inset 0 0 0 1.5px rgba(22,32,58,.14)}
+.opt.on .emo{background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1px rgba(255,255,255,.25);transform:rotate(-6deg) scale(1.06)}
+.txt{min-width:0}
+.lbl{display:block;font-weight:700;font-size:15.5px;line-height:1.3;letter-spacing:-.02em}
+.sub{display:block;font-size:12.5px;font-weight:500;color:var(--muted);margin-top:3px;line-height:1.38;transition:color .3s}
+.opt.on .sub{color:rgba(255,255,255,.72)}
+.tag{display:inline-block;margin-top:6px;padding:3px 8px;border-radius:999px;font-size:10.5px;font-weight:700;letter-spacing:.01em;
+  color:var(--deep);background:var(--tint);box-shadow:inset 0 0 0 1px rgba(22,32,58,.06);transition:background .3s,color .3s}
+.opt.on .tag{background:rgba(255,255,255,.16);color:#fff;box-shadow:none}
+.meter{display:flex;align-items:flex-end;gap:3px;height:20px}
+.meter b{width:5px;border-radius:2px;background:rgba(22,32,58,.15);transition:background .3s}
+.meter b:nth-child(1){height:6px}.meter b:nth-child(2){height:11px}.meter b:nth-child(3){height:15px}.meter b:nth-child(4){height:20px}
+.meter b.f{background:var(--deep)}
+.opt.on .meter b{background:rgba(255,255,255,.28)}
+.opt.on .meter b.f{background:var(--gold-soft)}
+
+/* ---------- last step ---------- */
+.field{display:grid;gap:6px;margin-bottom:12px;animation:rise .55s .5s var(--ease) both}
+.field label{font-size:12px;font-weight:700;color:var(--muted);letter-spacing:.02em}
+.field label em{display:block;font-style:normal;font-weight:600;color:#B5432E;letter-spacing:0;margin-top:2px;font-size:11.5px}
+.field input,.field textarea{font:inherit;font-size:16px;font-weight:500;color:var(--ink);border:1.5px solid var(--line);border-radius:15px;padding:12px 14px;background:#F7F5F0;outline:none;transition:border-color .2s,background .2s,box-shadow .2s;resize:none;box-sizing:border-box;width:100%}
+.field input:focus,.field textarea:focus{border-color:var(--deep);background:#fff;box-shadow:0 0 0 4px rgba(26,46,90,.08)}
+.field.bad input{border-color:var(--coral);background:#FFF5F3}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 16px}
+.chip{border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-size:13.5px;font-weight:600;cursor:pointer;
+  transition:background .25s,border-color .25s,color .25s,transform .35s var(--spring);animation:optIn .55s var(--spring) both;animation-delay:calc(.38s + var(--i) * .05s)}
+@media (hover:hover){.chip:hover{border-color:rgba(22,32,58,.35)}}
+.chip.on{background:var(--deep);border-color:var(--deep);color:#fff;transform:scale(1.04)}
+.chip.on::before{content:"✓ ";color:var(--gold-soft)}
+.checks{display:grid;gap:8px;margin:2px 0 14px;animation:rise .55s .55s var(--ease) both}
+.check{display:flex;align-items:flex-start;gap:9px;font-size:13.5px;font-weight:600;line-height:1.45;cursor:pointer;color:var(--ink)}
+.check input{appearance:none;-webkit-appearance:none;flex:none;width:20px;height:20px;margin:0;border-radius:6px;border:1.5px solid #CFCBC0;background:#fff;display:grid;place-items:center;cursor:pointer;transition:background .2s,border-color .2s}
+.check input:checked{background:var(--deep);border-color:var(--deep)}
+.check input:checked::after{content:"";width:10px;height:6px;border:2.5px solid #fff;border-top:0;border-right:0;transform:translateY(-1px) rotate(-45deg)}
+.check input:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.check b{color:#B5432E;font-weight:700}
+.agree-wrap{display:grid;gap:6px;padding:11px 12px;border-radius:14px;background:#F7F5F0;animation:rise .4s var(--ease) both}
+.agree-wrap.bad{box-shadow:inset 0 0 0 1.5px var(--coral);background:#FFF5F3}
+.more{border:0;background:none;padding:0;margin-left:29px;font-size:12px;font-weight:600;color:var(--muted);text-decoration:underline;text-underline-offset:2px;cursor:pointer;justify-self:start}
+.agree-detail{margin:0 0 0 29px;font-size:12px;line-height:1.6;color:var(--muted)}
+.agree-detail a{color:var(--navy);font-weight:700}
+.tip{margin:-4px 0 0 29px;font-size:12px;font-weight:600;color:#B5432E;line-height:1.5}
+.err{margin:0 0 10px;font-size:13px;font-weight:600;color:#C22F19}
+.err:empty{display:none}
+.nudge{display:grid;gap:10px;padding:14px;border-radius:16px;background:var(--tint);margin-bottom:10px;animation:rise .45s var(--spring) both}
+.nudge p{margin:0;font-size:14px;font-weight:700;line-height:1.5}
+.nudge .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.nudge button{border:0;border-radius:12px;padding:11px;font-size:14px;font-weight:700;cursor:pointer}
+.nudge .yes{background:var(--deep);color:#fff}
+.nudge .no{background:#fff;color:var(--ink);box-shadow:inset 0 0 0 1.5px var(--line)}
+.shake{animation:shake .4s ease both!important}
+.actions{display:grid;gap:6px;margin-top:4px;animation:rise .55s .6s var(--ease) both}
+.cta{position:relative;overflow:hidden;border:0;border-radius:17px;padding:17px 18px;font-size:17px;font-weight:800;cursor:pointer;background:var(--coral);color:#fff;text-decoration:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.25),0 16px 30px -14px rgba(232,67,43,.85);transition:transform .3s var(--spring),box-shadow .3s;display:flex;align-items:center;justify-content:center;gap:10px}
+.cta::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 35%,rgba(255,255,255,.38) 50%,transparent 65%);transform:translateX(-130%);animation:sheen 4.2s 1.8s ease-in-out infinite}
+.cta svg{transition:transform .3s var(--spring)}
+@media (hover:hover){.cta:hover{transform:translateY(-2px)}.cta:hover svg{transform:translateX(4px)}}
+.cta:active{transform:scale(.97)}
+.cta.dark{background:var(--deep);box-shadow:inset 0 1px 0 rgba(255,255,255,.15),0 16px 30px -14px rgba(6,12,34,.7)}
+.cta.pulse{animation:ring 2s 1.6s ease-out infinite}
+.ghostbtn{border:0;background:none;color:var(--muted);font-size:14px;font-weight:600;padding:10px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+/* ---------- intro ---------- */
+.intro{color:#fff;display:flex;flex-direction:column;gap:22px}
+.brand{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:700;letter-spacing:.12em;color:rgba(255,255,255,.78);animation:rise .7s .05s var(--ease) both}
+.brand .live{width:7px;height:7px;border-radius:50%;background:var(--gold-soft);animation:pulse 2.2s infinite}
+.hello{font-family:var(--serif);font-weight:600;font-size:clamp(42px,12.4vw,68px);line-height:1.02;letter-spacing:-.035em;margin:0}
+.hello .ln{display:block;position:relative;width:fit-content}
+.hello .ch{display:inline-block;animation:dropIn 1s var(--spring) both;animation-delay:calc(var(--base,0s) + var(--k) * 38ms)}
+.hello .it{font-style:italic;font-weight:500;color:var(--gold-soft);--base:.35s}
+.swoosh{position:absolute;left:0;bottom:-.14em;height:.24em;width:100%;overflow:visible}
+.swoosh path{fill:none;stroke:var(--coral);stroke-width:4;stroke-linecap:round;stroke-dasharray:240;stroke-dashoffset:240;animation:draw 1.1s 1.1s var(--ease) forwards}
+.lead{font-size:17.5px;font-weight:500;line-height:1.65;margin:0;color:rgba(255,255,255,.9);animation:rise .8s .55s var(--ease) both}
+.lead b{color:#fff;font-weight:800;background:linear-gradient(transparent 62%,rgba(217,164,65,.5) 62%)}
+.paths{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;animation:rise .8s .66s var(--ease) both}
+.paths span{display:grid;gap:3px;justify-items:center;text-align:center;padding:10px 4px;border-radius:14px;background:var(--glass);box-shadow:inset 0 0 0 1px var(--glass-line);font-size:11.5px;font-weight:700;line-height:1.3}
+.paths span em{font-style:normal;font-size:18px}
+.pills{display:flex;flex-wrap:wrap;gap:7px;animation:rise .8s .74s var(--ease) both}
+.pill{background:var(--glass);box-shadow:inset 0 0 0 1px var(--glass-line);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-radius:999px;padding:7px 12px;font-size:12.5px;font-weight:600}
+.intro .cta{font-size:18px;padding:19px;animation:rise .8s .84s var(--ease) both}
+.intro .cta svg{animation:nudgeX 2.4s 2.2s ease-in-out infinite}
+
+/* ---------- compiling ---------- */
+.printing{color:#fff;display:grid;gap:16px;justify-items:center;text-align:center}
+.bar{width:200px;height:4px;border-radius:4px;background:rgba(255,255,255,.18);overflow:hidden}
+.bar i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--gold),var(--gold-soft));transform-origin:0 50%;animation:load 1.4s var(--ease) both}
+.printing p{font-size:17px;font-weight:700;margin:0}
+.printing small{font-size:13px;color:rgba(255,255,255,.7);font-weight:500}
+
+/* ---------- study profile ---------- */
+.done{max-height:100%;overflow-y:auto;padding:4px 2px 8px;scrollbar-width:none}
+.done::-webkit-scrollbar{display:none}
+.profile{position:relative;background:var(--paper);border-radius:24px;overflow:hidden;box-shadow:0 40px 70px -28px rgba(6,12,34,.65);animation:unfold 1s var(--ease) both}
+.profile::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(115deg,transparent 30%,rgba(255,255,255,.8) 46%,rgba(255,240,205,.5) 52%,transparent 66%);mix-blend-mode:soft-light;transform:translateX(-110%);animation:holo 1.6s 1.2s var(--ease) forwards}
+.ph{position:relative;background:var(--deep);color:#fff;padding:18px 18px 16px;display:grid;gap:6px;overflow:hidden}
+.ph::before{content:"";position:absolute;right:-30px;top:-40px;width:150px;height:150px;border-radius:50%;border:1px solid rgba(243,213,142,.25);box-shadow:0 0 0 14px rgba(243,213,142,.06)}
+.ph .k{font-size:10px;font-weight:800;letter-spacing:.2em;color:var(--gold-soft)}
+.ph h3{margin:0;font-family:var(--serif);font-style:italic;font-weight:500;font-size:26px;letter-spacing:-.02em;line-height:1.1}
+.ph .who{font-size:13px;font-weight:600;opacity:.85}
+.ph .route{font-size:11px;letter-spacing:.12em;gap:6px;opacity:.9}
+.rows{display:grid;padding:6px 18px 4px}
+.r{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:baseline;padding:11px 0;border-bottom:1px dashed var(--line);animation:rise .5s var(--ease) both;animation-delay:calc(.7s + var(--i) * .06s)}
+.r:last-child{border-bottom:0}
+.r small{font-size:11.5px;font-weight:700;color:var(--muted)}
+.r b{font-size:15px;font-weight:700;line-height:1.4;overflow-wrap:anywhere}
+.r b.u{color:var(--muted);font-weight:600}
+.pf{position:relative;display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px 18px;border-top:1px solid var(--line);background:var(--paper2)}
+.pf small{display:block;font-size:9.5px;font-weight:800;letter-spacing:.18em;color:var(--muted)}
+.pf b{font-size:14.5px;font-weight:800;color:var(--ink)}
+.seal{position:relative;flex:none;width:76px;height:76px;margin:-34px 0 -6px;border-radius:50%;display:grid;place-items:center;text-align:center;color:#fff;
+  background:radial-gradient(circle at 35% 30%,#E8634B,#B72D19 70%);box-shadow:0 10px 18px -8px rgba(120,20,10,.6),inset 0 0 0 4px rgba(255,255,255,.12);
+  transform:rotate(-10deg);animation:seal .55s 1.5s cubic-bezier(.5,0,.3,1.4) both}
+.seal::before{content:"";position:absolute;inset:7px;border-radius:50%;border:1.5px dashed rgba(255,255,255,.55)}
+.seal span{display:grid;line-height:1.05}
+.seal small{font-size:7.5px;font-weight:800;letter-spacing:.16em;color:rgba(255,255,255,.85)}
+.seal b{font-size:20px;color:#fff}
+.profile.pending .seal{visibility:hidden}
+.seal.now{animation-delay:0s}
+.after{display:grid;gap:10px;margin-top:18px;animation:rise .6s 1.3s var(--ease) both}
+.after > p{color:rgba(255,255,255,.9);font-size:14px;font-weight:500;line-height:1.6;margin:0;text-align:center}
+.after .row{display:grid;grid-template-columns:1fr auto;gap:8px}
+.restart{border-radius:17px;padding:0 16px;font-size:14px;font-weight:700}
+.final{display:grid;gap:12px;padding:16px;border-radius:20px;color:#fff;background:rgba(255,255,255,.1);
+  box-shadow:inset 0 0 0 1.5px rgba(243,213,142,.6),0 0 0 6px rgba(243,213,142,.08);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px)}
+.final-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.final-h .tg{font-size:10px;font-weight:800;letter-spacing:.16em;background:var(--gold-soft);color:var(--navy);border-radius:999px;padding:4px 9px}
+.final-h b{font-size:17px;font-weight:800}
+.final > p{margin:0;font-size:14px;font-weight:500;line-height:1.6;color:rgba(255,255,255,.9)}
+.steps{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.steps li{display:flex;align-items:center;gap:8px;padding:10px;border-radius:12px;background:rgba(255,255,255,.08);font-size:13px;font-weight:700;transition:background .3s}
+.steps li i{flex:none;width:22px;height:22px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:12px;font-weight:800;background:rgba(255,255,255,.18)}
+.steps li.active{background:rgba(255,255,255,.18);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.4)}
+.steps li.done i{background:var(--gold-soft);color:var(--navy)}
+.steps li.done{color:rgba(255,255,255,.7)}
+.cta.kakao{background:#FEE500;color:#191919;box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 16px 30px -14px rgba(254,229,0,.55)}
+.cta.kakao svg{flex:none}
+.cta.kakao.pulse{animation:ringY 2s 1.6s ease-out infinite}
+@keyframes ringY{0%{box-shadow:0 0 0 0 rgba(254,229,0,.6)}70%,100%{box-shadow:0 0 0 14px rgba(254,229,0,0)}}
+.linkbtn{border:0;background:none;color:rgba(255,255,255,.75);font-size:13px;font-weight:600;padding:4px;cursor:pointer;text-decoration:underline;text-underline-offset:3px;justify-self:center}
+button.r{font:inherit;color:inherit;text-align:left;background:none;border:0;border-bottom:1px dashed var(--line);width:100%;cursor:pointer;transition:background .2s}
+button.r:hover,button.r:focus-visible{background:#F7F4EE}
+.chgpath{position:absolute;top:14px;right:14px;z-index:1;border:0;border-radius:999px;padding:6px 11px;background:rgba(255,255,255,.14);color:#fff;font:inherit;font-size:11.5px;font-weight:700;cursor:pointer}
+.chgpath:hover{background:rgba(255,255,255,.24)}
+.edithint{margin:10px 0 0;text-align:center;color:rgba(255,255,255,.78);font-size:12.5px;font-weight:600}
+.ed{font-style:normal;margin-left:5px;color:var(--coral);opacity:.8;font-size:10px;letter-spacing:0}
+.backnote{margin:0;padding:13px 12px;border-radius:14px;background:rgba(255,255,255,.14);box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.3);font-size:14px;font-weight:600;text-align:center;line-height:1.7}
+.backnote b{color:var(--gold-soft);font-weight:800}
+.backnote .x{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:6px;background:#fff;color:var(--navy);font-size:12px;font-weight:800;vertical-align:1px}
+.manual{display:grid;gap:8px}
+.manual p{margin:0;font-size:13px;color:rgba(255,255,255,.9);text-align:center}
+.copybox{width:100%;box-sizing:border-box;height:180px;font:inherit;font-size:16px;line-height:1.5;color:var(--ink);background:#fff;border-radius:16px;padding:12px 14px;border:0;resize:none;-webkit-user-select:text;user-select:text}
+.copied{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom,0px));transform:translate(-50%,20px);background:rgba(14,20,44,.88);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);color:#fff;padding:12px 18px;border-radius:999px;font-weight:700;font-size:14px;opacity:0;transition:all .4s var(--spring);z-index:20;pointer-events:none;white-space:nowrap}
+.copied.show{opacity:1;transform:translate(-50%,0)}
+
+.fx{position:fixed;inset:0;pointer-events:none;z-index:30;overflow:hidden}
+.fx i{position:absolute;left:0;top:0;border-radius:2px}
+
+/* ---------- keyframes ---------- */
+@keyframes orbitA{to{translate:-9vmax 12vmax}}
+@keyframes orbitB{to{translate:10vmax -8vmax}}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}}
+@keyframes wordUp{from{transform:translateY(108%) rotate(4deg)}}
+@keyframes optIn{from{opacity:0;transform:translateY(20px) rotateX(-26deg) scale(.96)}}
+@keyframes pick{0%{transform:scale(1)}30%{transform:scale(.95)}65%{transform:scale(1.03)}100%{transform:scale(1.012)}}
+@keyframes badgeIn{from{opacity:0;transform:scale(.2) rotate(-60deg)}}
+@keyframes badgeFloat{0%,100%{translate:0 0;rotate:-3deg}50%{translate:0 -6px;rotate:3deg}}
+@keyframes msgIn{from{opacity:0;transform:translateY(6px)}}
+@keyframes blink{0%,100%{opacity:.25}50%{opacity:1}}
+@keyframes chipIn{from{opacity:0;scale:.6}}
+@keyframes drift{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-12px) rotate(3deg)}}
+@keyframes dropIn{from{opacity:0;transform:translateY(-60%) rotate(-10deg) scale(.85)}}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(243,213,142,.7)}70%{box-shadow:0 0 0 9px rgba(243,213,142,0)}100%{box-shadow:0 0 0 0 rgba(243,213,142,0)}}
+@keyframes nudgeX{0%,80%,100%{transform:translateX(0)}88%{transform:translateX(5px)}94%{transform:translateX(-1px)}}
+@keyframes sheen{0%{transform:translateX(-130%)}35%,100%{transform:translateX(130%)}}
+@keyframes ring{0%{box-shadow:0 0 0 0 rgba(232,67,43,.6),0 16px 30px -14px rgba(232,67,43,.85)}70%,100%{box-shadow:0 0 0 14px rgba(232,67,43,0),0 16px 30px -14px rgba(232,67,43,.85)}}
+@keyframes eq{0%,100%{height:4px}50%{height:13px}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+@keyframes load{from{transform:scaleX(0)}}
+@keyframes unfold{from{clip-path:inset(0 0 100% 0 round 24px);transform:translateY(-30px)}to{clip-path:inset(0 0 0 0 round 24px);transform:none}}
+@keyframes holo{to{transform:translateX(110%)}}
+@keyframes seal{from{opacity:0;transform:rotate(-30deg) scale(2.4)}70%{opacity:1;transform:rotate(-8deg) scale(.92)}to{opacity:1;transform:rotate(-10deg) scale(1)}}
+@keyframes shake{0%,100%{transform:none}20%{transform:translateX(-6px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(2px)}}
+
+@media (max-height:700px){
+  .opts.grid .opt{min-height:98px;gap:8px}
+  .emo{width:38px;height:38px;font-size:19px}
+  .hint{margin-bottom:14px}
+  .cheerzone{height:52px}
+  .card{padding-top:22px}
+  .q{margin-top:10px}
+  .paths{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+</head>
+<body>
+
+<div class="app" id="app">
+  <div class="blob a"></div>
+  <div class="blob b"></div>
+  <div class="grain"></div>
+  <div class="lines"></div>
+  <div class="vignette"></div>
+  <div class="num hide" id="num" aria-hidden="true"></div>
+
+  <div class="shell">
+    <div class="topbar hide" id="topbar">
+      <button class="back glassbtn" id="back" aria-label="이전 질문으로">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+      </button>
+      <div class="route" aria-hidden="true">
+        <span>KR</span>
+        <div class="track" id="track">
+          <div class="fill"></div>
+          <div class="cap"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 3L1 9l11 6 9-4.91V17h2V9L12 3zM5 13.18v4L12 21l7-3.82v-4L12 17l-7-3.82z"/></svg></div>
+        </div>
+        <span>UK</span>
+      </div>
+      <div class="count" id="count" aria-live="polite"></div>
+      <button class="snd glassbtn" id="snd" aria-pressed="false" aria-label="배경음악 켜기">
+        <span class="eq" aria-hidden="true"><b></b><b></b><b></b></span>BGM <span class="st" id="sndState">OFF</span>
+      </button>
+    </div>
+
+    <div class="cheerzone">
+      <div class="cheer" id="cheer" role="status" aria-live="polite">
+        <div class="av">신촌</div>
+        <div class="t" id="cheerText"></div>
+      </div>
+    </div>
+
+    <div class="stage" id="stage"></div>
+  </div>
+</div>
+<div class="fx" id="fx" aria-hidden="true"></div>
+<div class="copied" id="copied">복사됐어요! 카톡 대화방에 붙여넣고 전송해 주세요</div>
+
+<script>
+(function(){
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const NEXT_DELAY = reduce ? 500 : 1050;
+  const IN_KAKAO = /KAKAOTALK/i.test(navigator.userAgent);
+  // 카카오톡 공유: 카카오 개발자 앱에 등록된 도메인(uksinchon.com, ukvisa.kr)에서만 동작
+  const KAKAO_KEY = '8de143d7cadb7f2f922a8ff3c970173c';   // 카카오 앱: 정규유학 사전 진단
+  const PAGE_URL = 'https://uksinchon.com/study-path/';
+  const CAN_KAKAO = /(^|\.)(uksinchon\.com|ukvisa\.kr)$/.test(location.hostname);
+  const KAKAO_ICON = '<svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><path fill="#191919" d="M12 3C6.48 3 2 6.48 2 10.77c0 2.76 1.85 5.18 4.63 6.55l-.95 3.48c-.08.3.26.54.52.37l4.15-2.74c.54.06 1.09.1 1.65.1 5.52 0 10-3.48 10-7.76S17.52 3 12 3z"/></svg>';
+  const FORMSPREE = 'https://formspree.io/f/xqaqagrk';
+
+  /* ---------- content ---------- */
+  // u:true = 부담 없는 '미정' 선택지 (점선 카드). m = 수준 막대, b = 작은 배지
+  const U = (l, s, e) => ({e: e || '🤔', l, s: s || '상담에서 같이 정해요', u:true});
+  const INTAKE = (key, extra) => ({ key, tag:'START', name:'입학 시기', icon:'🗓️',
+    title:'언제 시작하고\n싶으세요?', hint:'영국은 보통 9월에 새 학년이 시작돼요', layout:'grid',
+    opts:[
+      {e:'❄️', l:'2027년 1월', s:'가장 가까운 시작', b:'일부 과정'},
+      {e:'🍂', l:'2027년 9월', s:'정규 학기 시작', b:'메인 입학'},
+      {e:'🌱', l:'2028년 이후', s:'여유 있게 준비'},
+      U('아직 미정', '목표에 맞춰 추천받을래요')
+    ].concat(extra || []) });
+  const ENGLISH = key => ({ key, tag:'ENGLISH', name:'영어 준비', icon:'💬',
+    title:'영어 준비는\n어디쯤이에요?', hint:'점수가 없어도 괜찮아요', layout:'list',
+    opts:[
+      {e:'🏅', l:'IELTS 점수가 있어요', s:'TOEFL 등 다른 공인 점수 포함', b:'점수 보유'},
+      {e:'📖', l:'시험 준비 중이에요', s:'학원·독학으로 준비 중'},
+      {e:'🌱', l:'아직 시작 전이에요', s:'어떻게 준비할지부터 궁금해요'},
+      U('잘 모르겠어요', '필요한 점수부터 알려주세요')
+    ]});
+
+  const PATH_Q = { key:'path', tag:'COURSE', name:'과정', icon:'🧭',
+    title:'어떤 과정을\n생각하고 계세요?', hint:'가장 가까운 걸 고르면 맞춤 질문으로 이어져요', layout:'list',
+    opts:[
+      {e:'🎓', l:'학부 · 파운데이션 · 편입', s:'고등학생·대학생', branch:'ug'},
+      {e:'📘', l:'석사 · 프리마스터', s:'졸업(예정)자·직장인', branch:'pg'},
+      {e:'🔬', l:'박사 · 연구과정', s:'PhD · MRes · MPhil', branch:'phd'},
+      {e:'🏫', l:'GCSE · A-Level · 보딩스쿨', s:'중·고등학생', branch:'school'},
+      {e:'🧸', l:'Prep School · 사립초등 · 부모동반', s:'초등 자녀', branch:'prep'},
+      {e:'🧭', l:'아직 잘 모르겠어요', s:'상황 듣고 방향부터 잡아주세요', branch:'unsure', u:true}
+    ]};
+
+  const BRANCHES = {
+    ug: { label:'학부 · 파운데이션 · 편입', short:'학부', hue:12, icon:'🎓',
+      chips:['비용이 궁금해요','장학금','전공 추천 받고 싶어요','파운데이션 vs 학부 직행','기숙사'],
+      qs:[
+        { key:'stage', tag:'NOW', name:'현재 단계', icon:'🎒', title:'지금 어느 단계에\n계세요?', hint:'학년 기준으로 골라주세요', layout:'grid',
+          opts:[ {e:'🏫', l:'고1~고2', s:'미리 준비 시작'}, {e:'🎒', l:'고3 · 졸업 예정', s:'올해 지원 고민 중'},
+                 {e:'📚', l:'고졸 · 재수', s:'다시 도전 준비'}, {e:'🏛️', l:'국내 대학 재학', s:'편입·재입학 고민'},
+                 U('기타', '검정고시·국제학교 등', '✏️') ]},
+        { key:'route', tag:'ROUTE', name:'희망 경로', icon:'🧭', title:'어떤 경로가\n끌리세요?', hint:'정하지 않았어도 괜찮아요', layout:'list',
+          opts:[ {e:'🎯', l:'학부 바로 입학', s:'A-Level · IB · AP 등 성적으로', b:'직행'},
+                 {e:'🪜', l:'파운데이션 거쳐서', s:'1년 준비 후 학부 진학', b:'1년 과정'},
+                 {e:'🔁', l:'편입', s:'국내 대학 학점으로 2학년 입학 등', b:'경력 활용'},
+                 U('잘 모르겠어요', '나에게 맞는 경로를 추천받을래요') ],
+          react:['직행 루트, 준비 순서가 중요해요','파운데이션은 탄탄한 시작이에요','편입은 학점 인정이 핵심이에요'] },
+        { key:'major', tag:'MAJOR', name:'관심 전공', icon:'📚', title:'관심 있는 전공\n분야는요?', hint:'가장 가까운 하나만요', layout:'grid',
+          opts:[ {e:'💼', l:'경영 · 경제', s:'회계·금융 포함'}, {e:'💻', l:'공학 · 컴퓨터', s:'AI·데이터 포함'},
+                 {e:'🎨', l:'예술 · 디자인', s:'건축·패션 포함'}, {e:'📖', l:'인문 · 사회', s:'법·정치·심리 포함'},
+                 {e:'🧬', l:'자연 · 의약', s:'생명·약학·간호 포함'}, U('아직 미정', '적성부터 같이 봐요') ]},
+        INTAKE('intake'),
+        { key:'grade', tag:'GRADES', name:'성적', icon:'📊', title:'성적은 대략\n어느 정도예요?', hint:'내신·수능·IB 등 대략적인 느낌이면 충분해요', layout:'list',
+          opts:[ {m:4, l:'상위권', s:'상위 10% 안팎'}, {m:3, l:'중상위권', s:'상위 30% 안팎'},
+                 {m:2, l:'중위권', s:'평균 정도'}, {m:1, l:'보완이 필요해요', s:'파운데이션 등 대안이 궁금해요'},
+                 U('잘 모르겠어요', '성적표 보고 같이 판단해요') ]},
+        ENGLISH('english')
+      ]},
+    pg: { label:'석사 · 프리마스터', short:'석사', hue:182, icon:'📘',
+      chips:['비용이 궁금해요','장학금','관련 경력 있어요','합격 가능성','졸업 후 취업'],
+      qs:[
+        { key:'stage', tag:'NOW', name:'현재 상태', icon:'🪪', title:'지금 어떤 상황\n이세요?', hint:'가장 가까운 걸 골라주세요', layout:'grid',
+          opts:[ {e:'🎒', l:'졸업 예정', s:'4학년 재학 중'}, {e:'🎓', l:'졸업했어요', s:'학사 학위 보유'},
+                 {e:'💼', l:'직장인', s:'경력을 살려 진학'}, U('기타', '휴직·이직 준비 등', '✏️') ]},
+        { key:'route', tag:'ROUTE', name:'희망 경로', icon:'🧭', title:'어떤 과정을\n생각하세요?', hint:'영국 석사는 대부분 1년 과정이에요', layout:'list',
+          opts:[ {e:'🎯', l:'석사 바로 입학', s:'학점·영어 조건을 맞춰 직행', b:'1년 과정'},
+                 {e:'🪜', l:'프리마스터 거쳐서', s:'학업·영어 보완 후 석사 진학', b:'준비 과정'},
+                 U('잘 모르겠어요', '내 조건에 맞는 걸 추천받을래요') ]},
+        { key:'field', tag:'FIELD', name:'관심 분야', icon:'🗂️', title:'관심 분야는\n어디예요?', hint:'가장 가까운 하나만요', layout:'grid',
+          opts:[ {e:'📈', l:'경영 · MBA', s:'마케팅·금융 포함'}, {e:'💻', l:'공학 · IT · 데이터', s:'AI·컴퓨터 포함'},
+                 {e:'🎨', l:'디자인 · 예술', s:'미디어·건축 포함'}, {e:'🌐', l:'인문 · 사회 · 교육', s:'국제관계·법 포함'},
+                 {e:'🩺', l:'보건 · 과학', s:'공중보건·생명과학'}, U('아직 미정', '경력과 연결해서 같이 봐요') ]},
+        INTAKE('intake'),
+        { key:'gpa', tag:'GPA', name:'학점', icon:'📊', title:'학부 학점은\n어느 정도예요?', hint:'4.5 만점 기준이에요 (4.3 만점이면 비슷한 구간으로)', layout:'list',
+          opts:[ {m:4, l:'3.8 이상', s:'상위권 대학 지원 여유'}, {m:3, l:'3.3 ~ 3.8', s:'선택지가 넓은 구간'},
+                 {m:2, l:'3.0 ~ 3.3', s:'학교·전공 선택이 중요'}, {m:1, l:'3.0 미만', s:'프리마스터 등 대안이 궁금해요'},
+                 U('잘 모르겠어요', '성적표 보고 같이 판단해요') ]},
+        ENGLISH('english')
+      ]},
+    phd: { label:'박사 · 연구과정', short:'박사', hue:284, icon:'🔬',
+      chips:['펀딩 · 장학금','연구계획서 피드백','지도교수 컨택 방법','가족 동반','비용'],
+      qs:[
+        { key:'degree', tag:'DEGREE', name:'최종 학력', icon:'🎓', title:'최종 학력이\n어떻게 되세요?', hint:'졸업 예정도 괜찮아요', layout:'grid',
+          opts:[ {e:'📜', l:'석사 졸업', s:'석사 학위 보유'}, {e:'✍️', l:'석사 재학 중', s:'졸업 예정'},
+                 {e:'🎓', l:'학사 졸업', s:'학사에서 바로 지원'}, U('기타', '해외 학위 등', '✏️') ]},
+        { key:'course', tag:'COURSE', name:'희망 과정', icon:'🧭', title:'어떤 과정을\n생각하세요?', hint:'영국 PhD는 보통 3~4년이에요', layout:'list',
+          opts:[ {e:'🔬', l:'PhD', s:'박사 학위 과정', b:'3~4년'},
+                 {e:'🧪', l:'MRes · MPhil', s:'연구 중심 석사 후 PhD 연계', b:'연구 석사'},
+                 U('잘 모르겠어요', '내 경력에 맞게 추천받을래요') ]},
+        { key:'field', tag:'RESEARCH', name:'연구 분야', icon:'🗂️', title:'연구 관심 분야는\n어디예요?', hint:'가장 가까운 하나만요', layout:'grid',
+          opts:[ {e:'⚙️', l:'공학 · 자연과학', s:'물리·화학·컴퓨터'}, {e:'📈', l:'사회과학 · 경영', s:'경제·정책·교육'},
+                 {e:'📖', l:'인문 · 예술', s:'문학·역사·디자인'}, {e:'🩺', l:'의학 · 보건', s:'생명·약학·간호'},
+                 U('아직 미정', '연구 주제부터 같이 봐요') ]},
+        { key:'ready', tag:'READY', name:'준비 상태', icon:'📝', title:'지원 준비는\n어디까지 됐어요?', hint:'솔직하게 골라주세요', layout:'list',
+          opts:[ {m:4, l:'지도교수와 연락 중', s:'연구 주제도 어느 정도 정해짐'}, {m:3, l:'연구계획서 초안 있어요', s:'교수 컨택은 아직'},
+                 {m:2, l:'주제만 정했어요', s:'계획서는 아직'}, {m:1, l:'이제 시작이에요', s:'무엇부터 할지 궁금해요'},
+                 U('잘 모르겠어요', '준비 순서부터 알려주세요') ]},
+        { key:'start', tag:'START', name:'시작 시기', icon:'🗓️', title:'언제 시작하고\n싶으세요?', hint:'박사과정은 시작 시기가 비교적 유연해요', layout:'grid',
+          opts:[ {e:'⏱️', l:'1년 이내', s:'빠르게 시작'}, {e:'🗓️', l:'1~2년 후', s:'준비 기간 확보'},
+                 {e:'🌱', l:'그 이후', s:'장기 계획'}, U('아직 미정') ]},
+        { key:'priority', tag:'PRIORITY', name:'중요 요소', icon:'⚖️', title:'가장 중요하게\n보는 건 뭐예요?', hint:'하나만 골라주세요', layout:'grid',
+          opts:[ {e:'🧑‍🏫', l:'지도교수 · 연구실', s:'연구 궁합'}, {e:'💷', l:'장학금 · 펀딩', s:'학비·생활비 지원'},
+                 {e:'🏛️', l:'대학 명성', s:'랭킹·평판'}, {e:'🚀', l:'졸업 후 진로', s:'교수·연구소·기업'},
+                 U('아직 미정', '균형 있게 보고 싶어요') ]}
+      ]},
+    school: { label:'GCSE · A-Level · 보딩스쿨', short:'중·고등', hue:152, icon:'🏫',
+      chips:['비용이 궁금해요','가디언 서비스','학교 투어','입학시험 준비','형제 함께'],
+      qs:[
+        { key:'age', tag:'STUDENT', name:'학년 · 나이', icon:'🧑‍🎓', title:'학생은 지금\n몇 학년이에요?', hint:'한국 학년 기준이에요', layout:'grid',
+          opts:[ {e:'🌱', l:'초6 ~ 중1', s:'만 11~13세'}, {e:'📗', l:'중2 ~ 중3', s:'만 14~15세'},
+                 {e:'📘', l:'고1', s:'만 16세'}, {e:'📙', l:'고2 이상', s:'만 17세 이상'},
+                 U('기타', '국제학교 등', '✏️') ]},
+        { key:'course', tag:'COURSE', name:'관심 과정', icon:'🧭', title:'어떤 과정에\n관심 있으세요?', hint:'학생 나이에 맞는 과정을 같이 볼게요', layout:'list',
+          opts:[ {e:'🏫', l:'보딩스쿨 저학년', s:'Year 7~9 입학', b:'만 11~13세'},
+                 {e:'📗', l:'GCSE', s:'Year 10~11, 2년 과정', b:'만 14~16세'},
+                 {e:'📘', l:'A-Level', s:'Year 12~13, 대학 진학 과정', b:'만 16~18세'},
+                 {e:'🌍', l:'IB', s:'국제 바칼로레아 과정', b:'만 16~18세'},
+                 U('잘 모르겠어요', '학생에게 맞는 과정을 추천받을래요') ]},
+        INTAKE('start'),
+        { key:'level', tag:'LEVEL', name:'학업 · 영어', icon:'📊', title:'학업과 영어는\n어떤 편이에요?', hint:'대략적인 느낌으로 골라주세요', layout:'list',
+          opts:[ {e:'🌟', l:'둘 다 자신 있어요', s:'성적도 영어도 좋은 편', b:'학업 ✓ 영어 ✓'},
+                 {e:'📚', l:'성적은 좋은데 영어 보완', s:'영어 집중 준비가 필요해요', b:'학업 ✓ 영어 △'},
+                 {e:'🗣️', l:'영어는 되는데 성적 보완', s:'학업 관리가 필요해요', b:'학업 △ 영어 ✓'},
+                 {e:'🌱', l:'둘 다 준비가 필요해요', s:'차근차근 시작하고 싶어요', b:'학업 △ 영어 △'},
+                 U('잘 모르겠어요', '테스트 후 판단하고 싶어요') ]},
+        { key:'type', tag:'STYLE', name:'선호 형태', icon:'🏡', title:'어떤 형태가\n좋으세요?', hint:'학교 생활 방식이에요', layout:'grid',
+          opts:[ {e:'🏰', l:'풀 보딩', s:'학교 기숙사 생활', b:'기숙'}, {e:'🗓️', l:'위클리 보딩', s:'주말엔 가디언·홈스테이'},
+                 {e:'🚌', l:'데이 스쿨', s:'홈스테이·가디언에서 통학'}, U('아직 미정', '장단점부터 듣고 싶어요') ]},
+        { key:'priority', tag:'PARENTS', name:'부모 우선순위', icon:'⚖️', title:'부모님이 가장\n중요하게 보는 건요?', hint:'하나만 골라주세요', layout:'grid',
+          opts:[ {e:'🏆', l:'학업 · 명문대 진학', s:'입시 실적'}, {e:'🛡️', l:'안전 · 케어', s:'생활 관리'},
+                 {e:'🎻', l:'예체능 · 활동', s:'다양한 경험'}, {e:'💷', l:'비용', s:'학비·생활비'},
+                 U('아직 미정', '균형 있게 보고 싶어요') ]}
+      ]},
+    prep: { label:'Prep School · 사립초등 · 부모동반', short:'초등', hue:34, icon:'🧸',
+      chips:['비용이 궁금해요','부모동반 비자','학교 투어','방학 캠프 먼저','형제 함께'],
+      qs:[
+        { key:'age', tag:'CHILD', name:'자녀 나이', icon:'🧒', title:'자녀는 지금\n몇 살이에요?', hint:'만 나이 기준이에요', layout:'grid',
+          opts:[ {e:'🌼', l:'만 7세 이하', s:'유치원 ~ 초1'}, {e:'🎈', l:'만 8~10세', s:'초2 ~ 초4'},
+                 {e:'📗', l:'만 11~13세', s:'초5 ~ 중1'}, U('기타', '형제가 함께 가요 등', '✏️') ]},
+        { key:'type', tag:'SCHOOL', name:'희망 형태', icon:'🏫', title:'어떤 형태를\n생각하세요?', hint:'자녀 나이에 맞춰 같이 볼게요', layout:'list',
+          opts:[ {e:'🏫', l:'사립초등 데이스쿨', s:'집에서 통학 (부모동반 등)', b:'통학'},
+                 {e:'🏰', l:'보딩 프렙스쿨', s:'학교 기숙사 생활', b:'기숙'},
+                 {e:'☀️', l:'방학 캠프 · 단기 스쿨링', s:'짧게 먼저 경험해 보기', b:'단기'},
+                 U('아직 미정', '아이에게 맞는 형태를 추천받을래요') ]},
+        INTAKE('start'),
+        { key:'parent', tag:'FAMILY', name:'부모 동반', icon:'👨‍👩‍👧', title:'부모님도 함께\n가시나요?', hint:'계획 중인 정도로 골라주세요', layout:'grid',
+          opts:[ {e:'👩‍👧', l:'한 분이 동반', s:'엄마 또는 아빠'}, {e:'👨‍👩‍👧', l:'가족 모두', s:'온 가족 이주'},
+                 {e:'🧳', l:'동반 안 해요', s:'보딩·가디언 고려'}, U('아직 미정', '가능한 방법부터 듣고 싶어요') ]},
+        { key:'priority', tag:'PRIORITY', name:'중요 요소', icon:'⚖️', title:'가장 중요하게\n보는 건 뭐예요?', hint:'하나만 골라주세요', layout:'grid',
+          opts:[ {e:'🗣️', l:'영어 환경', s:'자연스러운 영어'}, {e:'🏆', l:'학업 · 진학', s:'상급 학교 연계'},
+                 {e:'💛', l:'정서 · 적응', s:'아이 행복 우선'}, {e:'🎻', l:'예체능 · 활동', s:'다양한 경험'},
+                 {e:'💷', l:'비용', s:'학비·생활비'}, U('아직 미정', '균형 있게 보고 싶어요') ]},
+        { key:'english', tag:'ENGLISH', name:'영어 · 적응', icon:'💬', title:'아이의 영어는\n어느 정도예요?', hint:'대략적인 느낌이면 충분해요', layout:'list',
+          opts:[ {m:1, l:'거의 처음이에요', s:'알파벳·기초 단어 정도'}, {m:2, l:'기초 수준', s:'간단한 표현 가능'},
+                 {m:3, l:'일상 대화 가능', s:'영어 유치원·학원 경험'}, {m:4, l:'국제학교 · 해외 경험', s:'영어 수업에 익숙해요'},
+                 U('잘 모르겠어요', '레벨 테스트로 확인하고 싶어요') ]}
+      ]},
+    unsure: { label:'아직 잘 모르겠어요', short:'방향 찾기', hue:216, icon:'🧭',
+      chips:['비용이 궁금해요','어디서부터 시작할지','장학금','영국 vs 다른 나라','일정 짜기'],
+      qs:[
+        { key:'stage', tag:'NOW', name:'현재 단계', icon:'🪪', title:'유학을 생각하는 분은\n지금 어느 단계예요?', hint:'본인 또는 자녀 기준으로요', layout:'grid',
+          opts:[ {e:'🧸', l:'초등 자녀', s:'만 13세 이하'}, {e:'🏫', l:'중·고등학생', s:'만 14~18세'},
+                 {e:'🏛️', l:'대학생', s:'재학 · 졸업 예정'}, {e:'💼', l:'졸업생 · 직장인', s:'커리어 고민 중'},
+                 U('기타', '상황을 들려주세요', '✏️') ]},
+        { key:'direction', tag:'DIRECTION', name:'관심 방향', icon:'🧭', title:'가장 끌리는\n방향은요?', hint:'느낌으로 골라도 괜찮아요', layout:'grid',
+          opts:[ {e:'🎓', l:'학위 취득', s:'학부 · 석사'}, {e:'🏫', l:'중·고등 유학', s:'보딩 · A-Level'},
+                 {e:'🧸', l:'자녀 조기유학', s:'프렙 · 부모동반'}, {e:'🔁', l:'커리어 전환', s:'석사 · 전문 과정'},
+                 U('아직 몰라요', '상황 듣고 추천해 주세요') ]},
+        { key:'when', tag:'WHEN', name:'시기', icon:'🗓️', title:'언제쯤 떠나고\n싶으세요?', hint:'대략적인 느낌이면 충분해요', layout:'grid',
+          opts:[ {e:'⏱️', l:'1년 이내', s:'빠르게 준비'}, {e:'🗓️', l:'1~2년 후', s:'차근차근 준비'},
+                 {e:'🌱', l:'그 이후', s:'장기 계획'}, U('아직 미정') ]},
+        { key:'question', tag:'CURIOUS', name:'가장 궁금한 점', icon:'❓', title:'가장 궁금한 건\n뭐예요?', hint:'상담에서 이것부터 답해 드릴게요', layout:'grid',
+          opts:[ {e:'💷', l:'비용', s:'학비 · 생활비'}, {e:'🎯', l:'입학 가능성', s:'내 조건으로 될까?'},
+                 {e:'🗺️', l:'학교 · 지역 추천', s:'어디가 맞을까?'}, {e:'🗓️', l:'준비 순서 · 일정', s:'언제 무엇을?'},
+                 {e:'🛂', l:'비자', s:'필요 서류 · 절차'}, U('전부 다요', '처음부터 차근차근', '🙌') ]},
+        ENGLISH('english')
+      ]}
+  };
+  const CHEERS = ['좋아요 😊','좋은 선택이에요','점점 선명해지고 있어요','충분히 그려볼 수 있어요','좋아요, 기억해 둘게요'];
+  const UNSURE_CHEER = '괜찮아요, 상담에서 같이 정해요 🙌';
+
+  /* ---------- sound: Web Audio로 직접 합성 (외부 음원 없음) ---------- */
+  const Sound = (() => {
+    let ctx, master, sfxBus, bgmBus, noise, timer, nextT = 0, step = 0, bgmOn = false;
+    const BPM = 96, S16 = 60 / BPM / 4;
+    const mtof = m => 440 * Math.pow(2, (m - 69) / 12);
+    // F – C – Dm – Bb, 차분하고 따뜻한 진행
+    const CHORDS = [[65,69,72],[64,67,72],[62,65,69],[62,65,70]];
+    const BASS = [41,48,50,46];
+    const ARP = [0,1,2,1,2,1,0,1];
+    function init(){
+      if (ctx) return true;
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return false;
+      ctx = new AC();
+      const comp = ctx.createDynamicsCompressor();
+      master = ctx.createGain(); master.gain.value = .9;
+      master.connect(comp); comp.connect(ctx.destination);
+      sfxBus = ctx.createGain(); sfxBus.gain.value = .42; sfxBus.connect(master);
+      bgmBus = ctx.createGain(); bgmBus.gain.value = 0; bgmBus.connect(master);
+      noise = ctx.createBuffer(1, ctx.sampleRate, ctx.sampleRate);
+      const d = noise.getChannelData(0); for (let k=0;k<d.length;k++) d[k] = Math.random()*2-1;
+      return true;
+    }
+    function unlock(){
+      if (!init()) return;
+      if (ctx.state === 'suspended') ctx.resume();
+      const b = ctx.createBufferSource(); b.buffer = ctx.createBuffer(1,1,22050); b.connect(ctx.destination); b.start(0);
+    }
+    const live = () => ctx && ctx.state !== 'closed' && !document.hidden;
+    function tone(f, t, dur, o){
+      o = o || {};
+      const osc = ctx.createOscillator(), g = ctx.createGain();
+      osc.type = o.type || 'sine';
+      osc.frequency.setValueAtTime(f, t);
+      if (o.to) osc.frequency.exponentialRampToValueAtTime(o.to, t + dur * .6);
+      const v = o.vol || .2, a = o.attack || .005;
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + a); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      let out = g;
+      if (o.lp){ const f2 = ctx.createBiquadFilter(); f2.type='lowpass'; f2.frequency.value=o.lp; g.connect(f2); out = f2; }
+      osc.connect(g); out.connect(o.bus || sfxBus); osc.start(t); osc.stop(t + dur + .05);
+    }
+    function burstNoise(t, dur, o){
+      const src = ctx.createBufferSource(), f = ctx.createBiquadFilter(), g = ctx.createGain();
+      src.buffer = noise; f.type = o.type || 'bandpass'; f.Q.value = o.q || 1;
+      f.frequency.setValueAtTime(o.from, t); if (o.to) f.frequency.exponentialRampToValueAtTime(o.to, t + dur);
+      g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(o.vol, t + (o.attack || .004)); g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      src.connect(f); f.connect(g); g.connect(o.bus || sfxBus); src.start(t, Math.random()*.5); src.stop(t + dur + .05);
+    }
+    const sfx = {
+      pop(){ if(!live())return; const t=ctx.currentTime; tone(660,t,.13,{to:990,vol:.28}); tone(1320,t+.01,.09,{vol:.06,type:'triangle'}); },
+      tick(){ if(!live())return; tone(1240,ctx.currentTime,.06,{type:'triangle',vol:.13}); },
+      whoosh(){ if(!live())return; burstNoise(ctx.currentTime,.45,{from:380,to:2400,q:.9,vol:.12,attack:.15}); },
+      thump(){ if(!live())return; const t=ctx.currentTime; tone(140,t,.26,{to:50,vol:.36}); burstNoise(t,.09,{from:900,q:.6,vol:.12}); },
+      chime(){ if(!live())return; const t=ctx.currentTime; [[72,0],[76,.16],[79,.32]].forEach(([m,dt])=>{ tone(mtof(m),t+dt,1.3,{vol:.2,attack:.01}); tone(mtof(m+12),t+dt,.7,{vol:.04,attack:.01}); }); },
+      sparkle(){ if(!live())return; const t=ctx.currentTime; [84,88,91,96].forEach((m,k)=>tone(mtof(m),t+.06*k,.35,{type:'triangle',vol:.05})); }
+    };
+    function playStep(s, t){
+      const bar = Math.floor(s/16) % 4, i = s % 16, ch = CHORDS[bar];
+      if (i % 2 === 0) tone(mtof(ch[ARP[i/2]] + (i === 8 ? 12 : 0)), t, .34, {type:'triangle', vol:.065, lp:2600, bus:bgmBus});
+      if (i === 0 || i === 10) tone(mtof(BASS[bar]), t, .5, {type:'triangle', vol:.15, lp:800, bus:bgmBus});
+      if (i === 0 || i === 8) tone(110, t, .2, {to:46, vol:.16, bus:bgmBus});
+      if (i % 4 === 2) burstNoise(t, .05, {type:'highpass', from:7500, vol:.035, bus:bgmBus});
+      if (i === 0) ch.forEach(m => tone(mtof(m+12), t, 1.8, {vol:.02, attack:.12, bus:bgmBus}));
+    }
+    function schedule(){ while (nextT < ctx.currentTime + .12){ playStep(step, nextT); nextT += S16; step = (step + 1) % 64; } }
+    function setBgm(on){
+      unlock(); if (!ctx) return false;
+      bgmOn = on; const t = ctx.currentTime;
+      bgmBus.gain.cancelScheduledValues(t); bgmBus.gain.setTargetAtTime(on ? .55 : 0, t, on ? .5 : .15);
+      clearInterval(timer);
+      if (on){ nextT = t + .05; step = 0; timer = setInterval(schedule, 25); }
+      return true;
+    }
+    document.addEventListener('visibilitychange', () => { if (!ctx) return; if (document.hidden) ctx.suspend(); else ctx.resume(); });
+    return Object.assign({ unlock, setBgm, get bgmOn(){ return bgmOn; } }, sfx);
+  })();
+
+  /* ---------- state & helpers ---------- */
+  const $ = id => document.getElementById(id);
+  const app = $('app'), stage = $('stage'), numEl = $('num'), track = $('track');
+  const state = { idx:-1, branch:null, answers:{}, chips:new Set(), name:'', contact:'', agree:false, kakao:false, nudged:false, memo:'', locked:false };
+  let current = null, cheerTimer = 0, cheerN = 0;
+
+  const esc = t => String(t).replace(/[&<>"]/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[ch]));
+  const buzz = ms => { try { navigator.vibrate && navigator.vibrate(ms); } catch(e){} };
+  const anim = (el, kf, opt) => (!el || !el.animate || reduce) ? null : el.animate(kf, opt);
+  const finished = a => new Promise(r => { if (!a) return r(); a.onfinish = r; a.oncancel = r; });
+  [app, document.querySelector('.shell')].forEach(el => el.addEventListener('scroll', () => { el.scrollTop = 0; el.scrollLeft = 0; }));
+
+  const BR = () => BRANCHES[state.branch];
+  const qs = () => state.branch ? BR().qs : [];
+  const NQ = () => state.branch ? BR().qs.length : 6;
+  const TOTAL = () => NQ() + 2;                 // 과정 선택 + 분기 질문 + 마지막 단계
+  const akey = q => state.branch + '.' + q.key;
+  const val = q => { const a = state.answers[akey(q)]; return a ? a.l : '상담에서 함께 정해요'; };
+
+  /* ---------- scenes: one system, hue shifts per branch ---------- */
+  const OFFS = [['-8vmax','6vmax','4vmax','-2vmax'],['4vmax','10vmax','-4vmax','-6vmax'],['-12vmax','2vmax','8vmax','-10vmax'],['2vmax','14vmax','-2vmax','-12vmax'],['-4vmax','8vmax','12vmax','-4vmax'],['-10vmax','12vmax','2vmax','-8vmax'],['-6vmax','4vmax','6vmax','-6vmax']];
+  const NAVY = {bg:'#1A2E5A', deep:'#1A2E5A', a:'#3A5BA8', b:'#E8432B', tint:'#EEF1F8', accent:'#1A2E5A'};
+  function branchScene(i){
+    const h = BR().hue, l = 21 + (i % 3) * 2.5;
+    return {bg:`hsl(${h} 40% ${l}%)`, deep:`hsl(${h} 45% 25%)`, a:`hsl(${h+16} 62% 52%)`, b:`hsl(${h-30} 52% 44%)`, tint:`hsl(${h} 60% 95%)`, accent:`hsl(${h} 55% 45%)`};
+  }
+  function applyScene(sc, i, origin){
+    const s = app.style, o = OFFS[(i + 7) % OFFS.length];
+    s.setProperty('--blobA', sc.a); s.setProperty('--blobB', sc.b); s.setProperty('--tint', sc.tint);
+    s.setProperty('--accent', sc.accent); s.setProperty('--deep', sc.deep);
+    ['ax','ay','bx','by'].forEach((k,n) => s.setProperty('--'+k, o[n]));
+    const ar = app.getBoundingClientRect();
+    const x = origin ? origin.x - ar.left : ar.width/2, y = origin ? origin.y - ar.top : ar.height*.55;
+    const R = Math.hypot(Math.max(x, ar.width - x), Math.max(y, ar.height - y)) + 20;
+    const w = document.createElement('div'); w.className = 'wipe'; w.style.background = sc.bg;
+    app.insertBefore(w, app.firstChild);
+    const a = anim(w, [{clipPath:`circle(0px at ${x}px ${y}px)`},{clipPath:`circle(${R}px at ${x}px ${y}px)`}], {duration:900, easing:'cubic-bezier(.65,0,.35,1)'});
+    finished(a).then(() => { s.setProperty('--scene', sc.bg); w.remove(); });
+  }
+
+  function setNum(i, back){
+    if (i < 0 || i >= TOTAL()) { numEl.classList.add('hide'); return; }
+    numEl.classList.remove('hide');
+    const txt = String(i+1).padStart(2,'0');
+    const old = numEl.querySelector('span:not(.out)');
+    if (old && old.textContent === txt) return;
+    const n = document.createElement('span'); n.textContent = txt; numEl.appendChild(n);
+    const dir = back ? -1 : 1;
+    anim(n, [{transform:`translateY(${dir*100}%)`, opacity:0},{transform:'none', opacity:1}], {duration:900, easing:'cubic-bezier(.22,1,.36,1)', delay:120, fill:'backwards'});
+    if (old){ old.classList.add('out'); finished(anim(old, [{transform:'none',opacity:1},{transform:`translateY(${-dir*100}%)`,opacity:0}], {duration:600, easing:'cubic-bezier(.6,0,.4,1)', fill:'forwards'})).then(()=>old.remove()); }
+  }
+  function setProgress(i){
+    const tb = $('topbar');
+    if (i < 0 || i >= TOTAL()) { tb.classList.add('hide'); return; }
+    tb.classList.remove('hide');
+    const T = TOTAL();
+    if (track.querySelectorAll('i').length !== T){
+      track.querySelectorAll('i').forEach(d => d.remove());
+      track.insertAdjacentHTML('beforeend', Array.from({length:T},(_,k)=>`<i style="left:${(k+.5)/T*100}%"></i>`).join(''));
+    }
+    track.style.setProperty('--p', ((i + .5) / T * 100) + '%');
+    track.querySelectorAll('i').forEach((d,k) => d.classList.toggle('lit', k <= i));
+    $('count').innerHTML = `<b>${String(i+1).padStart(2,'0')}</b><span> / ${state.branch ? String(T).padStart(2,'0') : '··'}</span>`;
+  }
+
+  function cheer(main, sub){
+    const c = $('cheer'), t = $('cheerText');
+    clearTimeout(cheerTimer);
+    t.innerHTML = '<span class="typing" aria-hidden="true"><b></b><b></b><b></b></span>';
+    c.classList.remove('show'); void c.offsetWidth; c.classList.add('show');
+    cheerTimer = setTimeout(() => { t.innerHTML = `<span class="msg">${esc(main)}${sub ? '<small>'+esc(sub)+'</small>' : ''}</span>`; }, reduce ? 0 : 280);
+  }
+  function hideCheer(){ clearTimeout(cheerTimer); $('cheer').classList.remove('show'); }
+
+  /* ---------- deck transitions ---------- */
+  const TOSS = 'perspective(900px) translate3d(-38%,-12%,0) rotateY(24deg) rotateZ(-9deg) scale(.85)';
+  function animOut(el, back){
+    el.querySelectorAll('.ghost').forEach(g => anim(g, [{opacity:getComputedStyle(g).opacity},{opacity:0}], {duration:180, fill:'forwards'}));
+    const box = el.querySelector('.cardbox') || el;
+    const kf = back
+      ? [{transform:'none',opacity:1},{transform:'translateY(24px) scale(.93)',opacity:0}]
+      : (box === el ? [{transform:'none',opacity:1},{transform:'translateY(-24px) scale(.97)',opacity:0}]
+                    : [{transform:'none',opacity:1,filter:'blur(0)'},{transform:TOSS,opacity:0,filter:'blur(3px)'}]);
+    return finished(anim(box, kf, {duration: back ? 380 : 560, easing:'cubic-bezier(.55,0,.25,1)', fill:'forwards'}));
+  }
+  function animIn(el, back){
+    const box = el.querySelector('.cardbox');
+    if (!box){ anim(el, [{opacity:0, transform:'translateY(26px)'},{opacity:1, transform:'none'}], {duration:650, easing:'cubic-bezier(.22,1,.36,1)', delay:120, fill:'backwards'}); return; }
+    el.querySelectorAll('.ghost').forEach((g,k) => { const cs = getComputedStyle(g);
+      anim(g, [{opacity:0, transform:'translateY(0) scale(1)'},{opacity:cs.opacity, transform:cs.transform}], {duration:600, delay:220 + k*80, easing:'cubic-bezier(.22,1,.36,1)', fill:'backwards'}); });
+    const kf = back ? [{transform:TOSS, opacity:0},{transform:'none', opacity:1}] : [{transform:'translateY(13px) scale(.945)', opacity:.3},{transform:'none', opacity:1}];
+    anim(box, kf, {duration: back ? 640 : 760, easing:'cubic-bezier(.34,1.28,.64,1)', delay: back ? 40 : 90, fill:'backwards'});
+  }
+  function mount(html, back){
+    const t = document.createElement('template'); t.innerHTML = html.trim();
+    const el = t.content.firstElementChild, old = current;
+    if (old){
+      const sr = stage.getBoundingClientRect(), r = old.getBoundingClientRect();
+      Object.assign(old.style, {position:'absolute', left:(r.left-sr.left)+'px', top:(r.top-sr.top)+'px', width:r.width+'px', height:r.height+'px', margin:'0', zIndex: back ? '0' : '3', pointerEvents:'none'});
+      animOut(old, back).then(() => old.remove());
+      setTimeout(() => old.remove(), 900);   // 애니메이션이 멈춰도(백그라운드 등) 이전 카드는 반드시 정리
+    }
+    stage.appendChild(el); current = el;
+    animIn(el, back); bind(el);
+    const q = el.querySelector('.q'); if (q) q.focus({preventScroll:true});
+    return el;
+  }
+
+  // idx: -1 인트로 · 0 과정 선택 · 1..N 분기 질문 · N+1 마지막 단계 · N+2 결과
+  function go(i, back, origin){
+    clearTimeout(state.timer); state.idx = i; state.locked = false;
+    if (current) Sound.whoosh();
+    hideCheer(); setProgress(i); setNum(i, back);
+    if (i < 0) { applyScene(NAVY, 0, origin); mount(introHTML(), back); floaties(true); return; }
+    floaties(false);
+    if (i === 0) { applyScene(NAVY, 1, origin); mount(stepHTML(PATH_Q, 0, true), back); return; }
+    const N = NQ();
+    if (i <= N) { applyScene(branchScene(i), i, origin); mount(stepHTML(qs()[i-1], i), back); return; }
+    if (i === N + 1) { applyScene(branchScene(i), i, origin); mount(noteHTML(), back); return; }
+    applyScene(branchScene(0), i, origin); finish();
+  }
+
+  /* ---------- views ---------- */
+  const chars = s => [...s].map((c,k)=>`<span class="ch" style="--k:${k}">${c === ' ' ? '&nbsp;' : c}</span>`).join('');
+  function introHTML(){
+    return `<div class="view intro">
+      <div class="brand"><span class="live"></span>영국유학센터 신촌지사 · 정규유학 사전 진단</div>
+      <h1 class="hello" aria-label="Your UK path starts here."><span class="ln" aria-hidden="true">${chars('Your UK path')}</span><span class="ln it" aria-hidden="true">${chars('starts here.')}<svg class="swoosh" viewBox="0 0 200 24" preserveAspectRatio="none"><path d="M4 16 C 60 6, 130 5, 196 12"/></svg></span></h1>
+      <p class="lead">긴 상담신청서 대신, <b>1분 진단</b>으로 시작해요.<br>몇 번만 고르면 나에게 맞는 영국 유학 경로를 상담 전에 미리 정리해 둘게요.</p>
+      <div class="paths" aria-hidden="true"><span><em>🎓</em>학부·석사·박사</span><span><em>🏫</em>GCSE·A-Level</span><span><em>🧸</em>프렙·부모동반</span></div>
+      <div class="pills"><span class="pill">⏱ 약 1분</span><span class="pill">👆 고르기만 하면 돼요</span><span class="pill">🤔 미정도 OK</span></div>
+      <button class="cta" data-act="start">진단 시작하기
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </button>
+    </div>`;
+  }
+  function words(title){
+    let n = 0;
+    return title.split('\n').map(line => line.split(' ').map(w => `<span class="w"><span style="--d:${(n++)*55}ms">${esc(w)}</span></span>`).join(' ')).join('<br>');
+  }
+  const ghosts = i => Array.from({length:Math.min(2, TOTAL() - 1 - i)}, (_,k)=>`<div class="ghost" style="--g:${k+1}"></div>`).reverse().join('');
+  function optVisual(o){
+    if (o.m) return `<span class="emo"><span class="meter">${[1,2,3,4].map(n=>`<b class="${n<=o.m?'f':''}"></b>`).join('')}</span></span>`;
+    return `<span class="emo" aria-hidden="true">${o.e}</span>`;
+  }
+  function stepHTML(q, i, isPath){
+    const picked = isPath ? (state.branch && PATH_Q.opts.find(o => o.branch === state.branch)) : state.answers[akey(q)];
+    return `<div class="view deck">${ghosts(i)}
+      <div class="cardbox">
+        <div class="badge" aria-hidden="true">${q.icon}</div>
+        <div class="card" role="group" aria-labelledby="q${i}">
+          <div class="eyebrow"><span class="dot"></span>${q.tag}<i>${isPath ? q.name : esc(BR().short + ' · ' + q.name)}</i></div>
+          <h2 class="q" id="q${i}" tabindex="-1">${words(q.title)}</h2>
+          <p class="hint">${esc(state.editing ? '다시 고르면 바로 결과로 돌아가요' : q.hint)}</p>
+          <div class="opts ${q.layout}">
+            ${q.opts.map((o,k)=>`<button class="opt${o.wide || (q.layout==='grid' && k === q.opts.length-1 && q.opts.length % 2) ? ' wide' : ''}${o.u ? ' soft' : ''}${picked===o?' on':''}" style="--i:${k}" data-k="${k}">
+              ${optVisual(o)}<span class="txt"><span class="lbl">${esc(o.l)}</span><span class="sub">${esc(o.s)}</span>${o.b ? `<span class="tag">${esc(o.b)}</span>` : ''}</span>
+            </button>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+  function noteHTML(){
+    const i = NQ() + 1;
+    return `<div class="view deck">${ghosts(i)}
+      <div class="cardbox">
+        <div class="badge" aria-hidden="true">✍️</div>
+        <div class="card">
+          <div class="eyebrow"><span class="dot"></span>LAST<i>선택 사항</i></div>
+          <h2 class="q" tabindex="-1">${words(state.branch === 'unsure' ? '한 줄로 상황을\n들려주실래요?' : '상담 전에 미리\n알려주실 게 있나요?')}</h2>
+          <p class="hint">없으면 바로 완료해도 괜찮아요</p>
+          <div class="chips">${BR().chips.map((c,k)=>`<button class="chip${state.chips.has(c)?' on':''}" style="--i:${k}" data-chip="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+          <div class="field"><label for="nm">어떻게 불러드릴까요?</label>
+            <input id="nm" maxlength="20" autocomplete="name" placeholder="이름 또는 닉네임 (학부모님은 학생 이름도 좋아요)" value="${esc(state.name)}"></div>
+          <div class="field" id="ctField"><label for="ct">연락받을 휴대폰 또는 이메일<em>남겨주시면 상담 전에 맞춤 경로를 먼저 정리해 보내드려요</em></label>
+            <input id="ct" maxlength="60" autocomplete="tel" placeholder="010-0000-0000 또는 이메일" value="${esc(state.contact)}"></div>
+          <div class="checks">
+            <div class="agree-wrap" id="agreeWrap"${state.contact ? '' : ' hidden'}>
+              <label class="check"><input type="checkbox" id="agree"${state.agree ? ' checked' : ''}><span><b>[필수]</b> 개인정보 수집·이용에 동의해요</span></label>
+              <button type="button" class="more" data-act="more" aria-expanded="false" aria-controls="agreeDetail">내용 보기</button>
+              <p class="agree-detail" id="agreeDetail" hidden>
+                수집 항목: 이름, 연락처, 진단 답변<br>
+                이용 목적: 정규유학 상담 연락 및 맞춤 안내<br>
+                보유 기간: 상담 완료 후 파기<br>
+                동의하지 않아도 결과는 받을 수 있어요. 이 경우 연락처는 전송되지 않아요.
+                <a href="https://ukvisa.kr/privacy" target="_blank" rel="noopener">개인정보 처리방침</a>
+              </p>
+            </div>
+            <label class="check"><input type="checkbox" id="kk"${state.kakao ? ' checked' : ''}><span>이미 카카오톡으로 상담 중이에요</span></label>
+            <p class="tip" id="kkTip"${state.kakao ? '' : ' hidden'}>위 이름 칸에 카톡 대화명을 적어주시면 답변을 바로 찾아 연결해 드려요.</p>
+          </div>
+          <div class="field"><label for="memo">${state.branch === 'unsure' ? '한 줄 메모' : '하고 싶은 말'}</label>
+            <textarea id="memo" rows="2" maxlength="300" placeholder="${state.branch === 'unsure' ? '예) 아이가 중2인데 언제 보내는 게 좋을지 고민이에요' : '예) 2027년 9월 입학을 목표로 하고 있어요'}">${esc(state.memo)}</textarea></div>
+          <p class="err" id="err" role="alert"></p>
+          <div class="nudge" id="nudge" hidden>
+            <p>연락처를 남겨주시면 상담 전에<br>맞춤 경로를 먼저 정리해서 보내드려요 🙌</p>
+            <div class="row"><button type="button" class="yes" data-act="fillct">남길게요</button><button type="button" class="no" data-act="skipct">그냥 받을게요</button></div>
+          </div>
+          <div class="actions">
+            <button class="cta dark" data-act="finish">진단 결과 받기</button>
+            <button class="ghostbtn" data-act="skip">건너뛰고 완료하기</button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  const needsPaste = () => state.kakao || !(state.contact && state.agree);
+  function finish(){
+    const edited = state.editing; state.editing = false;
+    if (edited) submit(true);
+    if (!edited) mount(`<div class="view printing" role="status"><div class="bar"><i></i></div><p>${esc(BR().short)} 경로를 정리하고 있어요</p><small>답변 ${NQ()}개를 프로필로 묶는 중</small></div>`);
+    setTimeout(() => {
+      const el = mount(profileHTML());
+      if (!edited) setTimeout(celebrate, reduce ? 0 : 700);
+      if (!needsPaste()) setTimeout(() => sealHit(el), reduce ? 0 : 1720);
+      else setTimeout(() => { const f = el.querySelector('.final'); if (f) f.scrollIntoView({block:'end', behavior: reduce ? 'auto' : 'smooth'}); }, reduce ? 0 : 2000);
+    }, edited ? 0 : (reduce ? 300 : 1500));
+  }
+  function profileHTML(){
+    const d = new Date(), date = `${d.getFullYear()}.${String(d.getMonth()+1).padStart(2,'0')}.${String(d.getDate()).padStart(2,'0')}`;
+    const remind = needsPaste();
+    const rows = qs().map((q,k) => { const a = state.answers[akey(q)];
+      return `<button type="button" class="r" style="--i:${k}" data-edit="${k+1}" aria-label="${esc(q.name)} 다시 고르기"><small>${esc(q.name)}</small><b class="${!a || a.u ? 'u' : ''}">${esc(val(q))}</b><i class="ed">✎</i></button>`; }).join('');
+    const manual = `<div class="manual" id="manual" hidden>
+        <p>자동 복사가 안 되면 아래 글을 길게 눌러 <b>전체 선택 → 복사</b>해 주세요.</p>
+        <textarea class="copybox" id="copyText" readonly aria-label="복사할 진단 답변"></textarea>
+      </div>`;
+    const back = IN_KAKAO
+      ? '<p class="backnote" id="backNote" hidden>① 왼쪽 위 <span class="x">&lt;</span> 를 눌러 대화방으로 돌아가기<br>② 입력창을 길게 눌러 <b>붙여넣기 → 전송</b> 💬</p>'
+      : '<p class="backnote" id="backNote" hidden>저희와 대화 중이던 카톡 대화방에서<br>입력창을 길게 눌러 <b>붙여넣기 → 전송</b>해 주세요 💬</p>';
+    const after = remind ? `<div class="after">
+      <div class="final">
+        <div class="final-h"><span class="tg">LAST STEP</span><b>상담 확인 도장까지 한 단계!</b></div>
+        ${CAN_KAKAO ? `<p>아래 버튼을 누르고 저희와 대화 중이던 카톡 대화방을 골라 전송해 주세요. 상담사가 바로 확인하고 맞춤 상담을 준비해요.</p>
+        <ol class="steps"><li id="s1" class="active"><i>1</i>카톡으로 보내기</li><li id="s2"><i>2</i>대화방 고르고 전송</li></ol>
+        <button class="cta kakao pulse" data-act="kshare" id="copyBtn">${KAKAO_ICON}카카오톡으로 결과 보내기</button>
+        <p class="backnote" id="backNote" hidden>카톡에서 <b>저희와 대화 중이던 방</b>을 골라<br><b>전송</b>하면 끝이에요 💬</p>
+        <button class="linkbtn" data-act="copy">카톡 화면이 안 열리면 복사해서 붙여넣기</button>` : `<p>진단 결과를 복사해서 저희와 대화 중이던 카톡 대화방에 붙여넣고 전송해 주세요. 상담사가 바로 확인하고 맞춤 상담을 준비해요.</p>
+        <ol class="steps"><li id="s1" class="active"><i>1</i>결과 복사하기</li><li id="s2"><i>2</i>카톡에 붙여넣고 전송</li></ol>
+        <button class="cta pulse" data-act="copy" id="copyBtn">진단 결과 복사하기</button>
+        ${back}`}
+      </div>
+      ${manual}
+      <button class="restart glassbtn" data-act="restart" style="padding:12px">처음부터 다시 하기</button>
+    </div>` : `<div class="after">
+      <p>진단 완료! 남겨주신 연락처로 상담 전에 먼저 연락드릴게요.<br>카톡으로 이야기 중이라면 결과를 카톡으로 보내 주셔도 좋아요.</p>
+      <div class="row">${CAN_KAKAO ? `<button class="cta kakao" data-act="kshare">${KAKAO_ICON}카톡으로 결과 보내기</button>` : '<button class="cta" data-act="copy">결과 복사하기</button>'}<button class="restart glassbtn" data-act="restart">다시 하기</button></div>
+      ${manual}
+    </div>`;
+    return `<div class="view done"><div class="profile${remind ? ' pending' : ''}" aria-label="진단 결과 프로필">
+      <div class="ph">
+        <button type="button" class="chgpath" data-edit="0">과정 바꾸기 ✎</button>
+        <span class="k">UK STUDY PROFILE</span>
+        <h3>${esc(BR().label)}</h3>
+        <span class="who">${esc(state.name ? state.name + '님의 영국 유학 경로' : '나의 영국 유학 경로')}</span>
+      </div>
+      <div class="rows">${rows}</div>
+      <div class="pf">
+        <div><small>SINCHON · ${date}</small><b>상담 준비 완료</b></div>
+        <div class="seal" aria-hidden="true"><span><small>SINCHON</small><b>✓</b><small>READY</small></span></div>
+      </div>
+    </div>
+    <p class="edithint">✎ 항목을 누르면 다시 고를 수 있어요</p>
+    ${after}</div>`;
+  }
+
+  /* ---------- interactions ---------- */
+  const center = el => { const r = el.getBoundingClientRect(); return {x:r.left + r.width/2, y:r.top + r.height/2}; };
+  function bind(el){
+    el.addEventListener('click', e => {
+      const b = e.target.closest('button'); if (!b) return;
+      if (b.dataset.k !== undefined) return pick(b, +b.dataset.k, e);
+      if (b.dataset.edit !== undefined) { state.editing = true; Sound.tick(); go(+b.dataset.edit, true, center(b)); return; }
+      if (b.dataset.chip) { b.classList.toggle('on'); state.chips.has(b.dataset.chip) ? state.chips.delete(b.dataset.chip) : state.chips.add(b.dataset.chip); popAt(b, 6); Sound.tick(); buzz(6); return; }
+      const act = b.dataset.act;
+      if (act === 'start') { Sound.unlock(); Sound.pop(); buzz(10); popAt(b, 16); go(0, false, center(b)); }
+      if (act === 'more') { const d = $('agreeDetail'); d.hidden = !d.hidden; b.setAttribute('aria-expanded', !d.hidden); b.textContent = d.hidden ? '내용 보기' : '접기'; }
+      if (act === 'fillct') { $('nudge').hidden = true; const ct = $('ct'); ct.focus(); ct.scrollIntoView({block:'center', behavior: reduce ? 'auto' : 'smooth'}); }
+      if (act === 'finish' || act === 'skipct') { if (act === 'skipct') $('nudge').hidden = true; tryFinish(b, act === 'skipct'); }
+      if (act === 'skip') { state.chips.clear(); state.memo = ''; state.contact = ''; state.agree = false; complete(b); }
+      if (act === 'copy') copy();
+      if (act === 'kshare') kshare();
+      if (act === 'restart') { Object.assign(state, {editing:false, branch:null, answers:{}, name:'', contact:'', agree:false, kakao:false, nudged:false, memo:''}); state.chips.clear(); go(-1, true, center(b)); }
+    });
+    const nm = el.querySelector('#nm'), memo = el.querySelector('#memo'), ct = el.querySelector('#ct');
+    if (nm) nm.addEventListener('input', () => state.name = nm.value.trim());
+    if (memo) memo.addEventListener('input', () => state.memo = memo.value.trim());
+    if (ct) ct.addEventListener('input', () => { state.contact = ct.value.trim(); $('agreeWrap').hidden = !state.contact; $('ctField').classList.remove('bad'); $('err').textContent = ''; });
+    const ag = el.querySelector('#agree'), kk = el.querySelector('#kk');
+    if (ag) ag.addEventListener('change', () => { state.agree = ag.checked; $('agreeWrap').classList.remove('bad'); $('err').textContent = ''; Sound.tick(); });
+    if (kk) kk.addEventListener('change', () => { state.kakao = kk.checked; $('nudge').hidden = true; $('kkTip').hidden = !kk.checked; Sound.tick(); });
+  }
+
+  function pick(btn, k, e){
+    if (state.locked && btn.classList.contains('on')) return;
+    clearTimeout(state.timer); state.locked = true;
+    const i = state.idx, isPath = i === 0;
+    const q = isPath ? PATH_Q : qs()[i-1], o = q.opts[k];
+    if (isPath){
+      if (state.branch !== o.branch){ state.branch = o.branch; state.chips.clear(); state.editing = false; }
+    } else state.answers[akey(q)] = o;
+    const r = btn.getBoundingClientRect();
+    const tap = (e && e.clientX) ? {x:e.clientX, y:e.clientY} : center(btn);
+    btn.style.setProperty('--x', (tap.x - r.left) + 'px'); btn.style.setProperty('--y', (tap.y - r.top) + 'px');
+    if (isPath) app.style.setProperty('--deep', branchScene(1).deep);
+    const wrap = btn.parentElement;
+    wrap.querySelectorAll('.opt').forEach(x => x.classList.remove('on'));
+    btn.classList.add('on'); wrap.classList.add('dim');
+    burstAt(tap.x, tap.y, 10, 80); Sound.pop(); buzz(12);
+    let main, sub = '';
+    if (isPath){
+      main = o.u ? '괜찮아요, 방향부터 같이 잡아볼게요 🧭' : `좋아요! ${BR().short} 맞춤 질문으로 이어갈게요`;
+      sub = `${NQ()}개만 더 고르면 끝나요`;
+    } else {
+      const left = NQ() - i;
+      main = o.u ? UNSURE_CHEER : (q.react && q.react[k]) || CHEERS[cheerN++ % CHEERS.length];
+      sub = left === 0 ? '마지막 한 장만 남았어요!' : left === 1 ? '거의 다 왔어요 🏁' : (i === Math.ceil(NQ()/2) ? '절반 왔어요 🙌' : '');
+    }
+    if (state.editing){ main = '수정했어요 ✓'; sub = '결과로 돌아갈게요'; }
+    cheer(main, sub);
+    state.timer = setTimeout(() => go(state.editing ? NQ() + 2 : i + 1, false, tap), NEXT_DELAY);
+  }
+
+  $('back').addEventListener('click', e => { if (state.idx >= 0) go(state.idx - 1, true, center(e.currentTarget)); });
+  $('snd').addEventListener('click', () => {
+    const on = !Sound.bgmOn; if (!Sound.setBgm(on)) return;
+    const b = $('snd'); b.setAttribute('aria-pressed', on); b.setAttribute('aria-label', on ? '배경음악 끄기' : '배경음악 켜기');
+    $('sndState').textContent = on ? 'ON' : 'OFF';
+  });
+
+  /* ---------- last step: contact + consent ---------- */
+  const isPhone = v => /^[0-9+\-\s()]+$/.test(v) && v.replace(/\D/g,'').length >= 9 && v.replace(/\D/g,'').length <= 13;
+  const isEmail = v => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v);
+  function flag(el, msg){
+    $('err').textContent = msg;
+    el.classList.add('bad'); el.classList.remove('shake'); void el.offsetWidth; el.classList.add('shake');
+    el.scrollIntoView({block:'center', behavior: reduce ? 'auto' : 'smooth'}); buzz(30);
+  }
+  function tryFinish(b, skipNudge){
+    state.name = ($('nm').value||'').trim(); state.memo = ($('memo').value||'').trim();
+    state.contact = ($('ct').value||'').trim(); state.agree = $('agree').checked; state.kakao = $('kk').checked;
+    if (state.contact){
+      if (!isPhone(state.contact) && !isEmail(state.contact)) return flag($('ctField'), '휴대폰 번호나 이메일 형식을 한 번만 확인해 주세요.');
+      if (!state.agree) return flag($('agreeWrap'), '연락처를 보내려면 개인정보 수집·이용에 동의해 주세요.');
+    } else if (!state.kakao && !state.nudged && !skipNudge){
+      state.nudged = true;
+      const n = $('nudge'); n.hidden = false; n.scrollIntoView({block:'center', behavior: reduce ? 'auto' : 'smooth'});
+      Sound.tick(); return;
+    }
+    complete(b);
+  }
+  function complete(b){ if (!state.editing) submit(); go(NQ() + 2, false, center(b)); }
+
+  // Formspree 전송: 화면 흐름은 기다리지 않고 백그라운드로 보냄 (실패해도 고객 화면에는 영향 없음)
+  function submit(edited){
+    const share = state.contact && state.agree;
+    const fd = new FormData();
+    fd.append('_subject', `${edited ? '(수정) ' : ''}[정규유학 진단] ${BR().short} · ${state.name || '이름 미기재'} · ${share ? state.contact : (state.kakao ? '카톡 상담 중' : '연락처 없음')}`);
+    fd.append('폼_종류', '정규유학 사전 진단');
+    fd.append('과정', BR().label);
+    fd.append('이름', state.name || '-');
+    fd.append('연락처', share ? state.contact : '-');
+    if (share && isEmail(state.contact)) fd.append('email', state.contact);
+    fd.append('카톡_상담중', state.kakao ? '예' : '아니오');
+    qs().forEach(q => fd.append(q.name, val(q)));
+    fd.append('관심_사항', state.chips.size ? [...state.chips].join(', ') : '-');
+    fd.append('메모', state.memo || '-');
+    fd.append('개인정보_동의', share ? '동의함' : '해당 없음(연락처 미전송)');
+    try { fetch(FORMSPREE, {method:'POST', body:fd, headers:{Accept:'application/json'}, keepalive:true}).catch(()=>{}); } catch(e){}
+  }
+
+  /* ---------- motion fx ---------- */
+  const COLORS = ['#F3D58E','#D9A441','#FFFFFF','#E8432B','#9FB4E8'];
+  function burstAt(x, y, n, spread){
+    if (reduce || !document.body.animate) return;
+    const fx = $('fx');
+    for (let j=0;j<n;j++){
+      const p = document.createElement('i');
+      const s = 4 + Math.random()*6, round = Math.random() < .45;
+      p.style.cssText = `width:${s}px;height:${round ? s : s*.55}px;background:${COLORS[j%COLORS.length]};border-radius:${round?'50%':'2px'}`;
+      fx.appendChild(p);
+      const ang = Math.random()*Math.PI*2, dist = spread*(.4+Math.random()*.75);
+      const dx = Math.cos(ang)*dist, dy = Math.sin(ang)*dist - spread*.35, fall = 120 + Math.random()*200, rot = (Math.random()*900-450)|0;
+      p.animate([
+        {transform:`translate(${x}px,${y}px) rotate(0deg)`, opacity:1},
+        {transform:`translate(${x+dx}px,${y+dy}px) rotate(${rot/2}deg)`, opacity:1, offset:.35},
+        {transform:`translate(${x+dx*1.2}px,${y+dy+fall}px) rotate(${rot}deg)`, opacity:0}
+      ], {duration:1000 + Math.random()*700, easing:'cubic-bezier(.2,.7,.4,1)'}).onfinish = () => p.remove();
+    }
+  }
+  function popAt(el, n){ const c = center(el); burstAt(c.x, c.y, n, 80); }
+  function celebrate(){
+    const w = innerWidth, h = innerHeight;
+    Sound.chime(); setTimeout(Sound.sparkle, 800);
+    burstAt(w*.5, h*.3, 34, Math.min(w,h)*.5);
+  }
+  function sealHit(el){
+    const s = el && el.querySelector('.seal'), card = el && el.querySelector('.profile');
+    if (!s) return;
+    Sound.thump(); buzz(20);
+    anim(card, [{transform:'none'},{transform:'translate(0,3px)'},{transform:'translate(0,-1px)'},{transform:'none'}], {duration:300, easing:'ease-out'});
+    popAt(s, 10);
+  }
+  function floaties(on){
+    let f = app.querySelector('.floaties');
+    if (!on) { if (f) finished(anim(f, [{opacity:1},{opacity:0}], {duration:300, fill:'forwards'})).then(()=>f.remove()); return; }
+    if (f) return;
+    f = document.createElement('div'); f.className = 'floaties'; f.setAttribute('aria-hidden','true');
+    const items = [['🎓','UCAS','6%','10%'],['📘','Masters','58%','15%'],['🔬','PhD','8%','86%'],['🏫','A-Level','56%','89%']];
+    f.innerHTML = items.map(([e,t,x,y],k)=>`<span style="left:${x};top:${y};--d0:${1.3 + k*.15}s;--d1:${-k*1.8}s"><em>${e}</em>${t}</span>`).join('');
+    app.insertBefore(f, app.querySelector('.shell'));
+  }
+
+  /* ---------- copy summary ---------- */
+  function summary(){
+    const L = ['[영국 정규유학 사전 진단]', '과정: ' + BR().label, '이름: ' + (state.name || '-'), '연락처: ' + (state.contact || '-')];
+    qs().forEach(q => L.push(q.name + ': ' + val(q)));
+    if (state.chips.size) L.push('관심 사항: ' + [...state.chips].join(', '));
+    if (state.memo) L.push('메모: ' + state.memo);
+    return L.join('\n');
+  }
+  function toast(){ Sound.tick(); const t = $('copied'); t.classList.add('show'); setTimeout(()=>t.classList.remove('show'), 2400); }
+  function afterCopy(){
+    const btn = $('copyBtn'); if (!btn || btn.dataset.done) return;
+    btn.dataset.done = '1';
+    const card = current && current.querySelector('.profile.pending');
+    if (card){ card.classList.remove('pending'); card.querySelector('.seal').classList.add('now'); setTimeout(() => sealHit(current), reduce ? 0 : 380); }
+    $('s1').classList.replace('active','done'); $('s1').querySelector('i').textContent = '✓';
+    $('s2').classList.add('active');
+    btn.classList.remove('pulse','cta','kakao'); btn.classList.add('restart','glassbtn'); btn.style.padding = '12px'; btn.textContent = btn.dataset.act === 'kshare' ? '카톡으로 다시 보내기' : '한 번 더 복사하기';
+    const n = $('backNote'); n.hidden = false;
+    anim(n, [{opacity:0, transform:'translateY(10px) scale(.96)'},{opacity:1, transform:'none'}], {duration:500, easing:'cubic-bezier(.34,1.45,.64,1)'});
+  }
+  // 카카오톡 공유: 고객이 대화방만 고르면 결과가 카드 메시지로 전송됨 (텍스트 템플릿 200자 제한)
+  function shareText(){
+    const L = [`[정규유학 진단] ${BR().short} · ${state.name || '이름 미기재'}`];
+    qs().forEach(q => L.push(`${q.name} ${val(q)}`));
+    if (state.contact) L.push('연락처 ' + state.contact);
+    if (state.chips.size) L.push('관심 ' + [...state.chips].join(', '));
+    if (state.memo) L.push('메모 ' + state.memo);
+    const t = L.join('\n');
+    return t.length > 200 ? t.slice(0, 199) + '…' : t;
+  }
+  function kshare(){
+    const K = window.Kakao;
+    if (!(K && K.isInitialized && K.isInitialized() && K.Share)) { copy(); return; }
+    try {
+      K.Share.sendDefault({ objectType:'text', text: shareText(),
+        link:{ mobileWebUrl: PAGE_URL, webUrl: PAGE_URL }, buttonTitle:'진단 페이지 보기' });
+      Sound.tick(); setTimeout(afterCopy, 0);
+    } catch(e){ copy(); }
+  }
+  if (CAN_KAKAO){
+    const sc = document.createElement('script');
+    sc.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.4/kakao.min.js'; sc.crossOrigin = 'anonymous';
+    sc.onload = () => { try { if (!window.Kakao.isInitialized()) window.Kakao.init(KAKAO_KEY); } catch(e){} };
+    document.head.appendChild(sc);
+  }
+  function copy(){
+    setTimeout(afterCopy, 0);
+    const text = summary(), box = $('manual'), ta = $('copyText');
+    ta.value = text; box.hidden = false;
+    let ok = false;
+    try { ta.readOnly = false; ta.focus({preventScroll:true}); ta.setSelectionRange(0, text.length); ok = document.execCommand('copy'); } catch(e){}
+    ta.readOnly = true; ta.blur();
+    if (ok) { toast(); return; }
+    try { navigator.clipboard.writeText(text).then(toast, showManual); } catch(e){ showManual(); }
+  }
+  function showManual(){ const ta = $('copyText'); ta.scrollIntoView({behavior: reduce ? 'auto' : 'smooth', block:'center'}); ta.focus({preventScroll:true}); ta.select(); }
+
+  go(-1);
+})();
+</script>
+</body>
+</html>
