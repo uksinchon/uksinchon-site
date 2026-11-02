@@ -9,6 +9,7 @@ from zipfile import ZipFile, ZIP_DEFLATED
 ROOT = Path(__file__).resolve().parents[1]
 PUBLIC_FILES = (
     'index.html', 'logo.png', 'favicon.ico', 'apple-icon.png',
+    'preview/index.html',
     'pharmacy/index.html', 'pharmacy/styles.css', 'pharmacy/consultation.js',
     'assets/meta-pixel-config.js', 'assets/meta-pixel.js',
     'seminar-2027/index.html', 'seminar-2027/styles.css', 'seminar-2027/source.json',
