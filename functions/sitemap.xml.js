@@ -1,0 +1,3 @@
+import {publishedURLs,ORIGIN} from '../cms/server/pages.js';
+import {esc} from '../cms/server/content.js';
+export async function onRequestGet({env}) {const posts=await publishedURLs(env.CMS_DB);const paths=['/','/pharmacy/','/seminar-2027/',...(posts.length?['/blog/']:[])];const xml='<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'+paths.map(path=>'<url><loc>'+ORIGIN+path+'</loc></url>').join('')+posts.map(p=>'<url><loc>'+ORIGIN+'/blog/'+esc(p.slug)+'/</loc><lastmod>'+esc(p.created_at)+'</lastmod></url>').join('')+'</urlset>';return new Response(xml,{headers:{'Content-Type':'application/xml; charset=utf-8','Cache-Control':'no-cache'}});}

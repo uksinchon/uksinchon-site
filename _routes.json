@@ -1,0 +1,1 @@
+{"version":1,"include":["/api/cms/*","/blog","/blog/*","/media/*","/sitemap.xml","/feed.xml"],"exclude":["/blog/styles.css"]}
