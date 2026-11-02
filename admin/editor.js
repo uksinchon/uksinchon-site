@@ -28,8 +28,25 @@ async function boot(){
  }catch(e){notice(e.message,true);}
 }
 function authView(){show('auth');$('account-nav').hidden=true;$('first-admin').hidden=!state.setup;$('setup-token').required=state.setup;$('setup-name').required=state.setup;$('auth-kicker').textContent=state.setup?'첫 관리자 만들기':'직원 로그인';$('auth-title').textContent=state.setup?'첫 관리자 계정을 만들어 주세요.':'오늘의 이야기를 기록해 주세요.';$('auth-submit').textContent=state.setup?'관리자 만들고 시작하기':'로그인';$('auth-help').textContent=state.setup?'한 번만 설정합니다. 직원은 로그인한 뒤 ‘직원 계정’에서 추가합니다.':'계정이 없거나 비밀번호를 잊으셨다면 관리자에게 요청해 주세요.';}
-$('auth-form').addEventListener('submit',async event=>{event.preventDefault();$('auth-submit').disabled=true;try{const data=await api(state.setup?'setup':'login',{method:'POST',body:{email:$('email').value,password:$('password').value,name:$('setup-name').value,setupToken:$('setup-token').value}});$('password').value='';$('setup-token').value='';state.setup=false;signedIn(data.user);notice();if(data.user.mustChange)show('password-view');else await loadList();}catch(e){notice(e.message,true);}finally{$('auth-submit').disabled=false;}});
+$('auth-form').addEventListener('submit',async event=>{event.preventDefault();$('auth-submit').disabled=true;try{const data=await api(state.setup?'setup':'login',{method:'POST',body:{email:$('email').value,password:$('password').value,name:$('setup-name').value,setupToken:$('setup-token').value}});$('password').value='';$('setup-token').value='';$('replacement-key').value='';$('replacement-key-area').hidden=true;state.setup=false;signedIn(data.user);notice();if(data.user.mustChange)show('password-view');else await loadList();}catch(e){notice(e.message,true);}finally{$('auth-submit').disabled=false;}});
 bind('generate-key',()=>{$('generated-key').value=Array.from(crypto.getRandomValues(new Uint8Array(24)),b=>b.toString(16).padStart(2,'0')).join('');$('generated-key').focus();$('generated-key').select();notice('설정키를 선택했습니다. Cloudflare의 암호화된 CMS_SETUP_TOKEN 값에 붙여넣어 주세요. 이 화면에는 따로 저장되지 않습니다.');});
+bind('replace-setup-key',()=>{
+ if(!state.setup)throw new Error('첫 관리자 등록 단계에서만 사용할 수 있습니다.');
+ if($('setup-token').value&&!confirm('새 키를 만들면 입력한 키가 바뀝니다. Cloudflare의 Secret 값도 교체해야 합니다. 계속할까요?'))return;
+ const key=Array.from(crypto.getRandomValues(new Uint8Array(24)),b=>b.toString(16).padStart(2,'0')).join('');
+ $('replacement-key').value=key;$('setup-token').value=key;$('replacement-key-area').hidden=false;
+ notice('새 키를 만들었습니다. Cloudflare의 CMS_SETUP_TOKEN 값을 교체하고 재배포한 뒤 등록하세요. 이 탭은 닫거나 새로고침하지 마세요.');
+});
+bind('copy-setup-key',async()=>{
+ const field=$('replacement-key');if(!field.value)throw new Error('새 설정키를 먼저 만들어 주세요.');
+ try{await navigator.clipboard.writeText(field.value);notice('새 키를 복사했습니다. Cloudflare의 CMS_SETUP_TOKEN Secret 값에 붙여넣어 주세요.');}
+ catch{field.focus();field.select();notice('새 키를 선택했습니다. Ctrl+C 또는 기기의 복사 기능을 사용해 주세요.');}
+});
+bind('save-setup-key',()=>{
+ const key=$('replacement-key').value;if(!key)throw new Error('새 설정키를 먼저 만들어 주세요.');
+ const url=URL.createObjectURL(new Blob([key],{type:'text/plain;charset=utf-8'}));const a=document.createElement('a');a.href=url;a.download='신촌점_초기설정키.txt';a.click();setTimeout(()=>URL.revokeObjectURL(url),2000);
+ notice('키 보관 파일을 내려받았습니다. Cloudflare 값 교체와 재배포를 완료한 뒤 이 화면에서 등록하세요.');
+});
 bind('recheck',boot);
 bind('logout',async()=>{if(state.dirty)await save(true);await api('logout',{method:'POST',body:{}});state.post=null;state.user=null;state.dirty=false;clearTimeout(state.autoTimer);authView();notice('로그아웃했습니다.');});
 bind('password-button',async()=>{if(state.dirty)await save(true);show('password-view');notice();});
