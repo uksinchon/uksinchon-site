@@ -1,6 +1,8 @@
 import {SCHEMA} from './schema.js';
 import {cleanSnapshot,imageIds,textOf,safeLink} from './content.js';
 import {articlePage} from './pages.js';
+import {syncNaver,importedItem,guardNaverPublish} from './naver.js';
+import {naverAdmin} from './naver-api.js';
 const encoder=new TextEncoder();
 const now=()=>new Date().toISOString();
 const uuid=()=>crypto.randomUUID();
@@ -29,6 +31,15 @@ async function loginResponse(request,env,user){const token=b64(crypto.getRandomV
 export async function handleCMS(context){
  const {request,env}=context;const db=env.CMS_DB;const url=new URL(request.url);const path=url.pathname.replace(/^\/api\/cms\/?/,'').replace(/\/$/,'');const parts=path.split('/');
  try {
+  if(path==='naver/cron'){
+   if(request.method!=='POST')fail(405,'예약 실행은 POST만 받습니다.');
+   if(!local(request,env)&&url.protocol!=='https:')fail(403,'HTTPS가 필요합니다.');
+   const expected=env.CMS_NAVER_CRON_TOKEN;
+   if(typeof expected!=='string'||expected.length<32)fail(503,'예약 감지 키가 설정되지 않았습니다.');
+   if(!equal(request.headers.get('Authorization')||'','Bearer '+expected))fail(401,'예약 실행 인증이 필요합니다.');
+   if(!db||!await ready(db))fail(503,'관리자 설정과 DB 연결이 필요합니다.');
+   return json(await syncNaver(env,{cron:true}));
+  }
   if(!['GET','POST','PUT'].includes(request.method))fail(405,'지원하지 않는 요청입니다.');
   if(request.method!=='GET'){
    if(request.headers.get('Origin')!==url.origin)fail(403,'다른 사이트에서 보낸 요청은 처리하지 않습니다. 새로고침해 주세요.');
@@ -63,6 +74,10 @@ export async function handleCMS(context){
    const salt=uuid();await db.batch([db.prepare('UPDATE cms_users SET password_salt=?,password_hash=?,must_change=0 WHERE id=?').bind(salt,await passwordHash(pass,salt),user.id),db.prepare('DELETE FROM cms_sessions WHERE user_id=? AND token_hash<>?').bind(user.id,tokenHash)]);return json({ok:true});
   }
   if(user.must_change)fail(403,'처음 받은 임시 비밀번호를 변경해 주세요.');
+  if(parts[0]==='naver'){
+   admin(user);try{return json(await naverAdmin(path,request.method,request.method==='GET'?{}:await bodyOf(request),env,user));}
+   catch(e){fail(e.status||400,String(e.message).startsWith('D1_')?'네이버 연결 저장소를 처리하지 못했습니다.':e.message);}
+  }
   if(path==='users'&&request.method==='GET'){admin(user);return json({users:(await db.prepare('SELECT id,email,name,role,active,must_change,created_at FROM cms_users ORDER BY created_at').all()).results});}
   if(path==='users'&&request.method==='POST'){
    admin(user);const b=await bodyOf(request);const {email,name}=identity(b);const salt=uuid();const pass=password(b.password);
@@ -87,7 +102,7 @@ export async function handleCMS(context){
   }
   if(parts[0]==='posts'&&parts[1]){
    const post=await ownPost(db,parts[1],user);
-   if(parts.length===2&&request.method==='GET')return json({post,snapshot:await snapshot(db,post.id,post.revision)});
+   if(parts.length===2&&request.method==='GET')return json({post,snapshot:await snapshot(db,post.id,post.revision),naver:await importedItem(db,post.id)});
    if(parts.length===2&&request.method==='PUT'){
     const b=await bodyOf(request);const owner=await db.prepare('SELECT name FROM cms_users WHERE id=?').bind(post.owner_id).first();let data;try{data=cleanSnapshot(b,owner.name);}catch(e){fail(400,e.message);}await validImages(db,post,data);
     const revision=Number(b.revision);if(!Number.isInteger(revision))fail(400,'저장 버전을 확인해 주세요.');const stamp=now(),saveToken=uuid();
@@ -112,7 +127,10 @@ export async function handleCMS(context){
      admin(user);
      if(parts[2]==='publish'){
       await validImages(db,post,s);
-      statements.push(db.prepare("UPDATE cms_posts SET published_revision=revision,published_at=COALESCE(published_at,?),status='published',updated_at=?,save_token=? WHERE id=? AND revision=?").bind(stamp,stamp,saveToken,post.id,post.revision));
+      let source;try{source=await guardNaverPublish(db,post,s);}catch(e){fail(400,e.message);}
+      const gate=source?" AND EXISTS(SELECT 1 FROM cms_naver_items n WHERE n.post_id=cms_posts.id AND n.source_complete=1 AND n.status<>'source_changed' AND n.approved_revision=cms_posts.revision AND n.approved_source_hash=n.source_hash AND n.source_hash=?) AND NOT EXISTS(SELECT 1 FROM cms_naver_source WHERE poll_until>?)":'';
+      const params=[stamp,stamp,saveToken,post.id,post.revision,...(source?[source.source_hash,stamp]:[])];
+      statements.push(db.prepare("UPDATE cms_posts SET published_revision=revision,published_at=COALESCE(published_at,?),status='published',updated_at=?,save_token=? WHERE id=? AND revision=?"+gate).bind(...params));
      }else statements.push(db.prepare("UPDATE cms_posts SET published_revision=NULL,status='draft',updated_at=?,save_token=? WHERE id=? AND revision=?").bind(stamp,saveToken,post.id,post.revision));
      statements.push(db.prepare('DELETE FROM cms_public_media WHERE post_id=? AND EXISTS(SELECT 1 FROM cms_posts WHERE id=? AND save_token=?)').bind(post.id,post.id,saveToken));
      if(parts[2]==='publish')for(const media of imageIds(s))statements.push(db.prepare('INSERT INTO cms_public_media(post_id,media_id) SELECT id,? FROM cms_posts WHERE id=? AND save_token=?').bind(media,post.id,saveToken));
