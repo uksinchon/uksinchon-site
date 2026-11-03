@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>약대 상담 첫 화면 디자인 제안 | 영국유학센터 신촌점</title>
+<meta name="description" content="PC 첫 화면에서 영국 약대 파운데이션 상담 경로와 문의 입력란을 함께 볼 수 있는 디자인 시안입니다.">
+<link rel="icon" href="../../favicon.ico"><link rel="stylesheet" href="./styles.css"><script src="./contact.js" defer></script>
+</head>
+<body>
+<div class="page-shell">
+<div class="proposal-bar"><div class="container"><span>DESIGN PREVIEW <b>약대 상담 페이지 디자인 제안</b></span><a href="../../pharmacy/index.html" target="_blank" rel="noopener noreferrer">기존 페이지 보기 ↗</a></div></div>
+<header class="header"><div class="container header-inner"><a class="brand" href="../../index.html"><img src="../../logo.png" alt="" width="42" height="34"><span>영국유학센터 신촌점<small>UK EDUCATION CENTRE · SINCHON</small></span></a><a class="phone" href="tel:+8223931030"><span>전화로 바로 문의</span><strong>02-393-1030 ↗</strong></a></div></header>
+<main class="hero-stage" id="main"><div class="container hero-grid">
+<section class="hero-copy" aria-labelledby="hero-title">
+<p class="eyebrow"><span aria-hidden="true"></span> 영국 약대 · 파운데이션 진학 상담</p>
+<h1 id="hero-title">영국 약대 진학,<br><em>어디서 시작할까요?</em></h1>
+<p class="hero-description">현재 학력과 영어 준비 상태를 바탕으로<br>나에게 맞는 지원 경로부터 함께 정리합니다.</p>
+<p id="campaign-note" class="campaign-note" hidden></p>
+<ul class="consult-points">
+<li><span class="point-icon" aria-hidden="true">01</span><div><strong>내 조건으로 지원할 수 있을까요?</strong><span>학력 · 이수 과목 · 영어 준비 확인</span></div></li>
+<li><span class="point-icon" aria-hidden="true">02</span><div><strong>무엇을, 언제부터 준비해야 할까요?</strong><span>입학 시기 · 학비 · 준비 일정 상담</span></div></li>
+<li><span class="point-icon" aria-hidden="true">03</span><div><strong>진학 이후에는 어떤 조건이 있나요?</strong><span>약대 진학 요건 · 약사 자격 요건 구분</span></div></li>
+</ul>
+<details class="more-info"><summary>상담 전에 알아두실 점</summary><p>파운데이션 수료만으로 약대 입학이나 약사 자격 취득이 보장되지는 않습니다. 대학·과정·입학 연도에 따른 진학 조건과 영국·한국의 자격 요건을 각각 확인해야 합니다. 학교나 입학 시기를 정하지 않았어도 상담할 수 있습니다.</p><a href="../../pharmacy/index.html#guide" target="_blank" rel="noopener noreferrer">과정 안내 자세히 보기 ↗</a></details>
+</section>
+<aside class="contact-card" aria-labelledby="contact-title">
+<div id="question-stage">
+<div class="card-heading"><span class="card-kicker">LET’S TALK</span><h2 id="contact-title">궁금한 점, 바로 물어보세요.</h2></div>
+<a class="kakao-button" id="direct-kakao" href="https://pf.kakao.com/_VNmTxd" target="_blank" rel="noopener noreferrer"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3C6.5 3 2 6.5 2 10.8c0 2.8 1.9 5.2 4.6 6.6L5.5 21l4.3-2.5c.7.1 1.4.2 2.2.2 5.5 0 10-3.5 10-7.9S17.5 3 12 3Z"/></svg><span>카카오톡으로 바로 문의하기</span><span aria-hidden="true">↗</span></a>
+<p class="direct-note">아직 계획이 정해지지 않았어도 괜찮습니다.</p>
+<div class="separator"><span>내 조건을 정리해서 문의하려면</span></div>
+<form id="consultation-form" hidden>
+<div class="form-row"><div class="field"><label for="education">현재 학력</label><select id="education" name="education"><option>아직 미정</option><option>고등학교 재학 중</option><option>고등학교 졸업</option><option>검정고시</option><option>대학교 재학·졸업</option><option>기타·상담 시 설명</option></select></div><div class="field"><label for="entry">희망 입학 시기</label><select id="entry" name="entry"><option>아직 미정</option><option>2027년</option><option>2028년</option><option>2029년 이후</option></select></div></div>
+<div class="field message-field"><label for="question">궁금한 점 <span>선택</span></label><textarea id="question" name="question" rows="2" maxlength="1000" placeholder="예: 현재 내신과 영어 성적으로 지원할 수 있을까요?"></textarea></div>
+<button class="prepare-button" type="submit">상담 내용 만들기 <span aria-hidden="true">→</span></button>
+<p class="privacy-note">작성 내용은 사이트에 저장·접수되지 않습니다.<br>다음 화면에서 복사해 카카오톡으로 직접 보내주세요.</p>
+</form>
+<noscript><p class="noscript-note">위 카카오톡 버튼이나 전화로 ‘약대 진학 상담’을 요청해 주세요.</p></noscript>
+</div>
+<section id="message-stage" aria-labelledby="result-title" hidden>
+<p class="card-kicker">ONE MORE STEP</p><h2 id="result-title" tabindex="-1">복사한 뒤, 카카오톡으로 보내세요.</h2><p class="result-intro">아직 전송되지 않았습니다. 내용은 직접 수정할 수 있습니다.</p>
+<label class="screen-reader" for="prepared-message">카카오톡으로 보낼 상담 내용</label><textarea id="prepared-message" maxlength="4000" rows="7"></textarea>
+<div class="result-actions"><button id="copy-message" type="button">1. 내용 복사</button><a class="kakao-button" id="result-kakao" href="https://pf.kakao.com/_VNmTxd" target="_blank" rel="noopener noreferrer">2. 카카오톡 열기 ↗</a></div>
+<p id="copy-status" class="copy-status" role="status" aria-live="polite"></p><p class="result-note">채널에서 채팅을 열고, 붙여넣은 내용을 직접 전송해 주세요.</p><button id="edit-conditions" class="back-button" type="button">← 조건 다시 수정하기</button>
+</section>
+</aside>
+</div></main>
+<footer class="footer"><div class="container footer-inner"><span>영국유학센터 신촌점 · 서울 서대문구 신촌로 127, 신촌르메이르타운 3차 307호</span><a href="tel:+8223931030">02-393-1030</a></div></footer>
+</div>
+</body></html>
