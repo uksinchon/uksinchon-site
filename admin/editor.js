@@ -135,7 +135,7 @@ async function loadNaver(){
 }
 async function openNaverItem(id){if(!discardNaverText())return;const data=await api('naver/items/'+id);state.naverItem=data.item;const i=data.item;$('naver-detail-title').textContent=i.title;$('naver-detail-link').href=i.url;$('naver-detail-info').textContent=(i.source_complete?'본문 텍스트 확인·이미지 제외 · '+i.source_method:'현재 RSS 요약만 확보했습니다. 전체 원문을 다시 읽거나 직접 넣어 주세요.')+(i.error?' · '+i.error:'');$('naver-source-text').value=i.source_text||i.excerpt;$('naver-source-confirmed').checked=false;$('naver-open-draft').hidden=!i.post_id;$('naver-detail').hidden=false;naverTextDirty=false;$('naver-detail').scrollIntoView({block:'start',behavior:'smooth'});}
 function fillNaverReview(){const i=state.naver;$('naver-review-panel').hidden=!i;if(!i)return;$('naver-review-link').href=i.url;$('naver-review-source').value=i.source_text||i.excerpt;$('naver-review-meta').textContent=(i.status==='source_changed'?'원문 변경 감지 · 재대조 필요 / ':'')+(i.mode==='ai'?'AI 재편집 · '+i.model:'AI를 사용하지 않은 원문 정리')+' / 원문 읽은 시각: '+(i.fetched_at?new Date(i.fetched_at).toLocaleString('ko-KR',{timeZone:'Asia/Seoul'}):'확인 필요');let images=[];try{images=JSON.parse(i.images);}catch{}$('naver-image-note').textContent='원문 사진 참조 '+images.length+'개 · 사진은 자동 복사하지 않았습니다. 이미지 안의 가격·조건·표를 별도로 확인하고 사용 가능한 사진을 직접 추가해 주세요.';for(const [id,values] of [['naver-review-notes',JSON.parse(i.notes||'[]')],['naver-evidence',JSON.parse(i.evidence||'[]')]]){$(id).replaceChildren();for(const value of values)$(id).append(node('li',value));}for(const key of ['facts','conditions','rights'])$('naver-check-'+key).checked=false;}
-function updateNaverReviewState(){if(!state.naver)return;const done=state.naver.approved_revision===state.revision&&state.naver.approved_source_hash===state.naver.source_hash&&!state.dirty;$('naver-review-state').textContent=done?'현재 저장 버전의 검수 완료가 기록되어 있습니다.':'현재 저장 버전은 검수가 필요합니다.';}
+function updateNaverReviewState(){if(!state.naver)return;const done=state.naver.approved_revision===state.revision&&state.naver.approved_source_hash===state.naver.source_hash&&!state.dirty;$('naver-review-state').textContent=done?(state.factReview?.kind==='ai'?'Codex의 AI 검토가 완료된 원고입니다. 사람의 검토로 기록하지 않습니다.':String(state.naver.approved_by||'').startsWith('codex-ai:')?'Codex 검토의 재확인이 필요합니다. 현재 내용·원문·검토 기한을 확인해 주세요.':'현재 저장 버전의 검수 완료가 기록되어 있습니다.'):'현재 저장 버전은 검수가 필요합니다.';$('apply-codex-post').hidden=!pilotPosts.some(p=>p.id===state.naver.id);}
 const pilotPosts=[
  {id:'224442365768',category:'대학·파운데이션',contentType:'guide',requiresFactCheck:true,appliesTo:'2027년 입학 · 리버풀대학교 약대 파운데이션'},
  {id:'224408275837',category:'어학연수',contentType:'comparison',requiresFactCheck:true,appliesTo:'공무원 어학연수 · 학교별 과정과 동일 수업·숙소 조건 확인'},
@@ -143,6 +143,30 @@ const pilotPosts=[
  {id:'224465727870',category:'상담 사례·소식',contentType:'case',requiresFactCheck:false,appliesTo:''},
  {id:'224440279774',category:'비용·장학금',contentType:'news',requiresFactCheck:true,appliesTo:'2027년 석사 입학 · 엑시터대학교 장학금 적용 대상과 조건 확인'}
 ];
+bind('apply-codex-pilots',async()=>{
+ if(!discardNaverText())return;const button=$('apply-codex-pilots');button.disabled=true;let applied=0,existing=0;const errors=[];
+ try{
+  const known=await api('naver');const linked=new Set(known.items.filter(item=>item.post_id).map(item=>item.id));
+  for(const [index,seed] of pilotPosts.entries()){
+   $('pilot-state').textContent=(index+1)+'/5 Codex 검토 원고를 적용하고 있습니다.';
+   try{
+    if(linked.has(seed.id)){existing++;continue;}
+    await api('naver/url',{method:'POST',body:{url:'https://blog.naver.com/pedu2/'+seed.id}});
+    const result=await api('naver/items/'+seed.id+'/codex-reviewed',{method:'POST',body:{onlyNew:true}});
+    if(result.skipped)existing++;else applied++;
+   }catch(e){errors.push(seed.id+': '+e.message);}
+  }
+  await loadNaver();const result='Codex 검토 원고 적용 '+applied+'개 · 기존 원고 보존 '+existing+'개';
+  $('pilot-state').textContent=result+(errors.length?' / '+errors.join(' / '):'. 기존 글은 열어서 ‘이 글에 Codex 검토 원고 적용’을 사용할 수 있습니다. 내용 검토는 완료되었으며 공개 승인은 별도입니다.');notice(result,!!errors.length);
+ }finally{button.disabled=false;}
+});
+bind('apply-codex-post',async()=>{
+ if(!state.naver||!pilotPosts.some(p=>p.id===state.naver.id))return;
+ await save(true);
+ if(!confirm('Codex가 검토한 원고를 새 저장 버전으로 적용할까요? 현재 초안은 수정 이력에 남고 공개본은 유지됩니다.'))return;
+ const result=await api('naver/items/'+state.naver.id+'/codex-reviewed',{method:'POST',body:{revision:state.revision}});
+ await openPost(result.postId);notice('Codex의 AI 검토 원고를 적용했습니다. 사람의 재검토 체크 없이 공개 승인할 수 있습니다.');
+});
 bind('prepare-pilot',async()=>{
  if(!discardNaverText())return;const button=$('prepare-pilot');button.disabled=true;let created=0,existing=0;const errors=[];
  try{
