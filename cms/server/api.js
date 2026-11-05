@@ -1,5 +1,6 @@
 import {SCHEMA} from './schema.js';
-import {cleanSnapshot,imageIds,textOf,safeLink} from './content.js';
+import {cleanSnapshot,imageIds,textOf,safeLink,webpDimensions,factReadiness,semanticContent} from './content.js';
+import {publicationProblem,sealPublication} from './publication.js';
 import {articlePage} from './pages.js';
 import {syncNaver,importedItem,guardNaverPublish} from './naver.js';
 import {naverAdmin} from './naver-api.js';
@@ -25,7 +26,20 @@ const publicUser=u=>({id:u.id,email:u.email,name:u.name,role:u.role,mustChange:!
 const admin=u=>{if(u.role!=='admin')fail(403,'관리자만 사용할 수 있습니다.');};
 async function ownPost(db,id,user){const p=await db.prepare('SELECT * FROM cms_posts WHERE id=?').bind(id).first();if(!p)fail(404,'글을 찾을 수 없습니다.');if(p.owner_id!==user.id&&user.role!=='admin')fail(403,'작성한 글만 수정할 수 있습니다.');return p;}
 async function snapshot(db,id,revision){const row=await db.prepare('SELECT snapshot FROM cms_versions WHERE post_id=? AND revision=?').bind(id,revision).first();return row?JSON.parse(row.snapshot):null;}
-async function validImages(db,post,s){for(const id of imageIds(s)){const image=await db.prepare('SELECT id FROM cms_media WHERE id=? AND post_id=?').bind(id,post.id).first();if(!image)fail(400,'이 글에 등록되지 않은 사진이 포함되어 있습니다. 사진을 다시 추가해 주세요.');}}
+async function validImages(db,post,s,previous=null){
+ for(const id of imageIds(s)){
+  const dimensions=s.schemaVersion===2?previous?.imageMeta?.[id]:null;
+  const needBytes=s.schemaVersion===2&&!(dimensions?.width&&dimensions?.height);
+  const image=await db.prepare('SELECT id'+(needBytes?',data':'')+' FROM cms_media WHERE id=? AND post_id=?').bind(id,post.id).first();
+  if(!image)fail(400,'이 글에 등록되지 않은 사진이 포함되어 있습니다. 사진을 다시 추가해 주세요.');
+  if(s.schemaVersion===2){
+   const size=needBytes?webpDimensions(image.data):{width:dimensions.width,height:dimensions.height};
+   delete s.imageMeta[id].width;delete s.imageMeta[id].height;
+   if(size)Object.assign(s.imageMeta[id],size);
+  }
+ }
+}
+async function factReview(db,id,revision){return db.prepare("SELECT e.actor_id,e.created_at,u.name FROM cms_events e JOIN cms_users u ON u.id=e.actor_id WHERE e.post_id=? AND e.revision=? AND e.action='factcheck' ORDER BY e.created_at DESC,e.id DESC LIMIT 1").bind(id,revision).first();}
 async function rateLimit(request,db,prefix,limit=60,byIP=true){const key=await hash(prefix+':'+(byIP?(request.headers.get('CF-Connecting-IP')||'local'):'account'));const stamp=now();await db.prepare('INSERT INTO cms_attempts(key,count,expires_at) VALUES(?,1,?) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN expires_at<? THEN 1 ELSE count+1 END, expires_at=CASE WHEN expires_at<? THEN excluded.expires_at ELSE expires_at END').bind(key,new Date(Date.now()+900000).toISOString(),stamp,stamp).run();const row=await db.prepare('SELECT count FROM cms_attempts WHERE key=?').bind(key).first();if(row.count>limit)fail(429,'로그인 시도가 많습니다. 15분 뒤 다시 시도해 주세요.');return key;}
 async function loginResponse(request,env,user){const token=b64(crypto.getRandomValues(new Uint8Array(32))).replace(/[^a-zA-Z0-9]/g,'')+uuid();const tokenHash=await hash(token);await env.CMS_DB.batch([env.CMS_DB.prepare('DELETE FROM cms_sessions WHERE expires_at<?').bind(now()),env.CMS_DB.prepare('INSERT INTO cms_sessions(token_hash,user_id,expires_at) VALUES(?,?,?)').bind(tokenHash,user.id,new Date(Date.now()+28800000).toISOString())]);return json({user:publicUser(user)},200,{'Set-Cookie':cookie(request,env,token)});}
 export async function handleCMS(context){
@@ -97,14 +111,16 @@ export async function handleCMS(context){
    const rows=await db.prepare(`SELECT p.*,u.name AS owner_name,json_extract(v.snapshot,'$.title') AS title,json_extract(v.snapshot,'$.category') AS category FROM cms_posts p JOIN cms_users u ON u.id=p.owner_id JOIN cms_versions v ON v.post_id=p.id AND v.revision=p.revision WHERE ${condition}${extra} ORDER BY p.updated_at DESC LIMIT 31 OFFSET ?`).bind(...args,offset).all();return json({posts:rows.results.slice(0,30),hasMore:rows.results.length>30,page});
   }
   if(path==='posts'&&request.method==='POST'){
-   const id=uuid(),stamp=now();const data=cleanSnapshot({title:'',category:'어학연수',delta:{ops:[{insert:'\n'}]}},user.name);
+   const id=uuid(),stamp=now();const data=cleanSnapshot({schemaVersion:2,title:'',category:'어학연수',delta:{ops:[{insert:'\n'}]}},user.name);
    await db.batch([db.prepare("INSERT INTO cms_posts(id,slug,owner_id,revision,created_at,updated_at,save_token) VALUES(?,?,?,1,?,?,?)").bind(id,'story-'+id,user.id,stamp,stamp,uuid()),db.prepare('INSERT INTO cms_versions(post_id,revision,snapshot,actor_id,created_at) VALUES(?,1,?,?,?)').bind(id,JSON.stringify(data),user.id,stamp)]);return json({id},201);
   }
   if(parts[0]==='posts'&&parts[1]){
    const post=await ownPost(db,parts[1],user);
-   if(parts.length===2&&request.method==='GET')return json({post,snapshot:await snapshot(db,post.id,post.revision),naver:await importedItem(db,post.id)});
+   if(parts.length===2&&request.method==='GET')return json({post,snapshot:await snapshot(db,post.id,post.revision),naver:await importedItem(db,post.id),factReview:await factReview(db,post.id,post.revision)});
    if(parts.length===2&&request.method==='PUT'){
-    const b=await bodyOf(request);const owner=await db.prepare('SELECT name FROM cms_users WHERE id=?').bind(post.owner_id).first();let data;try{data=cleanSnapshot(b,owner.name);}catch(e){fail(400,e.message);}await validImages(db,post,data);
+    const b=await bodyOf(request);const previous=await snapshot(db,post.id,post.revision);
+    if(previous.schemaVersion===2&&Number(b.schemaVersion)!==2)fail(409,'편집기가 업데이트되었습니다. 현재 원고를 보관하고 화면을 새로고침해 주세요.');
+    const owner=await db.prepare('SELECT name FROM cms_users WHERE id=?').bind(post.owner_id).first();let data;try{data=cleanSnapshot(b,owner.name);}catch(e){fail(400,e.message);}await validImages(db,post,data,previous);
     const revision=Number(b.revision);if(!Number.isInteger(revision))fail(400,'저장 버전을 확인해 주세요.');const stamp=now(),saveToken=uuid();
     const result=await db.batch([db.prepare("UPDATE cms_posts SET revision=revision+1,status='draft',updated_at=?,save_token=? WHERE id=? AND revision=?").bind(stamp,saveToken,post.id,revision),db.prepare('INSERT INTO cms_versions(post_id,revision,snapshot,actor_id,created_at) SELECT id,revision,?,?,? FROM cms_posts WHERE id=? AND save_token=?').bind(JSON.stringify(data),user.id,stamp,post.id,saveToken)]);
     if(result[0].meta.changes!==1)fail(409,'다른 창에서 이 글을 수정했습니다. 현재 내용을 내려받은 뒤 새로고침해 주세요.');return json({revision:revision+1,updatedAt:stamp});
@@ -118,25 +134,43 @@ export async function handleCMS(context){
     if(!request.headers.get('Content-Type')?.startsWith('image/webp'))fail(415,'편집 화면에서 변환한 사진만 등록할 수 있습니다.');
     if(Number(request.headers.get('Content-Length'))>900000)fail(413,'사진을 줄여 다시 등록해 주세요.');const bytes=await request.arrayBuffer();const a=new Uint8Array(bytes);
     if(bytes.byteLength<16||bytes.byteLength>900000||String.fromCharCode(...a.slice(0,4))!=='RIFF'||String.fromCharCode(...a.slice(8,12))!=='WEBP')fail(400,'올바른 WebP 사진이 아닙니다.');
-    const id=uuid();await db.prepare('INSERT INTO cms_media(id,post_id,owner_id,mime,data,bytes,created_at) VALUES(?,?,?,\'image/webp\',?,?,?)').bind(id,post.id,user.id,bytes,bytes.byteLength,now()).run();return json({url:'/media/'+id},201);
+    const size=webpDimensions(bytes);if(!size||size.width>1600||size.height>1600)fail(400,'긴 쪽 1600px 이하의 WebP 사진을 등록해 주세요.');
+    const id=uuid();await db.prepare('INSERT INTO cms_media(id,post_id,owner_id,mime,data,bytes,created_at) VALUES(?,?,?,\'image/webp\',?,?,?)').bind(id,post.id,user.id,bytes,bytes.byteLength,now()).run();return json({url:'/media/'+id,id,...size,bytes:bytes.byteLength},201);
+   }
+   if(parts[2]==='factcheck'&&parts.length===3&&request.method==='POST'){
+    admin(user);const b=await bodyOf(request);if(Number(b.revision)!==post.revision)fail(409,'새 버전이 있습니다. 현재 원고를 다시 확인해 주세요.');
+    const s=await snapshot(db,post.id,post.revision);const problem=factReadiness(s);if(problem)fail(400,problem);
+    if(!b.checks||!['facts','conditions','rights'].every(key=>b.checks[key]===true))fail(400,'출처·적용 조건·개인정보와 사진 권리를 모두 대조해 주세요.');
+    const stamp=now();const result=await db.prepare("INSERT INTO cms_events(id,post_id,actor_id,action,revision,created_at) SELECT ?,id,?,'factcheck',revision,? FROM cms_posts WHERE id=? AND revision=?").bind(uuid(),user.id,stamp,post.id,post.revision).run();
+    if(result.meta.changes!==1)fail(409,'초안이 바뀌었습니다. 현재 버전을 다시 확인해 주세요.');
+    return json({ok:true,revision:post.revision});
    }
    if(['review','publish','unpublish'].includes(parts[2])&&request.method==='POST'){
     const b=await bodyOf(request);if(Number(b.revision)!==post.revision)fail(409,'새 버전이 있습니다. 글을 다시 열어 주세요.');const s=await snapshot(db,post.id,post.revision);if(parts[2]!=='unpublish'&&(!s.title||!textOf(s)))fail(400,'제목과 본문을 입력한 뒤 요청해 주세요.');if(parts[2]!=='unpublish'&&s.sources.split('\n').filter(Boolean).some(url=>!safeLink(url)))fail(400,'참고 자료 주소를 완성하거나 지운 뒤 검토를 요청해 주세요.');const stamp=now(),saveToken=uuid();const statements=[];
+    let resultingRevision=post.revision;
     if(parts[2]==='review')statements.push(db.prepare("UPDATE cms_posts SET status='review',updated_at=?,save_token=? WHERE id=? AND revision=?").bind(stamp,saveToken,post.id,post.revision));
     else {
      admin(user);
      if(parts[2]==='publish'){
-      await validImages(db,post,s);
+      if(post.published_revision===post.revision)return json({ok:true,url:'/blog/'+post.slug+'/',revision:post.revision,unchanged:true});
+      await validImages(db,post,s,s);
       let source;try{source=await guardNaverPublish(db,post,s);}catch(e){fail(400,e.message);}
+      const reviewed=await factReview(db,post.id,post.revision);const problem=publicationProblem(s,reviewed);if(problem)fail(400,problem);
+      const last=post.published_revision?{revision:post.published_revision}:await db.prepare("SELECT revision FROM cms_events WHERE post_id=? AND action='publish' ORDER BY created_at DESC,id DESC LIMIT 1").bind(post.id).first();
+      const previous=last?await snapshot(db,post.id,last.revision):null;
+      if(s.schemaVersion===2&&previous&&semanticContent(previous)!==semanticContent(s)&&!s.changeNote)fail(400,'이번 수정의 이유와 범위를 입력해 주세요.');
+      const approved=sealPublication(s,post,previous,reviewed,user,stamp);resultingRevision=post.revision+1;
       const gate=source?" AND EXISTS(SELECT 1 FROM cms_naver_items n WHERE n.post_id=cms_posts.id AND n.source_complete=1 AND n.status<>'source_changed' AND n.approved_revision=cms_posts.revision AND n.approved_source_hash=n.source_hash AND n.source_hash=?) AND NOT EXISTS(SELECT 1 FROM cms_naver_source WHERE poll_until>?)":'';
       const params=[stamp,stamp,saveToken,post.id,post.revision,...(source?[source.source_hash,stamp]:[])];
-      statements.push(db.prepare("UPDATE cms_posts SET published_revision=revision,published_at=COALESCE(published_at,?),status='published',updated_at=?,save_token=? WHERE id=? AND revision=?"+gate).bind(...params));
+      statements.push(db.prepare("UPDATE cms_posts SET revision=revision+1,published_revision=revision+1,published_at=COALESCE(published_at,?),status='published',updated_at=?,save_token=? WHERE id=? AND revision=?"+gate).bind(...params));
+      statements.push(db.prepare('INSERT INTO cms_versions(post_id,revision,snapshot,actor_id,created_at) SELECT id,revision,?,?,? FROM cms_posts WHERE id=? AND save_token=?').bind(JSON.stringify(approved),user.id,stamp,post.id,saveToken));
+      if(source)statements.push(db.prepare('UPDATE cms_naver_items SET approved_revision=? WHERE post_id=? AND approved_revision=? AND source_hash=? AND EXISTS(SELECT 1 FROM cms_posts WHERE id=? AND save_token=?)').bind(resultingRevision,post.id,post.revision,source.source_hash,post.id,saveToken));
      }else statements.push(db.prepare("UPDATE cms_posts SET published_revision=NULL,status='draft',updated_at=?,save_token=? WHERE id=? AND revision=?").bind(stamp,saveToken,post.id,post.revision));
      statements.push(db.prepare('DELETE FROM cms_public_media WHERE post_id=? AND EXISTS(SELECT 1 FROM cms_posts WHERE id=? AND save_token=?)').bind(post.id,post.id,saveToken));
      if(parts[2]==='publish')for(const media of imageIds(s))statements.push(db.prepare('INSERT INTO cms_public_media(post_id,media_id) SELECT id,? FROM cms_posts WHERE id=? AND save_token=?').bind(media,post.id,saveToken));
     }
     statements.push(db.prepare('INSERT INTO cms_events(id,post_id,actor_id,action,revision,created_at) SELECT ?,id,?,?,revision,? FROM cms_posts WHERE id=? AND save_token=?').bind(uuid(),user.id,parts[2],stamp,post.id,saveToken));
-    const result=await db.batch(statements);if(result[0].meta.changes!==1)fail(409,'새 버전이 있습니다. 글을 다시 열어 주세요.');return json({ok:true,url:'/blog/'+post.slug+'/'});
+    const result=await db.batch(statements);if(result[0].meta.changes!==1)fail(409,'새 버전이 있습니다. 글을 다시 열어 주세요.');return json({ok:true,url:'/blog/'+post.slug+'/',revision:resultingRevision});
    }
   }
   fail(404,'요청한 기능을 찾을 수 없습니다.');
