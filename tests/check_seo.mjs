@@ -70,6 +70,7 @@ try{
  current=await a.api('posts/'+p.id);
  await a.api('posts/'+p.id,{method:'PUT',body:{...current.snapshot,contentType:'comparison',changeKind:'substantive',changeNote:'가상 사진·표 검증',imageMeta:{[uploaded.id]:{alt:'가상 검증 사진',caption:'검증용 16×12 이미지',rights:'직접 생성한 가상 이미지',width:999,height:999}},heroImageId:uploaded.id,relatedIds:[otherIds[0],privateId,p.id],delta:{ops:[{insert:'새 비교 조건을 확인하는 가상의 본문입니다.\n'},{insert:{image:uploaded.url}},{insert:'\n'},{insert:{comparisonTable:table}},{insert:'\n'}]},revision:current.post.revision}});
  current=await a.api('posts/'+p.id);assert.equal(current.snapshot.imageMeta[uploaded.id].width,16);
+ const preview=(await a.request('/api/cms/posts/'+p.id+'/preview')).data;assert(preview.includes('/blog/story-'+otherIds[0]+'/'));assert(!preview.includes('/blog/story-'+privateId+'/'));
  await a.api('posts/'+p.id+'/factcheck',{method:'POST',body:{revision:current.post.revision,checks:{facts:true,conditions:true,rights:true}}});
  await a.api('posts/'+p.id+'/publish',{method:'POST',body:{revision:current.post.revision}});current=await a.api('posts/'+p.id);
  const html=(await anonymous.request(url)).data;

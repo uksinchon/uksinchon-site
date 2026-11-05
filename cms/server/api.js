@@ -1,7 +1,7 @@
 import {SCHEMA} from './schema.js';
 import {cleanSnapshot,imageIds,textOf,safeLink,webpDimensions,factReadiness,semanticContent} from './content.js';
 import {publicationProblem,sealPublication} from './publication.js';
-import {articlePage} from './pages.js';
+import {articlePage,relatedPosts} from './pages.js';
 import {syncNaver,importedItem,guardNaverPublish} from './naver.js';
 import {naverAdmin} from './naver-api.js';
 const encoder=new TextEncoder();
@@ -129,7 +129,9 @@ export async function handleCMS(context){
     const rows=await db.prepare('SELECT v.revision,v.created_at,u.name AS editor FROM cms_versions v JOIN cms_users u ON u.id=v.actor_id WHERE v.post_id=? ORDER BY v.revision DESC LIMIT 100').bind(post.id).all();return json({versions:rows.results});
    }
    if(parts[2]==='versions'&&parts[3]&&request.method==='GET'){const s=await snapshot(db,post.id,Number(parts[3]));if(!s)fail(404,'버전을 찾을 수 없습니다.');return json({snapshot:s});}
-   if(parts[2]==='preview'&&request.method==='GET')return articlePage(await snapshot(db,post.id,post.revision),post,true);
+   if(parts[2]==='preview'&&request.method==='GET'){
+    const s=await snapshot(db,post.id,post.revision);return articlePage(s,post,true,{related:await relatedPosts(db,s,post.id)});
+   }
    if(parts[2]==='images'&&request.method==='POST'){
     if(!request.headers.get('Content-Type')?.startsWith('image/webp'))fail(415,'편집 화면에서 변환한 사진만 등록할 수 있습니다.');
     if(Number(request.headers.get('Content-Length'))>900000)fail(413,'사진을 줄여 다시 등록해 주세요.');const bytes=await request.arrayBuffer();const a=new Uint8Array(bytes);
