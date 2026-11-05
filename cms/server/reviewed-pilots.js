@@ -1,6 +1,6 @@
 // A finite, code-reviewed catalogue, not a general AI approval service.
 // No client-supplied reviewer, packet, date or checks can create this proof.
-import packets from './reviewed-pilots.json' with {type:'json'};
+import packets from './reviewed-pilots-data.js';
 import {cleanSnapshot,todayKorea} from './content.js';
 import {readSource} from './naver.js';
 

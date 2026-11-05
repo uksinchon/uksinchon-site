@@ -1,4 +1,4 @@
-[
+export default [
   {
     "id": "codex-pilot-224442365768",
     "sourceId": "224442365768",
@@ -787,4 +787,4 @@
     },
     "reportURL": "https://github.com/uksinchon/uksinchon-site/blob/main/docs/editorial-review/2026-11-06/README.md"
   }
-]
+];
