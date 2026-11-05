@@ -69,7 +69,7 @@ second=two.api('posts','POST',{},201)['id']
 two.api('posts/'+id,expected=403);one.api('posts/'+second,expected=403)
 assert not any(p['id']==id for p in two.api('posts')['posts'])
 passed('staff see and edit only their own drafts; admin can review all')
-content={'title':'가상 검증 글 <script>시험</script>','category':'어학연수','summary':'테스트용 요약','sources':'https://example.org/official','verifiedAt':'2026-11-02','delta':{'ops':[{'insert':'공식 자료의 조건을 확인하고 학교를 비교하는 가상의 테스트 글입니다. '},{'insert':'위험한 링크','attributes':{'link':'javascript:alert(1)','onerror':'bad'}},{'insert':'\n'},{'insert':'소제목'},{'insert':'\n','attributes':{'header':2}},{'insert':'목록 항목'},{'insert':'\n','attributes':{'list':'bullet'}}]},'revision':1}
+content={'schemaVersion':2,'title':'가상 검증 글 <script>시험</script>','category':'어학연수','summary':'테스트용 요약','sources':'https://example.org/official','verifiedAt':'2026-11-02','delta':{'ops':[{'insert':'공식 자료의 조건을 확인하고 학교를 비교하는 가상의 테스트 글입니다. '},{'insert':'위험한 링크','attributes':{'link':'javascript:alert(1)','onerror':'bad'}},{'insert':'\n'},{'insert':'소제목'},{'insert':'\n','attributes':{'header':2}},{'insert':'목록 항목'},{'insert':'\n','attributes':{'list':'bullet'}}]},'revision':1}
 revision=one.api('posts/'+id,'PUT',content)['revision'];assert revision==2
 one.api('posts/'+id,'PUT',{**content,'delta':{'ops':[{'insert':{'image':'https://example.org/external.jpg'}}]},'revision':revision},400)
 passed('shared rich-text draft stores; arbitrary embedded images and executable link attributes are rejected or removed')
@@ -77,6 +77,7 @@ image=Image.new('RGB',(16,12),(80,120,160));buf=io.BytesIO();image.save(buf,form
 img=one.api('posts/'+id+'/images','POST',image_bytes,201,content_type='image/webp')['url']
 anon.req(img,expected=404)
 one.req(img)
+content['imageMeta']={img.split('/')[-1]:{'alt':'가상 검증 사진','rights':'직접 생성한 가상 이미지'}}
 content['delta']['ops'] += [{'insert':{'image':img}},{'insert':'\n'}]
 revision=one.api('posts/'+id,'PUT',{**content,'revision':revision})['revision']
 preview,headers=one.req('/api/cms/posts/'+id+'/preview')
@@ -88,8 +89,9 @@ passed('private images and preview require authorization; text renders safely wi
 one.api('posts/'+id+'/review','POST',{'revision':revision})
 assert a.api('posts/'+id)['post']['status']=='review'
 one.api('posts/'+id+'/publish','POST',{'revision':revision},403)
+one.api('posts/'+id+'/factcheck','POST',{'revision':revision,'checks':{'facts':True,'conditions':True,'rights':True}},403)
 a.api('posts/'+id+'/publish','POST',{'revision':revision})
-post=a.api('posts/'+id)['post'];public_url='/blog/'+post['slug']+'/'
+post=a.api('posts/'+id)['post'];revision=post['revision'];content['changeNote']='가상 조건 수정';public_url='/blog/'+post['slug']+'/'
 html,headers=anon.req(public_url)
 assert '테스트용 요약' in html and 'BlogPosting' in html and '가상 직원 one' in html
 assert 'rel="canonical"' in html and 'javascript:' not in html
@@ -115,8 +117,8 @@ assert sum(isinstance(x,dict) for x in results)==1 and results.count('conflict')
 revision=next(x['revision'] for x in results if isinstance(x,dict))
 passed('two simultaneous writes produce one saved revision and one conflict')
 versions=one.api('posts/'+id+'/versions')['versions'];assert any(v['revision']==2 for v in versions)
-old=one.api('posts/'+id+'/versions/2')['snapshot'];old['title']='복원한 가상 글';revision=one.api('posts/'+id,'PUT',{**old,'revision':revision})['revision']
-a.api('posts/'+id+'/publish','POST',{'revision':revision})
+old=one.api('posts/'+id+'/versions/2')['snapshot'];old['title']='복원한 가상 글';old['changeNote']='가상 이전 원고 복원';revision=one.api('posts/'+id,'PUT',{**old,'revision':revision})['revision']
+revision=a.api('posts/'+id+'/publish','POST',{'revision':revision})['revision']
 html,_=anon.req(public_url);assert '복원한 가상 글' in html
 assert len(one.api('posts/'+id+'/versions')['versions'])>=5
 passed('earlier versions can be restored into a new revision and republished without deleting history')
@@ -137,6 +139,6 @@ missing,_=anon.req('/blog/story-not-found/',expected=404);assert '글을 찾을 
 admin_html,head=anon.req('/admin/');assert 'noindex' in head.get('X-Robots-Tag','')
 passed('unknown posts return 404; staff editor is excluded from indexing')
 Path('/tmp/uksinchon-cms-restart-check.json').write_text(json.dumps({'id':id,'revision':revision,'title':'복원한 가상 글'}))
-report={'passed':len(checks),'checks':checks,'backend':'Wrangler + persistent local D1','production_db_connected':False,'real_customer_data_used':False}
+report={'passed':len(checks),'checks':checks,'backend':'Workers runtime + isolated local D1','production_db_connected':False,'real_customer_data_used':False}
 Path('/workspace/신촌점_직원블로그_통합검증.json').write_text(json.dumps(report,ensure_ascii=False,indent=2))
 print(json.dumps(report,ensure_ascii=False,indent=2))

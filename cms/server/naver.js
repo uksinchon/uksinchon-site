@@ -1,4 +1,5 @@
 import {NAVER_FEED,parseFeed,sourceURL,extractPost,rawDraft,rewrite,aiConfigured,PROMPT_VERSION} from './naver-content.js';
+import {cleanSnapshot} from './content.js';
 export const NAVER_SCHEMA=[
 `CREATE TABLE IF NOT EXISTS cms_naver_source(id INTEGER PRIMARY KEY CHECK(id=1),enabled INTEGER NOT NULL DEFAULT 0,owner_id TEXT,baseline_at TEXT,last_checked_at TEXT,last_error TEXT,last_cron_at TEXT,poll_token TEXT,poll_until TEXT)`,
 `INSERT OR IGNORE INTO cms_naver_source(id) VALUES(1)`,
@@ -27,8 +28,14 @@ export async function createNaverDraft(db,id,mode,env,actor,fetcher=fetch){
  try {
   const owner=item.post_id?await db.prepare('SELECT u.* FROM cms_users u JOIN cms_posts p ON p.owner_id=u.id WHERE p.id=?').bind(item.post_id).first():actor;
   if(!owner?.active)throw new Error('초안 담당 계정이 사용 중지되었습니다.');
-  const previous=item.post_id?await db.prepare('SELECT revision FROM cms_posts WHERE id=?').bind(item.post_id).first():null;
+  const previous=item.post_id?await db.prepare('SELECT p.revision,v.snapshot FROM cms_posts p JOIN cms_versions v ON v.post_id=p.id AND v.revision=p.revision WHERE p.id=?').bind(item.post_id).first():null;
   const result=mode==='ai'?await rewrite(item,owner.name,env,fetcher):{snapshot:rawDraft(item,owner.name),notes:['AI를 사용하지 않은 원문 정리 초안입니다. 독자에게 맞는 답변과 구조로 직접 재편집해 주세요.'],evidence:[]};
+  if(previous){
+   const old=JSON.parse(previous.snapshot),metadata={};
+   for(const key of ['contentType','requiresFactCheck','appliesTo','sourceDetails','verifiedAt','reviewScope','reviewDueAt','relatedIds'])if(old[key]!==undefined)metadata[key]=old[key];
+   const sources=[...new Set([...(old.sources||'').split('\n'),...result.snapshot.sources.split('\n')].filter(Boolean))].join('\n');
+   result.snapshot=cleanSnapshot({...result.snapshot,...metadata,schemaVersion:2,sources,changeKind:'substantive',changeNote:''},owner.name);
+  }
   const data=JSON.stringify(result.snapshot),stamp=now();let postId=item.post_id;const save=token();let statements=[];
   if(!postId){postId=token();statements.push(db.prepare("INSERT INTO cms_posts(id,slug,owner_id,status,revision,created_at,updated_at,save_token) SELECT ?,?,?,'draft',1,?,?,? FROM cms_naver_items WHERE id=? AND source_hash=? AND source_complete=1 AND processing_token=? AND post_id IS NULL").bind(postId,'story-'+postId,owner.id,stamp,stamp,save,id,baseHash,lease),db.prepare('INSERT INTO cms_versions(post_id,revision,snapshot,actor_id,created_at) SELECT id,revision,?,?,? FROM cms_posts WHERE id=? AND save_token=?').bind(data,actor.id,stamp,postId,save));}
   else statements.push(db.prepare("UPDATE cms_posts SET revision=revision+1,status='draft',updated_at=?,save_token=? WHERE id=? AND revision=? AND EXISTS(SELECT 1 FROM cms_naver_items WHERE id=? AND source_hash=? AND source_complete=1 AND processing_token=?)").bind(stamp,save,postId,previous.revision,id,baseHash,lease),db.prepare('INSERT INTO cms_versions(post_id,revision,snapshot,actor_id,created_at) SELECT id,revision,?,?,? FROM cms_posts WHERE id=? AND save_token=?').bind(data,actor.id,stamp,postId,save));

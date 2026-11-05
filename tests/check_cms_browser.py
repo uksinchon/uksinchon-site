@@ -28,6 +28,7 @@ with sync_playwright() as p:
  s.locator('#image-file').set_input_files(str(image));expect(s.locator('.ql-editor img')).to_be_visible()
  expect(s.locator('#notice')).to_have_text('사진과 글을 공동 DB에 저장했습니다.')
  assert s.locator('.ql-editor img').evaluate('(e)=>e.naturalHeight')==960
+ s.get_by_label('독자에게 전달할 사진 설명',exact=True).fill('가상 검증 이미지');s.get_by_label('사용 근거 · 예: 직접 촬영, 학교의 사용 허락',exact=True).fill('직접 생성한 가상 이미지');s.locator('#save').click();expect(s.locator('#save-state')).to_have_text(re.compile('^저장 완료'))
  passed('rich-text editor, Korean summary, sources and actual server photo upload with 1600px resizing')
  for width in [320,375,390,430,768]:
   s.set_viewport_size({'width':width,'height':900});assert not s.evaluate('document.documentElement.scrollWidth>innerWidth'),width
@@ -45,7 +46,7 @@ with sync_playwright() as p:
  public=browser.new_context(viewport={'width':1440,'height':1050});v=public.new_page();r=v.goto(BASE+public_url,wait_until='networkidle');assert r.status==200;assert v.get_by_role('heading',name=title,exact=True).is_visible();expect(v.locator('.article-body img')).to_be_visible()
  v.screenshot(path='/workspace/신촌점_직원블로그_공개글.png',full_page=True)
  a.screenshot(path='/workspace/신촌점_직원글쓰기_관리자.png',full_page=True)
- passed('admin approval produces public Korean HTML with working image and official-source link')
+ passed('admin approval produces public Korean HTML with working image and source link')
  s.get_by_role('button',name='← 글 목록',exact=True).click();s.get_by_role('button',name=title,exact=True).click();s.locator('#title').fill('아직 승인하지 않은 수정 제목');s.get_by_role('button',name='초안 저장',exact=True).click();expect(s.locator('#save-state')).to_have_text(re.compile('^저장 완료'))
  v.reload(wait_until='networkidle');assert v.get_by_role('heading',name=title,exact=True).is_visible()
  passed('staff editing after publication keeps the previous approved article live')

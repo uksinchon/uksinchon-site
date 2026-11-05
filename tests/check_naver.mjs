@@ -57,9 +57,13 @@ try {
  await api('posts/'+p.id+'/publish',{method:'POST',body:{revision:p.revision},useCookie:false,cron:true,expected:401});
  pass('authenticated cron creates one unapproved draft; rechecks do not duplicate the post or AI call');
  await api('posts/'+p.id+'/publish',{method:'POST',body:{revision:p.revision},expected:400});
+ s={...s,appliesTo:'가상 2027년 일반영어 과정',verifiedAt:'2026-11-02',reviewScope:'가상 공식 자료의 적용 조건 대조',sourceDetails:[{url:'https://example.org/official',title:'검증용 공식 자료',publisher:'가상 기관',kind:'official'}]};
+ const editorial=await api('posts/'+p.id,{method:'PUT',body:{...s,revision:p.revision}});p.revision=editorial.revision;
  await api('naver/items/'+item.id+'/review',{method:'POST',body:{revision:p.revision,sourceHash:item.source_hash,checks:{facts:true}},expected:400});
  await api('naver/items/'+item.id+'/review',{method:'POST',body:{revision:p.revision,sourceHash:item.source_hash,checks:{facts:true,conditions:true,rights:true}}});
- await api('posts/'+p.id+'/publish',{method:'POST',body:{revision:p.revision}});assert((await publicRead(p.slug)).includes(item.url));
+ await api('posts/'+p.id+'/publish',{method:'POST',body:{revision:p.revision},expected:400});
+ await api('posts/'+p.id+'/factcheck',{method:'POST',body:{revision:p.revision,checks:{facts:true,conditions:true,rights:true}}});
+ await api('posts/'+p.id+'/publish',{method:'POST',body:{revision:p.revision}});p=(await api('posts/'+p.id)).post;assert((await publicRead(p.slug)).includes(item.url));
  pass('publication requires explicit full checklist for the current revision and keeps the original source link');
  const saved=await api('posts/'+p.id,{method:'PUT',body:{...s,title:'사람이 수정한 제목',revision:p.revision}});p.revision=saved.revision;
  await api('posts/'+p.id+'/publish',{method:'POST',body:{revision:p.revision},expected:400});assert(!(await publicRead(p.slug)).includes('사람이 수정한 제목'));
@@ -74,6 +78,9 @@ try {
  for(let i=0;i<100&&!gateEntered;i++)await new Promise(r=>setTimeout(r,10));assert(gateEntered);
  s=(await api('posts/'+p.id)).snapshot;const newer=await api('posts/'+p.id,{method:'PUT',body:{...s,title:'AI 처리 중 사람이 저장한 내용',revision:before}});release();await pending;aiGate=null;assert.equal((await api('posts/'+p.id)).post.revision,newer.revision);
  pass('AI result cannot overwrite a human edit made while generation was in progress');
+ await api('naver/items/'+item.id+'/draft',{method:'POST',body:{mode:'ai'},ai:true});
+ const regenerated=(await api('posts/'+p.id)).snapshot;assert.equal(regenerated.schemaVersion,2);assert.equal(regenerated.appliesTo,s.appliesTo);assert.equal(regenerated.sourceDetails[0].url,'https://example.org/official');assert(!regenerated.publication);
+ pass('regeneration preserves editorial scope and official references without carrying an old publication approval');
  ids.push('444444444');badBody.add('444444444');await api('naver/check',{method:'POST',body:{}});const missing=(await api('naver/items/444444444')).item;assert.equal(missing.status,'needs_input');assert.equal(missing.source_complete,0);
  await api('naver/items/444444444/draft',{method:'POST',body:{mode:'manual'},expected:400});
  await api('naver/items/444444444/text',{method:'POST',body:{text:bodyText(),confirmed:false},expected:400});await api('naver/items/444444444/text',{method:'POST',body:{text:bodyText(),confirmed:true}});
