@@ -2,7 +2,8 @@ import {SCHEMA} from './schema.js';
 import {cleanSnapshot,imageIds,textOf,safeLink,webpDimensions,factReadiness,semanticContent} from './content.js';
 import {publicationProblem,sealPublication} from './publication.js';
 import {articlePage,relatedPosts} from './pages.js';
-import {syncNaver,importedItem,guardNaverPublish} from './naver.js';
+import {syncNaver,importedItem,guardNaverPublish,readSource} from './naver.js';
+import {pilotReview,CODEX_REVIEWER} from './reviewed-pilots.js';
 import {naverAdmin} from './naver-api.js';
 const encoder=new TextEncoder();
 const now=()=>new Date().toISOString();
@@ -40,6 +41,7 @@ async function validImages(db,post,s,previous=null){
  }
 }
 async function factReview(db,id,revision){return db.prepare("SELECT e.actor_id,e.created_at,e.revision,u.name FROM cms_events e JOIN cms_users u ON u.id=e.actor_id WHERE e.post_id=? AND e.revision=? AND e.action='factcheck' ORDER BY e.created_at DESC,e.id DESC LIMIT 1").bind(id,revision).first();}
+async function currentReview(db,post,s){return await factReview(db,post.id,post.revision)||pilotReview(s,await importedItem(db,post.id),post);}
 async function rateLimit(request,db,prefix,limit=60,byIP=true){const key=await hash(prefix+':'+(byIP?(request.headers.get('CF-Connecting-IP')||'local'):'account'));const stamp=now();await db.prepare('INSERT INTO cms_attempts(key,count,expires_at) VALUES(?,1,?) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN expires_at<? THEN 1 ELSE count+1 END, expires_at=CASE WHEN expires_at<? THEN excluded.expires_at ELSE expires_at END').bind(key,new Date(Date.now()+900000).toISOString(),stamp,stamp).run();const row=await db.prepare('SELECT count FROM cms_attempts WHERE key=?').bind(key).first();if(row.count>limit)fail(429,'로그인 시도가 많습니다. 15분 뒤 다시 시도해 주세요.');return key;}
 async function loginResponse(request,env,user){const token=b64(crypto.getRandomValues(new Uint8Array(32))).replace(/[^a-zA-Z0-9]/g,'')+uuid();const tokenHash=await hash(token);await env.CMS_DB.batch([env.CMS_DB.prepare('DELETE FROM cms_sessions WHERE expires_at<?').bind(now()),env.CMS_DB.prepare('INSERT INTO cms_sessions(token_hash,user_id,expires_at) VALUES(?,?,?)').bind(tokenHash,user.id,new Date(Date.now()+28800000).toISOString())]);return json({user:publicUser(user)},200,{'Set-Cookie':cookie(request,env,token)});}
 export async function handleCMS(context){
@@ -116,7 +118,7 @@ export async function handleCMS(context){
   }
   if(parts[0]==='posts'&&parts[1]){
    const post=await ownPost(db,parts[1],user);
-   if(parts.length===2&&request.method==='GET')return json({post,snapshot:await snapshot(db,post.id,post.revision),naver:await importedItem(db,post.id),factReview:await factReview(db,post.id,post.revision)});
+   if(parts.length===2&&request.method==='GET'){const s=await snapshot(db,post.id,post.revision);return json({post,snapshot:s,naver:await importedItem(db,post.id),factReview:await currentReview(db,post,s)});}
    if(parts.length===2&&request.method==='PUT'){
     const b=await bodyOf(request);const previous=await snapshot(db,post.id,post.revision);
     if(previous.schemaVersion===2&&Number(b.schemaVersion)!==2)fail(409,'편집기가 업데이트되었습니다. 현재 원고를 보관하고 화면을 새로고침해 주세요.');
@@ -156,8 +158,13 @@ export async function handleCMS(context){
      if(parts[2]==='publish'){
       if(post.published_revision===post.revision)return json({ok:true,url:'/blog/'+post.slug+'/',revision:post.revision,unchanged:true});
       await validImages(db,post,s,s);
+      let reviewed=await currentReview(db,post,s);
+      if(reviewed?.kind==='ai'){
+       try{const item=await importedItem(db,post.id);const fresh=await readSource(db,item.id);reviewed=pilotReview(s,fresh,post);if(!reviewed)fail(409,'Codex 검토 후 원문이 변경되었거나 검토 기한이 지났습니다. 재검토가 필요합니다.');}
+       catch(e){fail(e.status||400,e.message);}
+      }
       let source;try{source=await guardNaverPublish(db,post,s);}catch(e){fail(400,e.message);}
-      let reviewed=await factReview(db,post.id,post.revision);
+      if(source?.approved_by===CODEX_REVIEWER&&!reviewed)fail(400,'이 원고의 Codex 검토가 현재 내용·원문·기한에 유효하지 않습니다. 재검토가 필요합니다.');
       if(!reviewed&&s.publication?.factCheck)reviewed=await factReview(db,post.id,s.publication.factCheck.sourceRevision);
       const problem=publicationProblem(s,reviewed);if(problem)fail(400,problem);
       const last=post.published_revision?{revision:post.published_revision}:await db.prepare("SELECT revision FROM cms_events WHERE post_id=? AND action='publish' ORDER BY created_at DESC,id DESC LIMIT 1").bind(post.id).first();

@@ -1,5 +1,6 @@
 import {ensureNaver,syncNaver,registerURL,readSource,saveSource,createNaverDraft} from './naver.js';
 import {aiConfigured,NAVER_FEED} from './naver-content.js';
+import {applyReviewedPilot} from './reviewed-pilots.js';
 function error(message,status=400){const e=new Error(message);e.status=status;throw e;}
 export async function naverAdmin(path,method,body,env,user){
  const db=env.CMS_DB;await ensureNaver(db);const parts=path.split('/');
@@ -17,6 +18,7 @@ export async function naverAdmin(path,method,body,env,user){
   if(parts[3]==='fetch'&&method==='POST')return {item:await readSource(db,item.id)};
   if(parts[3]==='text'&&method==='POST'){if(body.confirmed!==true)error('전체 원문을 대조했다는 확인이 필요합니다.');await saveSource(db,item,String(body.text||''),JSON.parse(item.images||'[]'),'manual-confirmed');return {ok:true};}
   if(parts[3]==='draft'&&method==='POST')return createNaverDraft(db,item.id,body.mode,env,user);
+  if(parts[3]==='codex-reviewed'&&method==='POST')return applyReviewedPilot(db,item,body,user);
   if(parts[3]==='review'&&method==='POST'){
    if(!body.checks||!['facts','conditions','rights'].every(k=>body.checks[k]===true))error('원문·적용 조건·개인정보와 사진 권리를 모두 확인해 주세요.');
    if(!item.post_id||!item.source_complete)error('전체 원문과 초안이 준비되어야 검수할 수 있습니다.');

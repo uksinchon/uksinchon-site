@@ -7,13 +7,18 @@ const {Miniflare,convertV4MiniflareOptions}=require('miniflare');
 const {build}=require('esbuild');
 export const SETUP_KEY='fixture-seo-setup-key-not-for-production-2026';
 export const PASSWORD='FictionalSeoPassword123!';
-export async function fixture({port,setupKey=SETUP_KEY}={}) {
+export async function fixture({port,setupKey=SETUP_KEY,pilotPackets,naverHTML}={}) {
  const root=process.cwd(),out=path.join(root,'.wrangler/seo-test-worker.js');fs.mkdirSync(path.dirname(out),{recursive:true});
  const file=name=>JSON.stringify(path.join(root,name));
  const entry=`import {handleCMS} from ${file('cms/server/api.js')};import {publicBlog} from ${file('cms/server/pages.js')};import {onRequestGet as sitemap} from ${file('functions/sitemap.xml.js')};import {onRequestGet as feed} from ${file('functions/feed.xml.js')};import {onRequest as media} from ${file('functions/media/[id].js')};export default{fetch(request,env){const u=new URL(request.url);if(u.pathname.startsWith('/api/cms/'))return handleCMS({request,env});if(u.pathname==='/sitemap.xml')return sitemap({request,env});if(u.pathname==='/feed.xml')return feed({request,env});if(u.pathname.startsWith('/media/'))return media({request,env,params:{id:u.pathname.split('/')[2]}});if(u.pathname==='/blog'||(u.pathname.startsWith('/blog/')&&u.pathname!=='/blog/styles.css'))return publicBlog({request,env});return fetch('https://fixture-assets.local'+u.pathname);}}`;
- await build({stdin:{contents:entry,resolveDir:root},bundle:true,format:'esm',platform:'browser',target:'es2022',outfile:out});
+ await build({stdin:{contents:entry,resolveDir:root},bundle:true,format:'esm',platform:'browser',target:'es2022',outfile:out,
+  plugins:pilotPackets?[{name:'fictional-review-catalogue',setup(b){b.onLoad({filter:/reviewed-pilots\.json$/},()=>({contents:JSON.stringify(pilotPackets),loader:'json'}));}}]:[]});
  const mf=new Miniflare(convertV4MiniflareOptions({host:'127.0.0.1',...(port?{port}:{}),modules:true,script:fs.readFileSync(out,'utf8'),compatibilityDate:'2026-10-30',d1Databases:{CMS_DB:'seo-fictional-database'},bindings:{CMS_LOCAL_DEV:'true',CMS_SETUP_TOKEN:setupKey},outboundService:async request=>{
-  const u=new URL(request.url);if(u.hostname!=='fixture-assets.local')throw new Error('Unexpected external request: '+u.hostname);
+  const u=new URL(request.url);
+  if(naverHTML&&u.hostname==='blog.naver.com'&&u.pathname==='/PostView.naver'){
+   const html=naverHTML[u.searchParams.get('logNo')];return new Response(html||'fictional unavailable source',{status:html?200:503,headers:{'Content-Type':'text/html; charset=utf-8'}});
+  }
+  if(u.hostname!=='fixture-assets.local')throw new Error('Unexpected external request: '+u.hostname);
   const allowed=u.pathname==='/'||u.pathname==='/index.html'||u.pathname==='/logo.png'||u.pathname==='/favicon.ico'||u.pathname==='/robots.txt'||u.pathname==='/blog/styles.css'||u.pathname.startsWith('/admin/')||u.pathname.startsWith('/assets/');
   if(!allowed)return new Response('not found',{status:404});
   const target=path.resolve(root,'.'+decodeURIComponent(u.pathname)+(u.pathname.endsWith('/')?'index.html':''));if(!target.startsWith(root+'/')||!fs.existsSync(target)||!fs.statSync(target).isFile())return new Response('not found',{status:404});
