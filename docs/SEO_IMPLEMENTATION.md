@@ -93,6 +93,8 @@ R06은 **기술 기능 배포와 실제 원고 공개를 구분**한다. 배포 
 
 R06 배포 호환성 보강: 첫 `5e649c7` Cloudflare Pages 체크는 Build failed였다. 인증된 상세 빌드 로그는 접근하지 못했다. 로컬 esbuild 0.17.19에서 JSON import의 `with {type:'json'}` 구문 오류를 재현했고, 기준 데이터를 표준 JS export로 옮겨 구형 번들러에서도 CMS 함수 번들이 성공하도록 바꿨다. 최신 로컬 런타임의 Codex 검토 API 7개도 다시 통과했다. 원고·검토일·원문 해시·승인 조건은 바꾸지 않았다.
 
+실제 배포 확인: 코드 커밋 **`fc3dfac`**의 [Cloudflare Pages 체크](https://github.com/uksinchon/uksinchon-site/commit/fc3dfac/checks)는 **success / Deploy successful**. 배포 ID `3111ca66-fa5f-4e9c-8068-af91c4e0b650`. 검토 보고서의 공개 GitHub URL도 HTTP 200과 예상 제목을 확인했다. 이 환경의 운영 `/admin/` 직접 요청은 여전히 403/1010이며 운영 CMS 세션·D1 쓰기·실제 글 공개는 확인하지 못했다. 배포 성공을 실제 글 공개로 표시하지 않는다.
+
 ## 개발 재현
 
 애플리케이션에 새 외부 구독·빌드 프레임워크·DB 마이그레이션·운영 Secret을 추가하지 않았다. 로컬 검증 도구만 저장소 밖에 설치한다.
