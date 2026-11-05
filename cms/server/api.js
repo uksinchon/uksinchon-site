@@ -39,7 +39,7 @@ async function validImages(db,post,s,previous=null){
   }
  }
 }
-async function factReview(db,id,revision){return db.prepare("SELECT e.actor_id,e.created_at,u.name FROM cms_events e JOIN cms_users u ON u.id=e.actor_id WHERE e.post_id=? AND e.revision=? AND e.action='factcheck' ORDER BY e.created_at DESC,e.id DESC LIMIT 1").bind(id,revision).first();}
+async function factReview(db,id,revision){return db.prepare("SELECT e.actor_id,e.created_at,e.revision,u.name FROM cms_events e JOIN cms_users u ON u.id=e.actor_id WHERE e.post_id=? AND e.revision=? AND e.action='factcheck' ORDER BY e.created_at DESC,e.id DESC LIMIT 1").bind(id,revision).first();}
 async function rateLimit(request,db,prefix,limit=60,byIP=true){const key=await hash(prefix+':'+(byIP?(request.headers.get('CF-Connecting-IP')||'local'):'account'));const stamp=now();await db.prepare('INSERT INTO cms_attempts(key,count,expires_at) VALUES(?,1,?) ON CONFLICT(key) DO UPDATE SET count=CASE WHEN expires_at<? THEN 1 ELSE count+1 END, expires_at=CASE WHEN expires_at<? THEN excluded.expires_at ELSE expires_at END').bind(key,new Date(Date.now()+900000).toISOString(),stamp,stamp).run();const row=await db.prepare('SELECT count FROM cms_attempts WHERE key=?').bind(key).first();if(row.count>limit)fail(429,'로그인 시도가 많습니다. 15분 뒤 다시 시도해 주세요.');return key;}
 async function loginResponse(request,env,user){const token=b64(crypto.getRandomValues(new Uint8Array(32))).replace(/[^a-zA-Z0-9]/g,'')+uuid();const tokenHash=await hash(token);await env.CMS_DB.batch([env.CMS_DB.prepare('DELETE FROM cms_sessions WHERE expires_at<?').bind(now()),env.CMS_DB.prepare('INSERT INTO cms_sessions(token_hash,user_id,expires_at) VALUES(?,?,?)').bind(tokenHash,user.id,new Date(Date.now()+28800000).toISOString())]);return json({user:publicUser(user)},200,{'Set-Cookie':cookie(request,env,token)});}
 export async function handleCMS(context){
@@ -155,7 +155,9 @@ export async function handleCMS(context){
       if(post.published_revision===post.revision)return json({ok:true,url:'/blog/'+post.slug+'/',revision:post.revision,unchanged:true});
       await validImages(db,post,s,s);
       let source;try{source=await guardNaverPublish(db,post,s);}catch(e){fail(400,e.message);}
-      const reviewed=await factReview(db,post.id,post.revision);const problem=publicationProblem(s,reviewed);if(problem)fail(400,problem);
+      let reviewed=await factReview(db,post.id,post.revision);
+      if(!reviewed&&s.publication?.factCheck)reviewed=await factReview(db,post.id,s.publication.factCheck.sourceRevision);
+      const problem=publicationProblem(s,reviewed);if(problem)fail(400,problem);
       const last=post.published_revision?{revision:post.published_revision}:await db.prepare("SELECT revision FROM cms_events WHERE post_id=? AND action='publish' ORDER BY created_at DESC,id DESC LIMIT 1").bind(post.id).first();
       const previous=last?await snapshot(db,post.id,last.revision):null;
       if(s.schemaVersion===2&&previous&&semanticContent(previous)!==semanticContent(s)&&!s.changeNote)fail(400,'이번 수정의 이유와 범위를 입력해 주세요.');

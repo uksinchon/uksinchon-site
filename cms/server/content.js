@@ -32,6 +32,7 @@ function opText(op) {
   return t?[t.caption,...t.columns,...t.rows.flat(),t.notes].join(' '):' ';
 }
 export function cleanSnapshot(input,authorName) {
+  if(input.schemaVersion!==undefined&&![1,2].includes(Number(input.schemaVersion)))throw new Error('지원하지 않는 원고 버전입니다. 최신 편집기에서 확인해 주세요.');
   const v2=Number(input.schemaVersion)===2,title=text(input.title,160);
   const definition=CATEGORY_DEFINITIONS.find(c=>c.label===input.category)||CATEGORY_DEFINITIONS.find(c=>c.code===input.categoryCode)||CATEGORY_DEFINITIONS[0];
   if(!input.delta||!Array.isArray(input.delta.ops)||input.delta.ops.length>4000)throw new Error('본문 형식을 확인해 주세요.');
@@ -52,7 +53,8 @@ export function cleanSnapshot(input,authorName) {
   }
   const plain=ops.map(opText).join('').trim();
   if(plain.length>60000)throw new Error('한 글의 본문은 표를 포함해 6만 자 이내로 작성해 주세요.');
-  const summary=text(input.summary,240)||plain.replace(/\s+/g,' ').slice(0,150);
+  const paragraphText=ops.filter(op=>typeof op.insert==='string').map(op=>op.insert).join('').trim();
+  const summary=text(input.summary,240)||(paragraphText||plain).replace(/\s+/g,' ').slice(0,150);
   let sources=String(input.sources||'').trim().split('\n').slice(0,15).map(line=>line.trim()).filter(Boolean);
   const verifiedAt=dateOnly(input.verifiedAt,'정보 확인일',{past:v2});
   const base={title,category:definition.label,summary,delta:{ops},sources:sources.join('\n').slice(0,15000),verifiedAt,authorName};
@@ -61,26 +63,27 @@ export function cleanSnapshot(input,authorName) {
   if(input.sourceDetails!==undefined&&!Array.isArray(input.sourceDetails))throw new Error('공식 자료 목록을 확인해 주세요.');
   for(const item of (input.sourceDetails||[]).slice(0,15)) {
     const raw=text(item?.url,2000);if(!raw&&!item?.title&&!item?.publisher)continue;
-    const url=safeLink(raw);if(!url)throw new Error('공식 자료의 웹 주소를 완성해 주세요.');
-    if(sourceDetails.some(s=>s.url===url))continue;
+    const url=safeLink(raw)||raw;
+    if(safeLink(url)&&sourceDetails.some(s=>s.url===url))continue;
     sourceDetails.push({url,title:text(item.title,200),publisher:text(item.publisher,100),kind:item.kind==='official'?'official':'reference'});
-    if(!sources.includes(url))sources.push(url);
+    if(safeLink(url)&&!sources.includes(url))sources.push(url);
   }
   if(sources.length>15)throw new Error('출처는 공식 자료를 포함해 15개 이내로 입력해 주세요.');
   const imageMeta={};
   for(const id of imageIds(base)) {
     const m=input.imageMeta?.[id]||{},source=text(m.source,2000);
-    if(source&&!safeLink(source))throw new Error('사진 출처 주소를 확인해 주세요.');
-    imageMeta[id]={alt:text(m.alt,300),caption:text(m.caption,600),rights:text(m.rights,300),source:source?safeLink(source):'',decorative:m.decorative===true};
+    imageMeta[id]={alt:text(m.alt,300),caption:text(m.caption,600),rights:text(m.rights,300),source:source?(safeLink(source)||source):'',decorative:m.decorative===true};
     // API replaces dimensions with values derived from owned WebP bytes.
     if(Number.isInteger(m.width)&&m.width>0&&m.width<=16000&&Number.isInteger(m.height)&&m.height>0&&m.height<=16000)Object.assign(imageMeta[id],{width:m.width,height:m.height});
   }
   const heroImageId=text(input.heroImageId,36);if(heroImageId&&!imageMeta[heroImageId])throw new Error('대표 사진은 본문에 등록한 사진 중에서 선택해 주세요.');
   const relatedIds=[...new Set(Array.isArray(input.relatedIds)?input.relatedIds:[])];
   if(relatedIds.length>8||relatedIds.some(id=>typeof id!=='string'||!UUID.test(id)))throw new Error('함께 읽을 글은 신촌점 글 주소 8개 이내로 입력해 주세요.');
+  const reviewDueAt=dateOnly(input.reviewDueAt,'다음 확인일');
+  if(reviewDueAt&&verifiedAt&&reviewDueAt<verifiedAt)throw new Error('다음 확인일은 마지막 자료 확인일 이후로 정해 주세요.');
   return {...base,schemaVersion:2,categoryCode:definition.code,contentType:CONTENT_TYPES.includes(input.contentType)?input.contentType:'news',
     appliesTo:text(input.appliesTo,500),requiresFactCheck:input.requiresFactCheck===true,sourceDetails,sources:sources.join('\n'),
-    reviewScope:text(input.reviewScope,1000),reviewDueAt:dateOnly(input.reviewDueAt,'다음 확인일'),
+    reviewScope:text(input.reviewScope,1000),reviewDueAt,
     changeKind:input.changeKind==='minor'?'minor':'substantive',changeNote:text(input.changeNote,500),imageMeta,heroImageId,relatedIds};
 }
 export function imageIds(snapshot) {return [...new Set(snapshot.delta.ops.filter(op=>typeof op.insert?.image==='string').map(op=>op.insert.image.slice(7)))];}
@@ -89,8 +92,9 @@ export function needsFactCheck(s) {return s.schemaVersion===2&&(s.requiresFactCh
 export function factReadiness(s) {
   if(!s.verifiedAt)return '실제로 자료를 확인한 날짜를 입력해 주세요.';
   if(!s.reviewScope)return '이번에 대조한 조건과 자료의 범위를 적어 주세요.';
+  if(s.sourceDetails?.some(x=>!safeLink(x.url)))return '자료 주소를 완성하거나 사용하지 않는 자료 줄을 지워 주세요.';
   if(needsFactCheck(s)&&!s.appliesTo)return '적용 학년도·기간·대상을 입력해 주세요.';
-  if(needsFactCheck(s)&&!s.sourceDetails?.some(x=>x.kind==='official'))return '학교·기관의 공식 자료를 한 개 이상 등록해 주세요.';
+  if(needsFactCheck(s)&&!s.sourceDetails?.some(x=>x.kind==='official'&&safeLink(x.url)))return '학교·기관의 공식 자료를 한 개 이상 등록해 주세요.';
   if(!s.sources)return '대조한 출처 주소를 등록해 주세요.';
   return '';
 }
@@ -100,12 +104,14 @@ export function imageReadiness(s) {
     const m=s.imageMeta?.[id];
     if(!m||(!m.decorative&&!m.alt))return '본문 사진의 설명을 입력하거나 장식용 여부를 선택해 주세요.';
     if(!m.rights)return '본문 사진의 사용 근거를 입력해 주세요.';
+    if(m.source&&!safeLink(m.source))return '사진 출처의 웹 주소를 완성하거나 지워 주세요.';
   }
   if(s.heroImageId&&s.imageMeta[s.heroImageId]?.decorative)return '장식용 사진은 대표 사진으로 선택할 수 없습니다.';
   return '';
 }
 export function semanticContent(s) {
-  return JSON.stringify([s.title,s.summary,s.category,s.delta,s.contentType||'news',s.appliesTo||'',s.sources,s.imageMeta||{},s.heroImageId||'']);
+  const images=Object.fromEntries(Object.entries(s.imageMeta||{}).map(([id,m])=>[id,{alt:m.alt||'',caption:m.caption||'',source:m.source||'',decorative:!!m.decorative}]));
+  return JSON.stringify([s.title,s.summary,s.category,s.delta,s.contentType||'news',s.appliesTo||'',s.sources,images,s.heroImageId||'']);
 }
 export function webpDimensions(buffer) {
   const b=new Uint8Array(buffer),word=(i,n)=>String.fromCharCode(...b.slice(i,i+n));
@@ -124,12 +130,13 @@ export function webpDimensions(buffer) {
   return null;
 }
 export function renderTable(t) {
-  return `<figure class="comparison-figure"><div class="table-scroll" role="region" aria-label="${esc(t.caption)}" tabindex="0"><table><caption>${esc(t.caption)}</caption><thead><tr>${t.columns.map(c=>'<th scope="col">'+esc(c)+'</th>').join('')}</tr></thead><tbody>${t.rows.map(row=>'<tr>'+row.map((v,i)=>i?'<td>'+esc(v)+'</td>':'<th scope="row">'+esc(v)+'</th>').join('')+'</tr>').join('')}</tbody></table></div>${t.notes?'<figcaption>'+esc(t.notes)+'</figcaption>':''}${t.source?'<p class="table-source">표 출처: <a href="'+esc(t.source)+'">'+esc(t.source)+'</a></p>':''}</figure>`;
+  return `<figure class="comparison-figure"><p class="table-hint">표가 넓으면 좌우로 밀어 확인해 주세요.</p><div class="table-scroll" role="region" aria-label="${esc(t.caption)}" tabindex="0"><table><caption>${esc(t.caption)}</caption><thead><tr>${t.columns.map(c=>'<th scope="col">'+esc(c)+'</th>').join('')}</tr></thead><tbody>${t.rows.map(row=>'<tr>'+row.map((v,i)=>i?'<td>'+esc(v)+'</td>':'<th scope="row">'+esc(v)+'</th>').join('')+'</tr>').join('')}</tbody></table></div>${t.notes?'<figcaption>'+esc(t.notes)+'</figcaption>':''}${t.source?'<p class="table-source">표 출처: <a href="'+esc(t.source)+'">'+esc(t.source)+'</a></p>':''}</figure>`;
 }
 export function renderDelta(delta,imageMeta={},heroImageId='') {
   let html='',line='',list=null;
   const closeList=()=>{if(list){html+=`</${list}>`;list=null;}};
   function endLine(a={}) {
+    if(!line&&!a.list){closeList();return;}
     if(a.list){const kind=a.list==='ordered'?'ol':'ul';if(list!==kind){closeList();html+=`<${kind}>`;list=kind;}html+=`<li>${line||'<br>'}</li>`;}
     else{closeList();const tag=a.header?'h'+a.header:a.blockquote?'blockquote':'p';html+=`<${tag}>${line||'<br>'}</${tag}>`;}
     line='';
@@ -139,7 +146,7 @@ export function renderDelta(delta,imageMeta={},heroImageId='') {
     if(typeof op.insert?.image==='string') {
       if(line)endLine();closeList();const id=op.insert.image.slice(7),m=imageMeta[id]||{},hero=id===heroImageId;
       const dimensions=m.width&&m.height?` width="${Number(m.width)}" height="${Number(m.height)}"`:'';
-      html+=`<figure class="article-image"><img src="${esc(op.insert.image)}" alt="${esc(m.decorative?'':m.alt||'')}"${dimensions}${hero?' fetchpriority="high"':' loading="lazy"'} decoding="async">${m.caption?'<figcaption>'+esc(m.caption)+'</figcaption>':''}${m.source?'<p class="image-source"><a href="'+esc(m.source)+'" rel="noopener noreferrer">사진 출처</a></p>':''}</figure>`;continue;
+      html+=`<figure class="article-image"><img src="${esc(op.insert.image)}" alt="${esc(m.decorative?'':m.alt||'')}"${dimensions}${hero?' fetchpriority="high"':' loading="lazy"'} decoding="async">${m.caption?'<figcaption>'+esc(m.caption)+'</figcaption>':''}${safeLink(m.source)?'<p class="image-source"><a href="'+esc(m.source)+'" rel="noopener noreferrer">사진 출처</a></p>':''}</figure>`;continue;
     }
     if(op.insert?.comparisonTable){if(line)endLine();closeList();html+=renderTable(op.insert.comparisonTable);continue;}
     if(typeof op.insert!=='string')continue;

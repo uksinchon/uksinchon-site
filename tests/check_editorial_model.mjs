@@ -9,7 +9,9 @@ const s=cleanSnapshot({...base,publication:{contentModifiedAt:'2099-01-01'}},'�
 assert.equal(s.schemaVersion,2);assert.equal(s.categoryCode,'undergraduate');assert(!s.publication);assert.equal(factReadiness(s),'');
 assert(s.sources.includes('https://example.org/official'));
 assert.throws(()=>cleanSnapshot({...base,verifiedAt:'2099-01-01'},'a'));
+assert.throws(()=>cleanSnapshot({...base,schemaVersion:3},'a'));
 assert.throws(()=>cleanSnapshot({...base,reviewDueAt:'2026-02-30'},'a'));
+assert.throws(()=>cleanSnapshot({...base,reviewDueAt:'2026-10-01'},'a'));
 pass('versioned scope and official sources normalize; forged publication metadata and invalid review dates cannot be saved');
 const legacy=cleanSnapshot({title:'옛 글',delta:{ops:[{insert:'옛 본문\n'}]},verifiedAt:'2026-11-01'},'기존 직원');
 assert(!legacy.schemaVersion);assert(!legacy.publication);assert(renderDelta(legacy.delta).includes('옛 본문'));
@@ -33,6 +35,7 @@ assert.equal(minor.publication.contentModifiedAt,first.publication.contentModifi
 const checkOnly=sealPublication({...s,verifiedAt:'2026-11-02'},published,first,review,user,'2026-11-05T04:00:00Z');
 assert.equal(checkOnly.publication.contentModifiedAt,first.publication.contentModifiedAt);
 assert.equal(semanticContent(s),semanticContent({...s,verifiedAt:'2026-11-02'}));
+assert.equal(semanticContent({...s,imageMeta:{[id]:{alt:'같은 사진',rights:'근거 A',width:100,height:60}}}),semanticContent({...s,imageMeta:{[id]:{alt:'같은 사진',rights:'근거 B',width:200,height:120}}}));
 const substantive=sealPublication({...s,title:'실질 조건 변경',changeKind:'substantive'},published,first,review,user,'2026-11-05T05:00:00Z');
 assert.equal(substantive.publication.contentModifiedAt,'2026-11-05T05:00:00Z');assert.equal(substantive.publication.publishedAt,first.publication.publishedAt);
 assert.equal(publicationDates(legacy,published).modifiedAt,null);
