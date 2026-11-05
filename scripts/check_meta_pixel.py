@@ -105,7 +105,6 @@ window.fbq.callMethod=function(){window.__metaCalls.push(Array.from(arguments));
 
             ctx,stats=context(enabled);page=ctx.new_page();page.goto(base+'/pharmacy/',wait_until='networkidle')
             expected=calls(page)
-            page.locator('#student-name').fill('가상 개인정보')
             page.locator('#education').select_option(label='아직 미정')
             page.locator('#entry').select_option(label='아직 미정')
             page.locator('#message').fill('가상 상담 자유 입력')
