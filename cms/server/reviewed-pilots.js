@@ -3,6 +3,7 @@
 import packets from './reviewed-pilots-data.js';
 import {cleanSnapshot,todayKorea} from './content.js';
 import {readSource} from './naver.js';
+import {isPostTrashed} from './trash.js';
 
 export const CODEX_REVIEWER='codex-ai:pilot-20261106';
 export const reviewedPilots=packets;
@@ -19,6 +20,7 @@ export function pilotReview(snapshot,item,post,date=todayKorea()) {
 }
 
 export async function applyReviewedPilot(db,item,body,actor) {
+ if(await isPostTrashed(db,item.post_id))reject('연결된 글이 휴지통에 있습니다. 전체 글 목록에서 복구한 뒤 적용해 주세요.',410);
  const packet=packets.find(p=>p.sourceId===item.id);
  if(!packet)reject('이 원문에는 Codex가 완료한 검토 원고가 없습니다.',404);
  if(todayKorea()>packet.validUntil)reject('이 검토 원고의 재확인 시점이 지났습니다. 새 자료 검토가 필요합니다.',409);
@@ -41,7 +43,7 @@ export async function applyReviewedPilot(db,item,body,actor) {
   const gate='EXISTS(SELECT 1 FROM cms_naver_items WHERE id=? AND source_hash=? AND source_complete=1 AND processing_token=?)';
   const params=[item.id,packet.sourceHash,lease];
   const statements=[previous?
-   db.prepare("UPDATE cms_posts SET revision=revision+1,status='draft',updated_at=?,save_token=? WHERE id=? AND revision=? AND "+gate).bind(stamp,save,id,previous.revision,...params):
+   db.prepare("UPDATE cms_posts SET revision=revision+1,status='draft',updated_at=?,save_token=? WHERE id=? AND revision=? AND NOT EXISTS(SELECT 1 FROM cms_post_trash WHERE post_id=cms_posts.id) AND "+gate).bind(stamp,save,id,previous.revision,...params):
    db.prepare("INSERT INTO cms_posts(id,slug,owner_id,status,revision,created_at,updated_at,save_token) SELECT ?,?,?,'draft',1,?,?,? WHERE "+gate+' AND EXISTS(SELECT 1 FROM cms_naver_items WHERE id=? AND post_id IS NULL)').bind(id,'story-'+id,owner.id,stamp,stamp,save,...params,item.id),
    db.prepare('INSERT INTO cms_versions(post_id,revision,snapshot,actor_id,created_at) SELECT id,revision,?,?,? FROM cms_posts WHERE id=? AND save_token=?').bind(data,actor.id,stamp,id,save),
    db.prepare("UPDATE cms_naver_items SET post_id=?,mode='ai',model='Codex (AI 검토)',prompt_version=?,notes=?,evidence=?,status='draft_ready',approved_revision=?,approved_source_hash=?,approved_by=?,approved_at=?,error=NULL,updated_at=? WHERE id=? AND processing_token=? AND source_hash=? AND EXISTS(SELECT 1 FROM cms_posts WHERE id=? AND save_token=?)").bind(id,packet.id,JSON.stringify(['Codex가 공식 자료와 대조한 한정 원고입니다. 검토 보고서: '+packet.reportURL,...packet.verdicts.held]),JSON.stringify(packet.verdicts.kept),revision,packet.sourceHash,CODEX_REVIEWER,packet.reviewedAt,stamp,item.id,lease,packet.sourceHash,id,save),

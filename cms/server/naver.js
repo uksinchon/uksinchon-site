@@ -1,5 +1,6 @@
 import {NAVER_FEED,parseFeed,sourceURL,extractPost,rawDraft,rewrite,aiConfigured,PROMPT_VERSION} from './naver-content.js';
 import {cleanSnapshot} from './content.js';
+import {isPostTrashed} from './trash.js';
 export const NAVER_SCHEMA=[
 `CREATE TABLE IF NOT EXISTS cms_naver_source(id INTEGER PRIMARY KEY CHECK(id=1),enabled INTEGER NOT NULL DEFAULT 0,owner_id TEXT,baseline_at TEXT,last_checked_at TEXT,last_error TEXT,last_cron_at TEXT,poll_token TEXT,poll_until TEXT)`,
 `INSERT OR IGNORE INTO cms_naver_source(id) VALUES(1)`,
@@ -23,6 +24,7 @@ export async function saveSource(db,item,text,images,method){
 export async function registerURL(db,url,fetcher=fetch){const source=sourceURL(url);if(!source)throw new Error('pedu2 네이버 블로그의 개별 글 주소를 넣어 주세요.');const stamp=now();await db.prepare("INSERT OR IGNORE INTO cms_naver_items(id,url,title,excerpt,feed_hash,status,discovered_at,updated_at) VALUES(?,?,?,'','','new',?,?)").bind(source.id,source.url,'네이버 글 '+source.id,stamp,stamp).run();return readSource(db,source.id,fetcher);}
 export async function createNaverDraft(db,id,mode,env,actor,fetcher=fetch){
  let item=await db.prepare('SELECT * FROM cms_naver_items WHERE id=?').bind(id).first();if(!item||!item.source_complete)throw new Error('전체 원문을 먼저 불러오거나 직접 입력해 주세요.');if(!['ai','manual'].includes(mode))throw new Error('초안 생성 방식을 확인해 주세요.');if(mode==='ai'&&!aiConfigured(env))throw new Error('AI 재편집 API가 연결되지 않았습니다. 원문 정리 초안은 별도로 만들 수 있습니다.');
+ if(await isPostTrashed(db,item.post_id)){const e=new Error('연결된 글이 휴지통에 있습니다. 전체 글 목록에서 복구한 뒤 재편집해 주세요.');e.status=410;throw e;}
  const lease=token();const lock=await db.prepare('UPDATE cms_naver_items SET processing_token=?,processing_until=? WHERE id=? AND (processing_until IS NULL OR processing_until<?)').bind(lease,new Date(Date.now()+180000).toISOString(),id,now()).run();if(lock.meta.changes!==1)throw new Error('이 글의 재편집이 진행 중입니다. 잠시 뒤 확인해 주세요.');
  const baseHash=item.source_hash;
  try {
@@ -38,7 +40,7 @@ export async function createNaverDraft(db,id,mode,env,actor,fetcher=fetch){
   }
   const data=JSON.stringify(result.snapshot),stamp=now();let postId=item.post_id;const save=token();let statements=[];
   if(!postId){postId=token();statements.push(db.prepare("INSERT INTO cms_posts(id,slug,owner_id,status,revision,created_at,updated_at,save_token) SELECT ?,?,?,'draft',1,?,?,? FROM cms_naver_items WHERE id=? AND source_hash=? AND source_complete=1 AND processing_token=? AND post_id IS NULL").bind(postId,'story-'+postId,owner.id,stamp,stamp,save,id,baseHash,lease),db.prepare('INSERT INTO cms_versions(post_id,revision,snapshot,actor_id,created_at) SELECT id,revision,?,?,? FROM cms_posts WHERE id=? AND save_token=?').bind(data,actor.id,stamp,postId,save));}
-  else statements.push(db.prepare("UPDATE cms_posts SET revision=revision+1,status='draft',updated_at=?,save_token=? WHERE id=? AND revision=? AND EXISTS(SELECT 1 FROM cms_naver_items WHERE id=? AND source_hash=? AND source_complete=1 AND processing_token=?)").bind(stamp,save,postId,previous.revision,id,baseHash,lease),db.prepare('INSERT INTO cms_versions(post_id,revision,snapshot,actor_id,created_at) SELECT id,revision,?,?,? FROM cms_posts WHERE id=? AND save_token=?').bind(data,actor.id,stamp,postId,save));
+  else statements.push(db.prepare("UPDATE cms_posts SET revision=revision+1,status='draft',updated_at=?,save_token=? WHERE id=? AND revision=? AND NOT EXISTS(SELECT 1 FROM cms_post_trash WHERE post_id=cms_posts.id) AND EXISTS(SELECT 1 FROM cms_naver_items WHERE id=? AND source_hash=? AND source_complete=1 AND processing_token=?)").bind(stamp,save,postId,previous.revision,id,baseHash,lease),db.prepare('INSERT INTO cms_versions(post_id,revision,snapshot,actor_id,created_at) SELECT id,revision,?,?,? FROM cms_posts WHERE id=? AND save_token=?').bind(data,actor.id,stamp,postId,save));
   statements.push(db.prepare("UPDATE cms_naver_items SET post_id=?,mode=?,model=?,prompt_version=?,notes=?,evidence=?,status='draft_ready',approved_revision=NULL,approved_source_hash=NULL,error=NULL,updated_at=? WHERE id=? AND processing_token=? AND source_hash=? AND EXISTS(SELECT 1 FROM cms_posts WHERE id=? AND save_token=?)").bind(postId,mode,mode==='ai'?env.CMS_REWRITE_MODEL:null,PROMPT_VERSION,JSON.stringify(result.notes),JSON.stringify(result.evidence),stamp,id,lease,baseHash,postId,save));
   const writes=await db.batch(statements);if(writes[0].meta.changes!==1)throw new Error('원문 또는 초안이 다른 창에서 변경되어 결과를 덮어쓰지 않았습니다. 다시 확인해 주세요.');return {postId,mode};
  }catch(e){await db.prepare("UPDATE cms_naver_items SET error=?,status=CASE WHEN post_id IS NULL THEN 'editing_error' ELSE status END,updated_at=? WHERE id=? AND processing_token=?").bind(e.message,now(),id,lease).run();throw e;}
