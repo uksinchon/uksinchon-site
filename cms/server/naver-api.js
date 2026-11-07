@@ -2,6 +2,7 @@ import {ensureNaver,syncNaver,registerURL,readSource,saveSource,createNaverDraft
 import {aiConfigured,NAVER_FEED} from './naver-content.js';
 import {applyReviewedPilot} from './reviewed-pilots.js';
 import {ensureTrash,isPostTrashed} from './trash.js';
+import {naverImageList,downloadNaverImage} from './naver-images.js';
 function error(message,status=400){const e=new Error(message);e.status=status;throw e;}
 export async function naverAdmin(path,method,body,env,user){
  const db=env.CMS_DB;await ensureNaver(db);await ensureTrash(db);const parts=path.split('/');
@@ -18,6 +19,11 @@ export async function naverAdmin(path,method,body,env,user){
   item.post_trashed=await isPostTrashed(db,item.post_id);
   if(item.post_trashed&&method==='POST'&&['draft','codex-reviewed','review'].includes(parts[3]))error('연결된 글이 휴지통에 있습니다. 전체 글 목록에서 복구한 뒤 작업해 주세요.',410);
   if(parts.length===3&&method==='GET')return {item};
+  if(parts[3]==='images'&&method==='GET'){
+   if(item.post_trashed)error('휴지통에 있는 글입니다. 복구한 뒤 사진을 가져와 주세요.',410);
+   if(parts.length===4)return naverImageList(item,body);
+   if(parts.length===5)return downloadNaverImage(item,parts[4],body);
+  }
   if(parts[3]==='fetch'&&method==='POST')return {item:await readSource(db,item.id)};
   if(parts[3]==='text'&&method==='POST'){if(body.confirmed!==true)error('전체 원문을 대조했다는 확인이 필요합니다.');await saveSource(db,item,String(body.text||''),JSON.parse(item.images||'[]'),'manual-confirmed');return {ok:true};}
   if(parts[3]==='draft'&&method==='POST')return createNaverDraft(db,item.id,body.mode,env,user);

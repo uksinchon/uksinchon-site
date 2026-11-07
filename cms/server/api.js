@@ -93,7 +93,7 @@ export async function handleCMS(context){
   if(user.must_change)fail(403,'처음 받은 임시 비밀번호를 변경해 주세요.');
   if(parts[0]==='posts')await ensureTrash(db);
   if(parts[0]==='naver'){
-   admin(user);try{return json(await naverAdmin(path,request.method,request.method==='GET'?{}:await bodyOf(request),env,user));}
+   admin(user);try{const result=await naverAdmin(path,request.method,request.method==='GET'?Object.fromEntries(url.searchParams):await bodyOf(request),env,user);return result instanceof Response?result:json(result);}
    catch(e){fail(e.status||400,String(e.message).startsWith('D1_')?'네이버 연결 저장소를 처리하지 못했습니다.':e.message);}
   }
   if(path==='users'&&request.method==='GET'){admin(user);return json({users:(await db.prepare('SELECT id,email,name,role,active,must_change,created_at FROM cms_users ORDER BY created_at').all()).results});}

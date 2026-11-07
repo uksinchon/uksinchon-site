@@ -7,7 +7,7 @@ const {Miniflare,convertV4MiniflareOptions}=require('miniflare');
 const {build}=require('esbuild');
 export const SETUP_KEY='fixture-seo-setup-key-not-for-production-2026';
 export const PASSWORD='FictionalSeoPassword123!';
-export async function fixture({port,setupKey=SETUP_KEY,pilotPackets,naverHTML}={}) {
+export async function fixture({port,setupKey=SETUP_KEY,pilotPackets,naverHTML,imageResponses}={}) {
  const root=process.cwd(),out=path.join(root,'.wrangler/seo-test-worker.js');fs.mkdirSync(path.dirname(out),{recursive:true});
  const file=name=>JSON.stringify(path.join(root,name));
  const entry=`import {handleCMS} from ${file('cms/server/api.js')};import {publicBlog} from ${file('cms/server/pages.js')};import {onRequestGet as sitemap} from ${file('functions/sitemap.xml.js')};import {onRequestGet as feed} from ${file('functions/feed.xml.js')};import {onRequest as media} from ${file('functions/media/[id].js')};export default{fetch(request,env){const u=new URL(request.url);if(u.pathname.startsWith('/api/cms/'))return handleCMS({request,env});if(u.pathname==='/sitemap.xml')return sitemap({request,env});if(u.pathname==='/feed.xml')return feed({request,env});if(u.pathname.startsWith('/media/'))return media({request,env,params:{id:u.pathname.split('/')[2]}});if(u.pathname==='/blog'||(u.pathname.startsWith('/blog/')&&u.pathname!=='/blog/styles.css'))return publicBlog({request,env});return fetch('https://fixture-assets.local'+u.pathname);}}`;
@@ -17,6 +17,9 @@ export async function fixture({port,setupKey=SETUP_KEY,pilotPackets,naverHTML}={
   const u=new URL(request.url);
   if(naverHTML&&u.hostname==='blog.naver.com'&&u.pathname==='/PostView.naver'){
    const html=naverHTML[u.searchParams.get('logNo')];return new Response(html||'fictional unavailable source',{status:html?200:503,headers:{'Content-Type':'text/html; charset=utf-8'}});
+  }
+  if(imageResponses&&Object.hasOwn(imageResponses,u.href)){
+   const item=imageResponses[u.href];return new Response(item.bytes??null,{status:item.status||200,headers:{'Content-Type':item.type||'image/png',...item.headers}});
   }
   if(u.hostname!=='fixture-assets.local')throw new Error('Unexpected external request: '+u.hostname);
   const allowed=u.pathname==='/'||u.pathname==='/index.html'||u.pathname==='/logo.png'||u.pathname==='/favicon.ico'||u.pathname==='/robots.txt'||u.pathname==='/blog/styles.css'||u.pathname.startsWith('/admin/')||u.pathname.startsWith('/assets/');
