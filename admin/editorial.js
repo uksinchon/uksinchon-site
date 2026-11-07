@@ -99,7 +99,7 @@ window.UK_EDITORIAL={
   const visible={};for(const id of imageIds())visible[id]={...imageMeta[id]};
   return {schemaVersion:2,contentType:$('content-type').value,appliesTo:$('applies-to').value,requiresFactCheck:$('requires-fact-check').checked,sourceDetails,reviewScope:$('review-scope').value,reviewDueAt:$('review-due').value,changeKind:$('change-kind').value,changeNote:$('change-note').value,relatedIds:relatedIds(),heroImageId:hero,imageMeta:visible};
  },
- imageUploaded(data){imageMeta[data.id]={...imageMeta[data.id],width:data.width,height:data.height};},
+ imageUploaded(data){imageMeta[data.id]={...imageMeta[data.id],width:data.width,height:data.height,...(typeof data.source==='string'?{source:data.source}:{}),...(typeof data.rights==='string'?{rights:data.rights}:{})};},
  status({user,post,dirty,revision,review,snapshot}){
   $('fact-review-panel').hidden=user.role!=='admin';
   if(dirty&&!lastDirty)for(const key of ['facts','conditions','rights'])$('fact-check-'+key).checked=false;
