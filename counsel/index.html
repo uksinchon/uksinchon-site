@@ -119,6 +119,24 @@
         <div class="row"><label class="lbl" for="when">희망 상담일시</label><input id="when" name="희망 상담일시" type="text" placeholder="예: 11월 15일(토) 오후 2시, 평일 저녁 6시 이후" /></div>
       </section>
 
+      <!-- 관심분야에 따라 보이는 추가 질문 (선택 입력) -->
+      <section class="sec hide" id="sec-lang" data-show="어학연수">
+        <h2>어학연수 상담 사전질문</h2>
+        <div class="row"><label class="lbl" for="dep">출국 예정일</label><input id="dep" name="출국 예정일" type="text" placeholder="예: 2027년 3월" /></div>
+        <div class="row"><label class="lbl" for="region">희망지역</label><input id="region" name="희망지역" type="text" placeholder="예: 런던, 옥스퍼드, 미정" /></div>
+        <div class="row"><label class="lbl" for="dur">어학연수 기간</label><input id="dur" name="어학연수 기간" type="text" placeholder="예: 6개월" /></div>
+        <div class="row"><label class="lbl" for="budget">전체예산</label><input id="budget" name="전체예산" type="text" /></div>
+        <div class="row"><label class="lbl" for="quote">어학연수 비용견적</label><textarea id="quote" name="어학연수 비용견적" rows="3" placeholder="어학연수를 계획하시고 이메일로 어학연수 비용 견적을 받고 싶으신 분께서는 정확한 학교명, 출국일과 총 수업시간, 주당 수업시간, 숙소 신청여부와 기간 등을 상세히 적어주세요"></textarea></div>
+      </section>
+
+      <section class="sec hide" id="sec-degree" data-show="조기유학,전문교육과정,학사,석사,박사">
+        <h2>정규유학 상담 사전질문</h2>
+        <div class="row"><label class="lbl" for="major">희망전공</label><input id="major" name="희망전공" type="text" /></div>
+        <div class="row"><label class="lbl" for="year">입학년도</label><input id="year" name="입학년도" type="text" placeholder="예: 2027년 9월" /></div>
+        <div class="row"><label class="lbl" for="school">최종 졸업학교와 전공</label><input id="school" name="최종 졸업학교와 전공" type="text" /></div>
+        <div class="row"><label class="lbl" for="score">어학 점수</label><input id="score" name="어학 점수" type="text" placeholder="예: IELTS 6.5 (각 영역 6.0)" /></div>
+      </section>
+
       <section class="sec">
         <h2>기타 문의사항</h2>
         <div style="padding-top:14px"><textarea name="기타 문의사항" aria-label="기타 문의사항" placeholder="기타 상담 받고 싶은 내용을 자세히 적어주세요"></textarea></div>
@@ -167,9 +185,22 @@
       return !first;
     }
 
+    // 관심분야에 따라 추가 질문 보이기. 숨긴 칸은 전송하지 않습니다.
+    function toggleExtra() {
+      const picked = [...form.querySelectorAll('input[name="관심분야"]:checked')].map(i => i.value);
+      for (const sec of form.querySelectorAll('[data-show]')) {
+        const on = sec.dataset.show.split(',').some(v => picked.includes(v));
+        sec.classList.toggle('hide', !on);
+        sec.querySelectorAll('input,textarea').forEach(el => { el.disabled = !on; });
+      }
+    }
+    form.querySelectorAll('input[name="관심분야"]').forEach(i => i.addEventListener('change', toggleExtra));
+    toggleExtra();
+
     form.addEventListener('reset', () => {
       ok.classList.add('hide'); err.classList.add('hide');
       form.querySelectorAll('.bad').forEach(el => el.classList.remove('bad'));
+      setTimeout(toggleExtra);
     });
 
     form.addEventListener('submit', async (e) => {
