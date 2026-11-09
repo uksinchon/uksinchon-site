@@ -6,6 +6,7 @@ import {articlePage,relatedPosts} from './pages.js';
 import {syncNaver,importedItem,guardNaverPublish,readSource} from './naver.js';
 import {pilotReview,CODEX_REVIEWER} from './reviewed-pilots.js';
 import {naverAdmin} from './naver-api.js';
+import {submitCounsel,counselAdmin} from './counsel.js';
 const encoder=new TextEncoder();
 const now=()=>new Date().toISOString();
 const uuid=()=>crypto.randomUUID();
@@ -76,6 +77,11 @@ export async function handleCMS(context){
    return loginResponse(request,env,{id,email,name,role:'admin',must_change:0});
   }
   if(!await ready(db))fail(503,'첫 관리자 설정을 완료해 주세요.');
+  if(path==='counsel/submit'&&request.method==='POST'){
+   await db.prepare('DELETE FROM cms_attempts WHERE expires_at<?').bind(now()).run();
+   try{await rateLimit(request,db,'counsel',10);}catch(e){fail(429,'짧은 시간에 신청이 많았습니다. 잠시 뒤 다시 시도해 주세요.');}
+   try{return json(await submitCounsel(db,await bodyOf(request)),201);}catch(e){if(e instanceof Failure)throw e;if(e.status)fail(e.status,e.message);throw e;}
+  }
   if(path==='login'&&request.method==='POST'){
    await db.prepare('DELETE FROM cms_attempts WHERE expires_at<?').bind(now()).run();await rateLimit(request,db,'login');const b=await bodyOf(request);const email=String(b.email||'').trim().toLowerCase();const accountKey=await rateLimit(request,db,'account:'+email,8,false);const u=await db.prepare('SELECT * FROM cms_users WHERE email=? AND active=1').bind(email).first();
    const given=typeof b.password==='string'&&b.password.length<=128?b.password:'';
@@ -95,6 +101,10 @@ export async function handleCMS(context){
   if(parts[0]==='naver'){
    admin(user);try{const result=await naverAdmin(path,request.method,request.method==='GET'?Object.fromEntries(url.searchParams):await bodyOf(request),env,user);return result instanceof Response?result:json(result);}
    catch(e){fail(e.status||400,String(e.message).startsWith('D1_')?'네이버 연결 저장소를 처리하지 못했습니다.':e.message);}
+  }
+  if(parts[0]==='counsel'){
+   admin(user);try{return json(await counselAdmin(db,parts,request.method,url,request.method==='GET'?null:await bodyOf(request),user));}
+   catch(e){if(e instanceof Failure)throw e;if(e.status)fail(e.status,e.message);throw e;}
   }
   if(path==='users'&&request.method==='GET'){admin(user);return json({users:(await db.prepare('SELECT id,email,name,role,active,must_change,created_at FROM cms_users ORDER BY created_at').all()).results});}
   if(path==='users'&&request.method==='POST'){

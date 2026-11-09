@@ -351,12 +351,16 @@
         err.classList.remove('hide'); btn.disabled = false; return;
       }
       try {
-        const resp = await fetch(form.action, {
-          method: 'POST',
-          headers: { 'Accept': 'application/json' },
-          body: new FormData(form)
-        });
-        if (resp.ok) { ok.classList.remove('hide'); form.reset(); }
+        const fd = new FormData(form);
+        const data = {};
+        for (const [k, v] of fd.entries()) data[k] = (k in data) ? data[k] + ', ' + v : v;
+        // 메일(Formspree)과 상담신청 게시판(관리 화면) 두 곳에 함께 보냅니다. 한 곳만 성공해도 접수로 봅니다.
+        const [mail, board] = await Promise.allSettled([
+          fetch(form.action, { method: 'POST', headers: { 'Accept': 'application/json' }, body: fd }),
+          fetch('/api/cms/counsel/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
+        ]);
+        const sent = r => r.status === 'fulfilled' && r.value.ok;
+        if (sent(mail) || sent(board)) { ok.classList.remove('hide'); form.reset(); }
         else { err.classList.remove('hide'); }
       } catch {
         err.classList.remove('hide');

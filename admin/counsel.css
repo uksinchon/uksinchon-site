@@ -1,0 +1,24 @@
+.c-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 14px}
+.c-tabs [aria-pressed=true]{background:var(--ink);color:white}
+.c-tabs span{font-size:12px;opacity:.8}
+.c-search{display:flex;gap:8px;margin-bottom:14px}.c-search input{flex:1}
+.c-table-wrap{padding:0;overflow-x:auto}
+.c-table{width:100%;border-collapse:collapse;font-size:14px}
+.c-table th{text-align:left;font-size:12px;color:var(--muted);font-weight:650;padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+.c-table td{padding:12px 14px;border-bottom:1px solid var(--line);white-space:nowrap}
+.c-table tbody tr{cursor:pointer}.c-table tbody tr:hover,.c-table tbody tr:focus{background:#f1f4f8;outline:none}
+.c-table tr.is-new td{font-weight:700}
+.c-table-wrap .muted{padding:18px}
+.c-badge{display:inline-block;font-size:12px;padding:2px 9px;border-radius:99px;background:#e9eef5}
+.c-badge.new{background:#fff0eb;color:#8a2a18}.c-badge.contacting{background:#fff6d6;color:#6b5200}.c-badge.done{background:#e3f1ea;color:var(--green)}.c-badge.spam{background:#eee;color:#777}
+.c-memo{font-size:11px;color:var(--muted);margin-left:6px}
+.c-pager{display:flex;align-items:center;justify-content:center;gap:14px;margin-top:16px;font-size:13px}
+#detail{width:min(720px,calc(100vw - 32px));max-height:calc(100vh - 32px);border:1px solid var(--line);border-radius:10px;padding:24px;color:var(--ink)}
+#detail::backdrop{background:rgba(20,30,50,.45)}
+.c-detail-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.c-detail-head h2{margin:0}
+.c-fields{display:grid;grid-template-columns:150px 1fr;gap:0;margin:14px 0 4px;border-top:1px solid var(--line)}
+.c-fields dt,.c-fields dd{margin:0;padding:9px 6px;border-bottom:1px solid var(--line);font-size:14px}
+.c-fields dt{color:var(--muted);font-weight:650;font-size:13px}.c-fields dd{white-space:pre-wrap;overflow-wrap:anywhere}
+.c-actions{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.c-danger{color:#8a2a18;border-color:#e5b9ad}
+@media(max-width:640px){main{padding:16px}.top{padding:14px 16px}.c-fields{grid-template-columns:1fr}.c-fields dt{border-bottom:0;padding-bottom:0}.c-table th:nth-child(6),.c-table td:nth-child(6){display:none}}

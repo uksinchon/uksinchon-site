@@ -17,7 +17,7 @@ async function api(path,options={}) {
 }
 function node(tag,text,className){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(className)n.className=className;return n;}
 function bind(id,fn){$(id).addEventListener('click',()=>Promise.resolve().then(fn).catch(e=>notice(e.message,true)));}
-function signedIn(user){state.user=user;$('account-name').textContent=user.name+' · '+(user.role==='admin'?'관리자':'직원');$('account-nav').hidden=false;$('users-tab').hidden=user.role!=='admin';$('naver-tab').hidden=user.role!=='admin';$('trash-view').hidden=user.role!=='admin';$('trash-filter').hidden=user.role!=='admin';if(user.role!=='admin'&&$('status-filter').value==='trash')$('status-filter').value='';$('list-title').textContent=user.role==='admin'?'전체 직원의 글':'내가 작성한 글';}
+function signedIn(user){state.user=user;$('account-name').textContent=user.name+' · '+(user.role==='admin'?'관리자':'직원');$('account-nav').hidden=false;$('users-tab').hidden=user.role!=='admin';$('naver-tab').hidden=user.role!=='admin';$('counsel-tab').hidden=user.role!=='admin';$('trash-view').hidden=user.role!=='admin';$('trash-filter').hidden=user.role!=='admin';if(user.role!=='admin'&&$('status-filter').value==='trash')$('status-filter').value='';$('list-title').textContent=user.role==='admin'?'전체 직원의 글':'내가 작성한 글';}
 async function boot(){
  try{const status=await api('status');
   if(!status.storageConfigured||(!status.initialized&&!status.setupKeyConfigured)){

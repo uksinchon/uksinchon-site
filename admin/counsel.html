@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>상담신청 게시판 | 영국유학센터 신촌점</title><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/admin/editor.css"><link rel="stylesheet" href="/admin/counsel.css"><script defer src="/admin/counsel.js"></script></head>
+<body>
+<header class="top"><a class="brand" href="/admin/">영국유학센터 신촌점<small>상담신청 게시판</small></a><nav><span id="account-name"></span><a href="/admin/">← 글쓰기 관리</a></nav></header>
+<main>
+<p id="notice" class="notice" role="status" aria-live="polite">불러오는 중입니다.</p>
+<section id="board" hidden>
+<div class="heading"><div><p class="eyebrow">COUNSEL REQUESTS</p><h1>상담신청</h1></div><a href="/counsel/" target="_blank" rel="noopener noreferrer">신청서 화면 보기 ↗</a></div>
+<div class="c-tabs" role="tablist" aria-label="처리 상태">
+<button type="button" data-status="" aria-pressed="true">전체 <span data-count="all"></span></button>
+<button type="button" data-status="new" aria-pressed="false">신규 <span data-count="new"></span></button>
+<button type="button" data-status="contacting" aria-pressed="false">상담중 <span data-count="contacting"></span></button>
+<button type="button" data-status="done" aria-pressed="false">완료 <span data-count="done"></span></button>
+<button type="button" data-status="spam" aria-pressed="false">스팸 <span data-count="spam"></span></button>
+</div>
+<form id="search-form" class="c-search"><input id="search" aria-label="이름·연락처 검색" placeholder="이름, 휴대폰, 이메일로 찾기"><button>찾기</button></form>
+<div class="card c-table-wrap"><table class="c-table"><thead><tr><th>접수일시</th><th>상태</th><th>성명</th><th>관심분야</th><th>휴대폰</th><th>이메일</th></tr></thead><tbody id="rows"></tbody></table><p id="empty" class="muted" hidden>해당하는 신청서가 없습니다.</p></div>
+<div class="c-pager"><button id="prev" type="button">← 이전</button><span id="page-label"></span><button id="next" type="button">다음 →</button></div>
+</section>
+<dialog id="detail" aria-labelledby="detail-title">
+<div class="c-detail-head"><h2 id="detail-title"></h2><button id="close" type="button" aria-label="닫기">닫기</button></div>
+<p id="detail-meta" class="muted"></p>
+<dl id="detail-fields" class="c-fields"></dl>
+<label for="detail-status">처리 상태</label>
+<select id="detail-status"><option value="new">신규</option><option value="contacting">상담중</option><option value="done">완료</option><option value="spam">스팸</option></select>
+<label for="detail-memo">상담 메모 · 직원끼리만 보입니다</label>
+<textarea id="detail-memo" rows="5" maxlength="5000" placeholder="통화 내용, 다음 연락 예정일 등"></textarea>
+<p id="detail-saved" class="muted" role="status"></p>
+<div class="c-actions"><button id="delete" type="button" class="c-danger">삭제</button><button id="save" type="button" class="button">저장</button></div>
+</dialog>
+</main>
+<noscript><p class="notice">이 화면에는 JavaScript가 필요합니다.</p></noscript>
+</body></html>
