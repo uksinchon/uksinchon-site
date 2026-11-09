@@ -5,7 +5,7 @@ export const COUNSEL_SCHEMA=[
 `CREATE INDEX IF NOT EXISTS cms_counsel_created ON cms_counsel(created_at)`
 ];
 // 신청서에 있는 항목만 받는다. 순서는 상세 화면 표시 순서.
-export const COUNSEL_FIELDS=['성명','휴대폰','이메일','성별','카카오톡 아이디','알게 된 경로','관심분야','출국 예정일','희망지역','어학연수 기간','전체예산','어학연수 비용견적','희망전공','입학년도','최종 졸업학교와 전공','어학 점수','정규유학 기타 문의사항','상담 방식','상담일','상담_AMPM','상담_시','상담_분','기타 문의사항','개인정보동의'];
+export const COUNSEL_FIELDS=['성명','휴대폰','이메일','성별','카카오톡 아이디','알게 된 경로','관심분야','출국 예정일','희망지역','어학연수 기간','전체예산','어학연수 비용견적','희망전공','입학년도','최종 졸업학교와 전공','어학 점수','정규유학 기타 문의사항','상담 방식','희망 상담일시','상담일','상담_AMPM','상담_시','상담_분','기타 문의사항','개인정보동의'];
 const STATUSES=['new','contacting','done','spam'];
 const LONG=new Set(['기타 문의사항','정규유학 기타 문의사항','최종 졸업학교와 전공']);
 const err=(status,message)=>Object.assign(new Error(message),{status});

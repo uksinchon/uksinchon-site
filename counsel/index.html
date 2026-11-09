@@ -3,367 +3,202 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>영국유학센터 신촌지사 | 상담신청서</title>
-  <meta name="description" content="영국유학센터 신촌지사 전용 상담 신청서" />
+  <title>상담신청 | 영국유학센터 신촌지사</title>
+  <meta name="description" content="영국유학센터 신촌지사 상담신청서. 어학연수·조기유학·파운데이션·학사·석사·박사·비자 상담을 신청하세요." />
+  <link rel="icon" href="/favicon.ico" />
   <style>
-    :root { --bg:#f7f7fb; --card:#ffffff; --ink:#111827; --sub:#6b7280; --pri:#1f6feb; --pri-ink:#fff; --err:#dc2626; --ok:#16a34a; }
+    :root{--navy:#1A2E5A;--coral:#E8432B;--ink:#222;--sub:#666;--line:#d9dde3;--soft:#f5f6f8}
     *{box-sizing:border-box}
-    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial}
-    .topbar{background:#fff;border-bottom:1px solid #e5e7eb}
-    .topbar-inner{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:12px 18px}
-    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
-    .brand img{height:44px;width:auto;display:block}
-    .brand span{font-weight:800;letter-spacing:-0.3px}
-    .wrap{max-width:880px;margin:32px auto 40px;padding:0 20px}
-    .card{background:var(--card);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.06);padding:28px}
-    h1{margin:0 0 6px;font-size:26px}
-    p.lead{margin:0 0 20px;color:var(--sub)}
-    .grid{display:grid;gap:16px}
-    @media(min-width:820px){.grid-2{grid-template-columns:1fr 1fr}}
-    label{display:block;margin:0 0 6px;font-weight:600}
-    .req::after{content:" *";color:var(--err);font-weight:700}
-    input,select,textarea{width:100%;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;outline:none;background:#fff}
-    input:focus,select:focus,textarea:focus{border-color:#bfdbfe;box-shadow:0 0 0 3px #dbeafe}
-    textarea{min-height:130px;resize:vertical}
-    .hint{font-size:12px;color:var(--sub);margin-top:6px}
-    .row{display:flex;align-items:center;gap:10px}
-    .btn{display:inline-flex;align-items:center;justify-content:center;border:none;border-radius:12px;padding:12px 18px;cursor:pointer;font-weight:700}
-    .btn-primary{background:var(--pri);color:var(--pri-ink)}
-    .btn-primary:disabled{opacity:.6;cursor:not-allowed}
-    .policy{background:#f3f4f6;border-radius:12px;padding:14px;font-size:14px;color:#374151}
-    .hide{display:none}
-    .success{border-left:6px solid var(--ok);background:#ecfdf5;padding:14px;border-radius:10px;margin:14px 0;color:#065f46}
-    .error{border-left:6px solid var(--err);background:#fef2f2;padding:14px;border-radius:10px;margin:14px 0;color:#7f1d1d}
-    .foot{max-width:880px;margin:18px auto 40px;padding:0 20px;color:#4b5563}
-    .foot .box{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px}
-    .foot strong{color:#111827}
+    body{margin:0;background:#fff;color:var(--ink);font:15px/1.6 system-ui,-apple-system,"Malgun Gothic","Apple SD Gothic Neo",sans-serif;word-break:keep-all}
+    .hide{display:none!important}
+    .topbar{border-bottom:1px solid var(--line)}
+    .topbar-inner{max-width:1000px;margin:0 auto;padding:12px 20px;display:flex;align-items:center}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--navy)}
+    .brand img{height:40px;width:auto;display:block}
+    .brand span{font-weight:800;letter-spacing:-.3px}
+    .wrap{max-width:1000px;margin:0 auto;padding:40px 20px 56px}
+    h1{text-align:center;color:var(--coral);font-size:30px;margin:0 0 36px;letter-spacing:-.5px}
+    .sec{margin-bottom:34px}
+    .sec h2{font-size:24px;margin:0;padding-bottom:8px;letter-spacing:-.5px;border-bottom:1px solid #c9ced6;position:relative}
+    .sec h2::after{content:"";position:absolute;left:0;bottom:-2px;width:160px;height:3px;background:var(--coral)}
+    .row{display:grid;grid-template-columns:150px 1fr;gap:16px;align-items:center;padding:8px 0}
+    .row>.lbl{text-align:right;font-weight:700;color:#444}
+    .req::after{content:" *";color:var(--coral)}
+    input[type=text],input[type=email],input[type=tel],textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:3px;font:inherit;color:var(--ink);background:#fff}
+    input:focus,textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 2px rgba(26,46,90,.12)}
+    textarea{min-height:110px;resize:vertical}
+    .opts{display:flex;flex-wrap:wrap;gap:6px 18px}
+    .opts label{display:inline-flex;align-items:center;gap:5px;cursor:pointer;color:#333}
+    .opts input{width:15px;height:15px;margin:0;accent-color:var(--navy)}
+    .bad{color:var(--coral)!important}
+    .agree{display:flex;justify-content:center;align-items:center;gap:8px;flex-wrap:wrap;margin:6px 0 18px}
+    .agree label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+    .agree input{width:15px;height:15px;margin:0;accent-color:var(--navy)}
+    .agree a{font-size:14px;color:var(--navy);border:1px solid var(--navy);padding:1px 7px;text-decoration:none}
+    .btns{display:flex;justify-content:center;gap:6px}
+    .btn{border:0;padding:12px 26px;font:inherit;font-size:17px;font-weight:700;cursor:pointer;color:#fff}
+    .btn-primary{background:var(--coral)}.btn-primary:disabled{opacity:.6;cursor:wait}
+    .btn-dark{background:#3a3f47}
+    .msg{padding:14px 16px;border-radius:4px;margin:0 0 24px;text-align:center}
+    .success{background:#e8f5ee;color:#1d6b45}
+    .error{background:#fdecea;color:#a12a1a}
+    .foot{border-top:1px solid var(--line);background:var(--soft)}
+    .foot .box{max-width:1000px;margin:0 auto;padding:20px;font-size:13px;color:var(--sub);line-height:1.8}
+    .foot strong{color:#333}
+    .foot a{color:var(--navy)}
+    @media(max-width:700px){
+      .wrap{padding:28px 16px 44px}
+      h1{font-size:26px;margin-bottom:26px}
+      .sec h2{font-size:21px}
+      .row{grid-template-columns:1fr;gap:6px;padding:7px 0}
+      .row>.lbl{text-align:left}
+      .btn{flex:1;padding:13px 10px}
+    }
   </style>
 </head>
 <body>
-  <!-- 헤더/로고 -->
   <div class="topbar">
     <div class="topbar-inner">
-      <a class="brand" href="./">
+      <a class="brand" href="https://uksinchon.com/">
         <img src="logo.png" alt="영국유학센터 로고" />
         <span>영국유학센터 신촌지사</span>
       </a>
     </div>
   </div>
 
-  <div class="wrap">
-    <div class="card">
-      <h1>상담신청서</h1>
-      <p class="lead">아래 항목을 작성해 주세요. <strong>*</strong> 표시는 필수입니다.</p>
+  <main class="wrap">
+    <h1>상담신청</h1>
 
-      <!-- 성공/실패 메시지 -->
-      <div id="msg-success" class="success hide">접수되었습니다! 곧 담당자가 <strong>j.lee@ukcentre.co.kr</strong>에서 연락드립니다.</div>
-      <div id="msg-error" class="error hide">전송에 실패했습니다. 잠시 후 다시 시도해 주세요.</div>
+    <div id="msg-success" class="msg success hide">접수되었습니다! 곧 담당자가 <strong>j.lee@ukcentre.co.kr</strong>에서 연락드립니다.</div>
+    <div id="msg-error" class="msg error hide">전송에 실패했습니다. 잠시 후 다시 시도해 주세요.</div>
 
-      <form id="counsel-form" action="https://formspree.io/f/mjkpjdka" method="POST" novalidate>
-        <input type="text" name="_gotcha" class="hide" tabindex="-1" autocomplete="off" />
+    <form id="counsel-form" action="https://formspree.io/f/mjkpjdka" method="POST" novalidate>
+      <input type="text" name="_gotcha" class="hide" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
-        <!-- 기본정보 -->
-        <section class="grid grid-2">
-          <div>
-            <label for="email" class="req">이메일</label>
-            <input id="email" name="이메일" type="email" placeholder="name@example.com" required />
-          </div>
-          <div>
-            <label for="name" class="req">성명</label>
-            <input id="name" name="성명" type="text" placeholder="홍길동" required />
-          </div>
-        </section>
+      <section class="sec">
+        <h2>개인정보</h2>
+        <div class="row"><label class="lbl req" for="email">이메일</label><input id="email" name="이메일" type="email" autocomplete="email" required /></div>
+        <div class="row"><label class="lbl req" for="name">성명</label><input id="name" name="성명" type="text" autocomplete="name" required /></div>
+        <div class="row"><label class="lbl req" for="phone">휴대폰</label><input id="phone" name="휴대폰" type="tel" autocomplete="tel" placeholder="010-1234-5678 혹은 +44 123-4567-8900" required /></div>
+        <div class="row" role="radiogroup" aria-labelledby="l-gender"><span class="lbl req" id="l-gender">성별</span>
+          <div class="opts" data-group="성별"><label><input type="radio" name="성별" value="남자" />남자</label><label><input type="radio" name="성별" value="여자" />여자</label></div></div>
+        <div class="row"><label class="lbl" for="kakao">카카오톡 아이디</label><input id="kakao" name="카카오톡 아이디" type="text" /></div>
+      </section>
 
-        <section class="grid grid-2" style="margin-top:12px">
-          <div>
-            <label for="phone" class="req">휴대폰</label>
-            <input id="phone" name="휴대폰" type="tel" placeholder="010-1234-5678" required />
-          </div>
-          <div>
-            <label for="gender" class="req">성별</label>
-            <select id="gender" name="성별" required>
-              <option value="">선택하세요</option>
-              <option>남자</option>
-              <option>여자</option>
-              <option>응답하지 않음</option>
-            </select>
-          </div>
-        </section>
+      <section class="sec">
+        <h2>상담정보</h2>
+        <div class="row" role="group" aria-labelledby="l-interest"><span class="lbl req" id="l-interest">관심분야</span>
+          <div class="opts" data-group="관심분야">
+            <label><input type="checkbox" name="관심분야" value="어학연수" />어학연수</label>
+            <label><input type="checkbox" name="관심분야" value="조기유학" />조기유학</label>
+            <label><input type="checkbox" name="관심분야" value="전문교육과정" />전문교육과정</label>
+            <label><input type="checkbox" name="관심분야" value="파운데이션과정" />파운데이션과정</label>
+            <label><input type="checkbox" name="관심분야" value="학사" />학사</label>
+            <label><input type="checkbox" name="관심분야" value="프리마스터과정" />프리마스터과정</label>
+            <label><input type="checkbox" name="관심분야" value="석사" />석사</label>
+            <label><input type="checkbox" name="관심분야" value="박사" />박사</label>
+            <label><input type="checkbox" name="관심분야" value="비자대행" />비자대행</label>
+            <label><input type="checkbox" name="관심분야" value="기타" />기타</label>
+          </div></div>
+        <div class="row" role="group" aria-labelledby="l-how"><span class="lbl req" id="l-how">알게 된 경로</span>
+          <div class="opts" data-group="알게 된 경로">
+            <label><input type="checkbox" name="알게 된 경로" value="영국문화원" />영국문화원</label>
+            <label><input type="checkbox" name="알게 된 경로" value="주변소개" />주변소개</label>
+            <label><input type="checkbox" name="알게 된 경로" value="SNS" />SNS</label>
+            <label><input type="checkbox" name="알게 된 경로" value="네이버" />네이버</label>
+            <label><input type="checkbox" name="알게 된 경로" value="다음" />다음</label>
+            <label><input type="checkbox" name="알게 된 경로" value="구글" />구글</label>
+            <label><input type="checkbox" name="알게 된 경로" value="기타" />기타</label>
+          </div></div>
+        <div class="row" role="radiogroup" aria-labelledby="l-method"><span class="lbl req" id="l-method">상담 방식</span>
+          <div class="opts" data-group="상담 방식">
+            <label><input type="radio" name="상담 방식" value="방문상담" />방문상담</label>
+            <label><input type="radio" name="상담 방식" value="전화상담" />전화상담</label>
+            <label><input type="radio" name="상담 방식" value="이메일상담" />이메일상담</label>
+          </div></div>
+        <div class="row"><label class="lbl" for="when">희망 상담일시</label><input id="when" name="희망 상담일시" type="text" placeholder="예: 11월 15일(토) 오후 2시, 평일 저녁 6시 이후" /></div>
+      </section>
 
-        <section class="grid grid-2" style="margin-top:12px">
-          <div>
-            <label for="kakao">카카오톡 아이디 (선택)</label>
-            <input id="kakao" name="카카오톡 아이디" type="text" placeholder="kakao_id (선택)" />
-          </div>
-          <div>
-            <label for="how" class="req">알게 된 경로</label>
-            <select id="how" name="알게 된 경로" required>
-              <option value="">선택하세요</option>
-              <option>영국문화원</option>
-              <option>주변소개</option>
-              <option>SNS</option>
-              <option>네이버</option>
-              <option>다음</option>
-              <option>구글</option>
-              <option>기타</option>
-            </select>
-          </div>
-        </section>
+      <section class="sec">
+        <h2>기타 문의사항</h2>
+        <div style="padding-top:14px"><textarea name="기타 문의사항" aria-label="기타 문의사항" placeholder="기타 상담 받고 싶은 내용을 자세히 적어주세요"></textarea></div>
+      </section>
 
-        <!-- 관심분야 & 동적 섹션 -->
-        <section class="grid grid-2" style="margin-top:12px">
-          <div>
-            <label for="interest" class="req">관심분야</label>
-            <select id="interest" name="관심분야" required>
-              <option value="">선택하세요</option>
-              <option>어학연수</option>
-              <option>조기유학</option>
-              <option>전문교육과정</option>
-              <option>파운데이션과정</option>
-              <option>학사</option>
-              <option>프리마스터과정</option>
-              <option>석사</option>
-              <option>박사</option>
-              <option>비자대행</option>
-              <option>기타</option>
-            </select>
+      <div class="agree">
+        <label><input id="agree" name="개인정보동의" type="checkbox" value="동의함" required />개인정보동의서에 동의합니다.</label>
+        <a href="privacy.html" target="_blank" rel="noopener">자세히 보기</a>
+      </div>
 
-            <!-- 어학연수 추가 질문 -->
-            <section id="lang-section" class="hide" style="margin-top:18px">
-              <h3 style="margin:0 0 8px">어학연수 상담 사전질문</h3>
-              <div class="grid grid-2" style="gap:12px">
-                <div>
-                  <label for="dep-date">출국 예정일</label>
-                  <input id="dep-date" name="출국 예정일" type="date" />
-                </div>
-                <div>
-                  <label for="region">희망지역</label>
-                  <input id="region" name="희망지역" type="text" placeholder="예: 런던, 브라이튼, 케임브리지" />
-                </div>
-              </div>
-              <div class="grid grid-2" style="gap:12px;margin-top:12px">
-                <div>
-                  <label for="duration">어학연수 기간</label>
-                  <input id="duration" name="어학연수 기간" type="text" placeholder="예: 24주 (2025-01-10 ~ 2025-06-27)" />
-                </div>
-                <div>
-                  <label for="budget">전체예산</label>
-                  <input id="budget" name="전체예산" type="text" placeholder="예: 총 2,500만원" />
-                </div>
-              </div>
-              <div style="margin-top:12px">
-                <label for="quote">어학연수 비용견적</label>
-                <textarea id="quote" name="어학연수 비용견적"
-                  placeholder="정확한 학교명, 출국일, 총/주당 수업시간, 숙소 신청 여부·기간 등을 적어주세요."></textarea>
-              </div>
-            </section>
+      <div class="btns">
+        <button id="submitBtn" type="submit" class="btn btn-primary">✔ 작성완료</button>
+        <button type="reset" class="btn btn-dark">취소</button>
+      </div>
+    </form>
+  </main>
 
-            <!-- 정규유학 추가 질문 -->
-            <section id="degree-section" class="hide" style="margin-top:18px">
-              <h3 style="margin:0 0 8px">정규유학 상담 사전질문</h3>
-              <div class="grid grid-2" style="gap:12px">
-                <div>
-                  <label for="major">희망전공</label>
-                  <input id="major" name="희망전공" type="text" placeholder="예: 경영학, 컴퓨터공학, 수의학" />
-                </div>
-                <div>
-                  <label for="entry-year">입학년도</label>
-                  <input id="entry-year" name="입학년도" type="text" placeholder="예: 2026" />
-                </div>
-              </div>
-              <div class="grid grid-2" style="gap:12px;margin-top:12px">
-                <div>
-                  <label for="last-school">최종 졸업학교와 전공</label>
-                  <input id="last-school" name="최종 졸업학교와 전공" type="text" placeholder="예: 홍익대학교 디자인학부" />
-                </div>
-                <div>
-                  <label for="eng-score">어학 점수</label>
-                  <input id="eng-score" name="어학 점수" type="text" placeholder="예: IELTS 6.5 (R6.0/W6.0/L6.5/S6.0)" />
-                </div>
-              </div>
-              <div style="margin-top:12px">
-                <label for="degree-notes">기타 문의사항</label>
-                <textarea id="degree-notes" name="정규유학 기타 문의사항"
-                  placeholder="기타 상담 받고 싶은 내용을 자세히 적어주세요."></textarea>
-              </div>
-            </section>
-          </div>
-
-          <div>
-            <label for="method" class="req">상담 방식</label>
-            <select id="method" name="상담 방식" required>
-              <option value="">선택하세요</option>
-              <option>방문상담</option>
-              <option>전화상담</option>
-              <option>이메일상담</option>
-            </select>
-          </div>
-        </section>
-
-        <section style="margin-top:12px">
-  <label for="date">희망 상담일시</label>
-  <div class="grid grid-2" style="gap:10px; align-items:center;">
-    <!-- 날짜 -->
-    <input id="date" name="상담일" type="date" required />
-
-    <!-- 시간 선택 -->
-    <div style="display:flex; gap:6px; align-items:center;">
-      <!-- 시 -->
-      <select id="hour" name="상담_시" required style="padding:10px 12px; border-radius:8px; border:1px solid #ccc;">
-        <option value="">시</option>
-        <option>01</option>
-        <option>02</option>
-        <option>03</option>
-        <option>04</option>
-        <option>05</option>
-        <option>06</option>
-        <option>07</option>
-        <option>08</option>
-        <option>09</option>
-        <option>10</option>
-        <option>11</option>
-        <option>12</option>
-      </select>
-
-      <!-- 분 -->
-      <select id="minute" name="상담_분" required style="padding:10px 12px; border-radius:8px; border:1px solid #ccc;">
-        <option value="">분</option>
-        <option>00</option>
-        <option>30</option>
-      </select>
-
-      <!-- 오전/오후 -->
-      <select id="ampm" name="상담_AMPM" required style="padding:10px 12px; border-radius:8px; border:1px solid #ccc;">
-        <option value="">오전/오후</option>
-        <option>오전</option>
-        <option>오후</option>
-      </select>
-    </div>
-  </div>
-</section>
-
-        <section style="margin-top:12px">
-          <label for="notes">기타 문의사항</label>
-          <textarea id="notes" name="기타 문의사항" placeholder="상담에 도움이 될 정보를 적어주세요."></textarea>
-        </section>
-
-        <!-- 개인정보 동의 -->
-<section style="margin-top:14px">
-  <div class="policy">
-    <strong>개인정보 수집 및 이용 동의 (필수)</strong>
-    <ul style="margin:8px 0 0 18px">
-      <li>수집항목: 이메일, 성명, 휴대폰, 성별, 카카오톡 아이디(선택), 관심분야, 상담 방식, 희망 상담일시, 기타 문의사항</li>
-      <li>수집목적: 상담 신청 접수 및 안내</li>
-    </ul>
-  </div>
-
-  <!-- 한 줄 정렬 + 체크박스 크기 보정 -->
-  <div class="row" style="margin-top:10px; align-items:center; gap:6px; flex-wrap:nowrap;">
-    <input id="agree" name="개인정보동의" type="checkbox" required
-           style="width:16px;height:16px;vertical-align:middle;cursor:pointer;margin:0;" />
-    <label for="agree" class="req"
-           style="margin:0; font-weight:600; white-space:nowrap; cursor:pointer;">
-      개인정보동의서에 동의합니다.
-    </label>
-    <a href="privacy.html" target="_blank" rel="noopener"
-       style="font-size:14px; margin-left:6px; white-space:nowrap;">자세히 보기</a>
-  </div>
-</section>
-
-        <div class="row" style="margin-top:18px">
-          <button id="submitBtn" type="submit" class="btn btn-primary">작성완료</button>
-        </div>
-      </form>
+  <div class="foot">
+    <div class="box">
+      <div><strong>영국유학센터 신촌지사</strong> · 서울특별시 서대문구 신촌로 127 신촌르메이르타운 3차 307호 (창천동)</div>
+      <div><strong>전화</strong> 02-393-1030 &nbsp;|&nbsp; <strong>이메일</strong> j.lee@ukcentre.co.kr &nbsp;|&nbsp; <a href="https://uksinchon.com/">uksinchon.com</a></div>
     </div>
   </div>
 
-  <!-- 하단 연락처 박스 -->
- <div class="foot">
-  <div class="box">
-    <div style="font-weight:700;margin-bottom:6px">영국유학센터 신촌지사</div>
-    <div>서울특별시 서대문구 신촌로 127 신촌르메이르타운 3차 307호 (창천동)</div>
-    <div>
-      <strong>전화</strong> 02-393-1030 &nbsp; | &nbsp;
-      <strong>홈페이지</strong>
-      <a href="https://www.ukcentre.co.kr" target="_blank" rel="noopener">www.ukcentre.co.kr</a>
-    </div>
-  </div>
-</div>
-
-  <!-- 관심분야별 섹션 토글 -->
-  <script>
-    (function(){
-      const interest = document.getElementById('interest');
-      const langSec   = document.getElementById('lang-section');
-      const degreeSec = document.getElementById('degree-section');
-
-      const langRequiredIds   = ['dep-date','region','duration'];
-      const degreeRequiredIds = ['major','entry-year','last-school'];
-      const DEGREE_SET = new Set(['조기유학','학사','석사','박사']);
-
-      function setRequired(ids,on){
-        ids.forEach(id=>{
-          const el=document.getElementById(id);
-          if(!el)return;
-          on?el.setAttribute('required','required'):el.removeAttribute('required');
-        });
-      }
-      function show(el){if(el){el.classList.remove('hide');el.style.display='block';}}
-      function hide(el){if(el){el.classList.add('hide');el.style.display='none';}}
-
-      function toggleSections(){
-        const val = interest.value;
-        if(val==='어학연수'){
-          show(langSec); hide(degreeSec);
-          setRequired(langRequiredIds,true);
-          setRequired(degreeRequiredIds,false);
-        }else if(DEGREE_SET.has(val)){
-          hide(langSec); show(degreeSec);
-          setRequired(langRequiredIds,false);
-          setRequired(degreeRequiredIds,true);
-        }else{
-          hide(langSec); hide(degreeSec);
-          setRequired(langRequiredIds,false);
-          setRequired(degreeRequiredIds,false);
-        }
-      }
-
-      if(interest){
-        interest.addEventListener('change',toggleSections);
-        document.addEventListener('DOMContentLoaded',toggleSections);
-      }
-    })();
-  </script>
-
-  <!-- 제출 처리 -->
   <script>
     const form = document.getElementById('counsel-form');
     const btn = document.getElementById('submitBtn');
     const ok = document.getElementById('msg-success');
     const err = document.getElementById('msg-error');
+    const GROUPS = ['성별', '관심분야', '알게 된 경로', '상담 방식'];
+
+    function check() {
+      let first = null;
+      const mark = (el, bad) => { el.classList.toggle('bad', bad); if (bad && !first) first = el; };
+      for (const id of ['email', 'name', 'phone']) {
+        const el = document.getElementById(id);
+        mark(el.closest('.row').querySelector('.lbl'), !el.checkValidity());
+      }
+      for (const g of GROUPS) {
+        const box = form.querySelector(`[data-group="${g}"]`);
+        mark(box.closest('.row').querySelector('.lbl'), !box.querySelector('input:checked'));
+      }
+      const agree = document.getElementById('agree');
+      mark(agree.parentElement, !agree.checked);
+      if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return !first;
+    }
+
+    form.addEventListener('reset', () => {
+      ok.classList.add('hide'); err.classList.add('hide');
+      form.querySelectorAll('.bad').forEach(el => el.classList.remove('bad'));
+    });
 
     form.addEventListener('submit', async (e) => {
       e.preventDefault();
       ok.classList.add('hide'); err.classList.add('hide');
-      btn.disabled = true;
-      if (!form.checkValidity()) {
-        err.textContent = "필수 항목을 확인해 주세요.";
-        err.classList.remove('hide'); btn.disabled = false; return;
+      if (!check()) {
+        err.textContent = '* 표시된 필수 항목을 확인해 주세요.';
+        err.classList.remove('hide'); return;
       }
+      btn.disabled = true;
+      // 여러 개 고른 항목은 쉼표로 묶어 한 칸으로 보냅니다.
+      const data = {};
+      for (const [k, v] of new FormData(form).entries()) data[k] = (k in data) ? data[k] + ', ' + v : v;
+      const mailBody = new FormData();
+      for (const [k, v] of Object.entries(data)) mailBody.append(k, v);
       try {
-        const fd = new FormData(form);
-        const data = {};
-        for (const [k, v] of fd.entries()) data[k] = (k in data) ? data[k] + ', ' + v : v;
         // 메일(Formspree)과 상담신청 게시판(관리 화면) 두 곳에 함께 보냅니다. 한 곳만 성공해도 접수로 봅니다.
         const [mail, board] = await Promise.allSettled([
-          fetch(form.action, { method: 'POST', headers: { 'Accept': 'application/json' }, body: fd }),
+          fetch(form.action, { method: 'POST', headers: { 'Accept': 'application/json' }, body: mailBody }),
           fetch('/api/cms/counsel/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) })
         ]);
         const sent = r => r.status === 'fulfilled' && r.value.ok;
-        if (sent(mail) || sent(board)) { ok.classList.remove('hide'); form.reset(); }
-        else { err.classList.remove('hide'); }
-      } catch {
-        err.classList.remove('hide');
+        if (sent(mail) || sent(board)) {
+          form.reset(); ok.classList.remove('hide');
+          ok.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        } else {
+          err.textContent = '전송에 실패했습니다. 잠시 후 다시 시도해 주세요. 급하시면 02-393-1030으로 전화 주세요.';
+          err.classList.remove('hide');
+        }
       } finally { btn.disabled = false; }
     });
   </script>
