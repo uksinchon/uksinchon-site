@@ -1,0 +1,367 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>영국유학센터 신촌지사 | 상담신청서</title>
+  <meta name="description" content="영국유학센터 신촌지사 전용 상담 신청서" />
+  <style>
+    :root { --bg:#f7f7fb; --card:#ffffff; --ink:#111827; --sub:#6b7280; --pri:#1f6feb; --pri-ink:#fff; --err:#dc2626; --ok:#16a34a; }
+    *{box-sizing:border-box}
+    body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Arial}
+    .topbar{background:#fff;border-bottom:1px solid #e5e7eb}
+    .topbar-inner{max-width:980px;margin:0 auto;display:flex;align-items:center;gap:14px;padding:12px 18px}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit}
+    .brand img{height:44px;width:auto;display:block}
+    .brand span{font-weight:800;letter-spacing:-0.3px}
+    .wrap{max-width:880px;margin:32px auto 40px;padding:0 20px}
+    .card{background:var(--card);border-radius:16px;box-shadow:0 10px 30px rgba(0,0,0,.06);padding:28px}
+    h1{margin:0 0 6px;font-size:26px}
+    p.lead{margin:0 0 20px;color:var(--sub)}
+    .grid{display:grid;gap:16px}
+    @media(min-width:820px){.grid-2{grid-template-columns:1fr 1fr}}
+    label{display:block;margin:0 0 6px;font-weight:600}
+    .req::after{content:" *";color:var(--err);font-weight:700}
+    input,select,textarea{width:100%;padding:12px 14px;border:1px solid #e5e7eb;border-radius:10px;outline:none;background:#fff}
+    input:focus,select:focus,textarea:focus{border-color:#bfdbfe;box-shadow:0 0 0 3px #dbeafe}
+    textarea{min-height:130px;resize:vertical}
+    .hint{font-size:12px;color:var(--sub);margin-top:6px}
+    .row{display:flex;align-items:center;gap:10px}
+    .btn{display:inline-flex;align-items:center;justify-content:center;border:none;border-radius:12px;padding:12px 18px;cursor:pointer;font-weight:700}
+    .btn-primary{background:var(--pri);color:var(--pri-ink)}
+    .btn-primary:disabled{opacity:.6;cursor:not-allowed}
+    .policy{background:#f3f4f6;border-radius:12px;padding:14px;font-size:14px;color:#374151}
+    .hide{display:none}
+    .success{border-left:6px solid var(--ok);background:#ecfdf5;padding:14px;border-radius:10px;margin:14px 0;color:#065f46}
+    .error{border-left:6px solid var(--err);background:#fef2f2;padding:14px;border-radius:10px;margin:14px 0;color:#7f1d1d}
+    .foot{max-width:880px;margin:18px auto 40px;padding:0 20px;color:#4b5563}
+    .foot .box{background:#fff;border:1px solid #e5e7eb;border-radius:14px;padding:16px}
+    .foot strong{color:#111827}
+  </style>
+</head>
+<body>
+  <!-- 헤더/로고 -->
+  <div class="topbar">
+    <div class="topbar-inner">
+      <a class="brand" href="./">
+        <img src="logo.png" alt="영국유학센터 로고" />
+        <span>영국유학센터 신촌지사</span>
+      </a>
+    </div>
+  </div>
+
+  <div class="wrap">
+    <div class="card">
+      <h1>상담신청서</h1>
+      <p class="lead">아래 항목을 작성해 주세요. <strong>*</strong> 표시는 필수입니다.</p>
+
+      <!-- 성공/실패 메시지 -->
+      <div id="msg-success" class="success hide">접수되었습니다! 곧 담당자가 <strong>j.lee@ukcentre.co.kr</strong>에서 연락드립니다.</div>
+      <div id="msg-error" class="error hide">전송에 실패했습니다. 잠시 후 다시 시도해 주세요.</div>
+
+      <form id="counsel-form" action="https://formspree.io/f/mjkpjdka" method="POST" novalidate>
+        <input type="text" name="_gotcha" class="hide" tabindex="-1" autocomplete="off" />
+
+        <!-- 기본정보 -->
+        <section class="grid grid-2">
+          <div>
+            <label for="email" class="req">이메일</label>
+            <input id="email" name="이메일" type="email" placeholder="name@example.com" required />
+          </div>
+          <div>
+            <label for="name" class="req">성명</label>
+            <input id="name" name="성명" type="text" placeholder="홍길동" required />
+          </div>
+        </section>
+
+        <section class="grid grid-2" style="margin-top:12px">
+          <div>
+            <label for="phone" class="req">휴대폰</label>
+            <input id="phone" name="휴대폰" type="tel" placeholder="010-1234-5678" required />
+          </div>
+          <div>
+            <label for="gender" class="req">성별</label>
+            <select id="gender" name="성별" required>
+              <option value="">선택하세요</option>
+              <option>남자</option>
+              <option>여자</option>
+              <option>응답하지 않음</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="grid grid-2" style="margin-top:12px">
+          <div>
+            <label for="kakao">카카오톡 아이디 (선택)</label>
+            <input id="kakao" name="카카오톡 아이디" type="text" placeholder="kakao_id (선택)" />
+          </div>
+          <div>
+            <label for="how" class="req">알게 된 경로</label>
+            <select id="how" name="알게 된 경로" required>
+              <option value="">선택하세요</option>
+              <option>영국문화원</option>
+              <option>주변소개</option>
+              <option>SNS</option>
+              <option>네이버</option>
+              <option>다음</option>
+              <option>구글</option>
+              <option>기타</option>
+            </select>
+          </div>
+        </section>
+
+        <!-- 관심분야 & 동적 섹션 -->
+        <section class="grid grid-2" style="margin-top:12px">
+          <div>
+            <label for="interest" class="req">관심분야</label>
+            <select id="interest" name="관심분야" required>
+              <option value="">선택하세요</option>
+              <option>어학연수</option>
+              <option>조기유학</option>
+              <option>전문교육과정</option>
+              <option>파운데이션과정</option>
+              <option>학사</option>
+              <option>프리마스터과정</option>
+              <option>석사</option>
+              <option>박사</option>
+              <option>비자대행</option>
+              <option>기타</option>
+            </select>
+
+            <!-- 어학연수 추가 질문 -->
+            <section id="lang-section" class="hide" style="margin-top:18px">
+              <h3 style="margin:0 0 8px">어학연수 상담 사전질문</h3>
+              <div class="grid grid-2" style="gap:12px">
+                <div>
+                  <label for="dep-date">출국 예정일</label>
+                  <input id="dep-date" name="출국 예정일" type="date" />
+                </div>
+                <div>
+                  <label for="region">희망지역</label>
+                  <input id="region" name="희망지역" type="text" placeholder="예: 런던, 브라이튼, 케임브리지" />
+                </div>
+              </div>
+              <div class="grid grid-2" style="gap:12px;margin-top:12px">
+                <div>
+                  <label for="duration">어학연수 기간</label>
+                  <input id="duration" name="어학연수 기간" type="text" placeholder="예: 24주 (2025-01-10 ~ 2025-06-27)" />
+                </div>
+                <div>
+                  <label for="budget">전체예산</label>
+                  <input id="budget" name="전체예산" type="text" placeholder="예: 총 2,500만원" />
+                </div>
+              </div>
+              <div style="margin-top:12px">
+                <label for="quote">어학연수 비용견적</label>
+                <textarea id="quote" name="어학연수 비용견적"
+                  placeholder="정확한 학교명, 출국일, 총/주당 수업시간, 숙소 신청 여부·기간 등을 적어주세요."></textarea>
+              </div>
+            </section>
+
+            <!-- 정규유학 추가 질문 -->
+            <section id="degree-section" class="hide" style="margin-top:18px">
+              <h3 style="margin:0 0 8px">정규유학 상담 사전질문</h3>
+              <div class="grid grid-2" style="gap:12px">
+                <div>
+                  <label for="major">희망전공</label>
+                  <input id="major" name="희망전공" type="text" placeholder="예: 경영학, 컴퓨터공학, 수의학" />
+                </div>
+                <div>
+                  <label for="entry-year">입학년도</label>
+                  <input id="entry-year" name="입학년도" type="text" placeholder="예: 2026" />
+                </div>
+              </div>
+              <div class="grid grid-2" style="gap:12px;margin-top:12px">
+                <div>
+                  <label for="last-school">최종 졸업학교와 전공</label>
+                  <input id="last-school" name="최종 졸업학교와 전공" type="text" placeholder="예: 홍익대학교 디자인학부" />
+                </div>
+                <div>
+                  <label for="eng-score">어학 점수</label>
+                  <input id="eng-score" name="어학 점수" type="text" placeholder="예: IELTS 6.5 (R6.0/W6.0/L6.5/S6.0)" />
+                </div>
+              </div>
+              <div style="margin-top:12px">
+                <label for="degree-notes">기타 문의사항</label>
+                <textarea id="degree-notes" name="정규유학 기타 문의사항"
+                  placeholder="기타 상담 받고 싶은 내용을 자세히 적어주세요."></textarea>
+              </div>
+            </section>
+          </div>
+
+          <div>
+            <label for="method" class="req">상담 방식</label>
+            <select id="method" name="상담 방식" required>
+              <option value="">선택하세요</option>
+              <option>방문상담</option>
+              <option>전화상담</option>
+              <option>이메일상담</option>
+            </select>
+          </div>
+        </section>
+
+        <section style="margin-top:12px">
+  <label for="date">희망 상담일시</label>
+  <div class="grid grid-2" style="gap:10px; align-items:center;">
+    <!-- 날짜 -->
+    <input id="date" name="상담일" type="date" required />
+
+    <!-- 시간 선택 -->
+    <div style="display:flex; gap:6px; align-items:center;">
+      <!-- 시 -->
+      <select id="hour" name="상담_시" required style="padding:10px 12px; border-radius:8px; border:1px solid #ccc;">
+        <option value="">시</option>
+        <option>01</option>
+        <option>02</option>
+        <option>03</option>
+        <option>04</option>
+        <option>05</option>
+        <option>06</option>
+        <option>07</option>
+        <option>08</option>
+        <option>09</option>
+        <option>10</option>
+        <option>11</option>
+        <option>12</option>
+      </select>
+
+      <!-- 분 -->
+      <select id="minute" name="상담_분" required style="padding:10px 12px; border-radius:8px; border:1px solid #ccc;">
+        <option value="">분</option>
+        <option>00</option>
+        <option>30</option>
+      </select>
+
+      <!-- 오전/오후 -->
+      <select id="ampm" name="상담_AMPM" required style="padding:10px 12px; border-radius:8px; border:1px solid #ccc;">
+        <option value="">오전/오후</option>
+        <option>오전</option>
+        <option>오후</option>
+      </select>
+    </div>
+  </div>
+</section>
+
+        <section style="margin-top:12px">
+          <label for="notes">기타 문의사항</label>
+          <textarea id="notes" name="기타 문의사항" placeholder="상담에 도움이 될 정보를 적어주세요."></textarea>
+        </section>
+
+        <!-- 개인정보 동의 -->
+<section style="margin-top:14px">
+  <div class="policy">
+    <strong>개인정보 수집 및 이용 동의 (필수)</strong>
+    <ul style="margin:8px 0 0 18px">
+      <li>수집항목: 이메일, 성명, 휴대폰, 성별, 카카오톡 아이디(선택), 관심분야, 상담 방식, 희망 상담일시, 기타 문의사항</li>
+      <li>수집목적: 상담 신청 접수 및 안내</li>
+    </ul>
+  </div>
+
+  <!-- 한 줄 정렬 + 체크박스 크기 보정 -->
+  <div class="row" style="margin-top:10px; align-items:center; gap:6px; flex-wrap:nowrap;">
+    <input id="agree" name="개인정보동의" type="checkbox" required
+           style="width:16px;height:16px;vertical-align:middle;cursor:pointer;margin:0;" />
+    <label for="agree" class="req"
+           style="margin:0; font-weight:600; white-space:nowrap; cursor:pointer;">
+      개인정보동의서에 동의합니다.
+    </label>
+    <a href="privacy.html" target="_blank" rel="noopener"
+       style="font-size:14px; margin-left:6px; white-space:nowrap;">자세히 보기</a>
+  </div>
+</section>
+
+        <div class="row" style="margin-top:18px">
+          <button id="submitBtn" type="submit" class="btn btn-primary">작성완료</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 하단 연락처 박스 -->
+ <div class="foot">
+  <div class="box">
+    <div style="font-weight:700;margin-bottom:6px">영국유학센터 신촌지사</div>
+    <div>서울특별시 서대문구 신촌로 127 신촌르메이르타운 3차 307호 (창천동)</div>
+    <div>
+      <strong>전화</strong> 02-393-1030 &nbsp; | &nbsp;
+      <strong>홈페이지</strong>
+      <a href="https://www.ukcentre.co.kr" target="_blank" rel="noopener">www.ukcentre.co.kr</a>
+    </div>
+  </div>
+</div>
+
+  <!-- 관심분야별 섹션 토글 -->
+  <script>
+    (function(){
+      const interest = document.getElementById('interest');
+      const langSec   = document.getElementById('lang-section');
+      const degreeSec = document.getElementById('degree-section');
+
+      const langRequiredIds   = ['dep-date','region','duration'];
+      const degreeRequiredIds = ['major','entry-year','last-school'];
+      const DEGREE_SET = new Set(['조기유학','학사','석사','박사']);
+
+      function setRequired(ids,on){
+        ids.forEach(id=>{
+          const el=document.getElementById(id);
+          if(!el)return;
+          on?el.setAttribute('required','required'):el.removeAttribute('required');
+        });
+      }
+      function show(el){if(el){el.classList.remove('hide');el.style.display='block';}}
+      function hide(el){if(el){el.classList.add('hide');el.style.display='none';}}
+
+      function toggleSections(){
+        const val = interest.value;
+        if(val==='어학연수'){
+          show(langSec); hide(degreeSec);
+          setRequired(langRequiredIds,true);
+          setRequired(degreeRequiredIds,false);
+        }else if(DEGREE_SET.has(val)){
+          hide(langSec); show(degreeSec);
+          setRequired(langRequiredIds,false);
+          setRequired(degreeRequiredIds,true);
+        }else{
+          hide(langSec); hide(degreeSec);
+          setRequired(langRequiredIds,false);
+          setRequired(degreeRequiredIds,false);
+        }
+      }
+
+      if(interest){
+        interest.addEventListener('change',toggleSections);
+        document.addEventListener('DOMContentLoaded',toggleSections);
+      }
+    })();
+  </script>
+
+  <!-- 제출 처리 -->
+  <script>
+    const form = document.getElementById('counsel-form');
+    const btn = document.getElementById('submitBtn');
+    const ok = document.getElementById('msg-success');
+    const err = document.getElementById('msg-error');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      ok.classList.add('hide'); err.classList.add('hide');
+      btn.disabled = true;
+      if (!form.checkValidity()) {
+        err.textContent = "필수 항목을 확인해 주세요.";
+        err.classList.remove('hide'); btn.disabled = false; return;
+      }
+      try {
+        const resp = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'Accept': 'application/json' },
+          body: new FormData(form)
+        });
+        if (resp.ok) { ok.classList.remove('hide'); form.reset(); }
+        else { err.classList.remove('hide'); }
+      } catch {
+        err.classList.remove('hide');
+      } finally { btn.disabled = false; }
+    });
+  </script>
+</body>
+</html>
