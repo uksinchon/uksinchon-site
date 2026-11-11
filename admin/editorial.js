@@ -7,6 +7,7 @@ const imageIds=()=>[...new Set((quill?.getContents().ops||[]).map(op=>typeof op.
 class ComparisonTable extends Quill.import('blots/block/embed') {
  static blotName='comparisonTable';static tagName='figure';static className='comparison-table-blot';
  static create(value){
+  if(value.layout==='grid')return window.UK_TABLE_GRID.create(super.create(),value);
   const n=super.create();n.dataset.table=JSON.stringify(value);n.setAttribute('contenteditable','false');n.setAttribute('role','group');n.setAttribute('aria-label','비교 표');
   n.append(node('strong',value.caption));const table=node('table'),thead=node('thead'),head=node('tr');
   for(const column of value.columns)head.append(node('th',column));thead.append(head);table.append(thead);const body=node('tbody');
@@ -82,8 +83,8 @@ window.UK_EDITORIAL={
   quill=q;changed=onChanged;notify=onNotice;if(installed)return;installed=true;
   for(const id of ['applies-to','requires-fact-check','review-scope','review-due','related-links','change-kind','change-note'])$(id).addEventListener('input',()=>changed());
   $('content-type').addEventListener('change',()=>{typeHelp();changed();});$('hero-image').addEventListener('change',()=>{hero=$('hero-image').value;changed();});
-  $('add-source').addEventListener('click',()=>{addSource();changed();});$('add-table').addEventListener('click',()=>openTable());
-  $('rich-editor').addEventListener('click',event=>{const figure=event.target.closest('.comparison-table-blot');if(!figure||!event.target.closest('button'))return;const blot=Quill.find(figure);openTable(ComparisonTable.value(figure),quill.getIndex(blot));});
+  $('add-source').addEventListener('click',()=>{addSource();changed();});window.UK_TABLE_GRID.install(quill);
+  $('rich-editor').addEventListener('click',event=>{const figure=event.target.closest('.comparison-table-blot');if(!figure||!event.target.closest('button')||figure.querySelector('[data-table-action]'))return;const blot=Quill.find(figure);openTable(ComparisonTable.value(figure),quill.getIndex(blot));});
   $('table-cancel').addEventListener('click',()=>$('table-dialog').close());
   $('table-remove').addEventListener('click',()=>{if(tableIndex!==null)quill.deleteText(tableIndex,1,'user');$('table-dialog').close();});
   $('table-form').addEventListener('submit',event=>{event.preventDefault();try{const value=tableValue(),index=tableIndex??newIndex;if(tableIndex!==null)quill.deleteText(index,1,'user');quill.insertEmbed(index,'comparisonTable',value,'user');if(tableIndex===null)quill.insertText(index+1,'\n','user');$('table-dialog').close();quill.setSelection(index+1,0,'silent');}catch(e){$('table-error').textContent=e.message;}});

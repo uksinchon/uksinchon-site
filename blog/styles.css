@@ -8,3 +8,4 @@
 [hidden]{display:none!important}.article-body .article-image img{margin-left:0;margin-right:auto}.article-body .article-image.ql-align-center img{margin-left:auto;margin-right:auto}.article-body .article-image.ql-align-right img{margin-left:auto;margin-right:0}
 
 .youtube-video{margin:22px 0;max-width:100%}.youtube-video iframe{display:block;width:100%;aspect-ratio:16/9;border:0}#rich-editor .ql-editor img{cursor:pointer}#rich-editor .ql-editor img:focus{outline:3px solid #3579ad}#toolbar .ql-youtube{font-size:18px}#image-metadata-panel>summary{cursor:pointer;font-weight:650}
+.body-table{table-layout:fixed;width:100%}.body-table td{white-space:pre-wrap;min-width:72px;overflow-wrap:anywhere}

@@ -28,7 +28,8 @@ with sync_playwright() as p:
  s.locator('#image-file').set_input_files(str(photo));expect(s.locator('#notice')).to_have_text('사진과 글을 공동 DB에 저장했습니다.')
  expect(s.locator('.image-detail')).to_have_count(1);s.locator('#image-metadata-panel > summary').click();s.get_by_label('독자에게 전달할 사진 설명',exact=True).fill('검증용으로 직접 만든 초록색 이미지');s.get_by_label('사진 아래에 보일 설명 · 선택',exact=True).fill('실제 학교 사진이 아닙니다.');s.get_by_label('사용 근거 · 예: 직접 촬영, 학교의 사용 허락',exact=True).fill('직접 생성한 가상 검증 이미지')
  s.locator('#hero-image').select_option(index=1)
- s.locator('#add-table').click();s.locator('#table-caption').fill('가상 동일 조건 비교');s.locator('#table-columns').fill('항목\n선택지 A\n선택지 B');s.locator('#table-rows').fill('기간\t가상 12주\t가상 12주\n숙소\t미확인\t미확인');s.locator('#table-notes').fill('실제 가격과 학교 조건이 아닌 테스트입니다.');s.get_by_role('button',name='표 반영하기',exact=True).click()
+ # Seed a saved legacy comparison table to verify its existing edit dialog remains usable.
+ s.evaluate('''()=>{const q=Quill.find(document.querySelector('#rich-editor'));q.insertEmbed(q.getLength()-1,'comparisonTable',{caption:'가상 동일 조건 비교',columns:['항목','선택지 A','선택지 B'],rows:[['기간','가상 12주','가상 12주'],['숙소','미확인','미확인']],notes:'실제 가격과 학교 조건이 아닌 테스트입니다.',source:''},'user');}''')
  expect(s.locator('.comparison-table-blot')).to_have_count(1)
  s.get_by_role('button',name='가상 동일 조건 비교 표 수정',exact=True).click();s.locator('#table-notes').fill('포함·제외 항목을 따로 확인하는 가상 표입니다.');s.get_by_role('button',name='표 반영하기',exact=True).click();s.locator('#save').click();expect(s.locator('#save-state')).to_have_text(re.compile('^저장 완료'))
  passed('image conversion, contextual alt/rights, hero selection and editable safe comparison tables save through the staff UI')

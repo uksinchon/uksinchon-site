@@ -1,0 +1,29 @@
+/* Grid picker and direct cell editing; serialized as the existing table embed. */
+(()=>{'use strict';
+const el=(tag,text)=>{const n=document.createElement(tag);if(text)n.textContent=text;return n;};
+let q;
+function cellAt(index,r,c){return q.getLeaf(index)[0]?.domNode.querySelector('textarea[data-row="'+r+'"][data-col="'+c+'"]');}
+function replace(figure,value,focus){const index=q.getIndex(Quill.find(figure)),Delta=Quill.import('delta');q.updateContents(new Delta().retain(index).delete(1).insert({comparisonTable:value}),'user');if(focus){const f=cellAt(index,focus.r,focus.c);if(f){f.focus({preventScroll:true});f.setSelectionRange(focus.start,focus.end);}}}
+function create(n,value){
+ n.dataset.table=JSON.stringify(value);n.contentEditable='false';n.setAttribute('role','group');n.setAttribute('aria-label','본문 표');
+ const scroll=el('div');scroll.className='inline-table-scroll';const table=el('table'),body=el('tbody');
+ [value.columns,...value.rows].forEach((row,r)=>{const tr=el('tr');row.forEach((cell,c)=>{const td=el('td'),input=el('textarea');input.value=cell;input.rows=Math.min(6,Math.max(1,String(cell).split('\n').length));input.maxLength=800;input.dataset.row=r;input.dataset.col=c;input.setAttribute('aria-label',(r+1)+'행 '+(c+1)+'열');td.append(input);tr.append(td);});body.append(tr);});table.append(body);scroll.append(table);n.append(scroll);
+ const actions=el('div');actions.className='inline-table-actions';for(const [action,label] of [['row-add','＋ 행'],['col-add','＋ 열'],['row-remove','마지막 행 삭제'],['col-remove','마지막 열 삭제'],['remove','표 삭제']]){const b=el('button',label);b.type='button';b.dataset.tableAction=action;actions.append(b);}n.append(actions);return n;
+}
+function install(quill){
+ q=quill;const button=document.getElementById('insert-table'),popup=document.getElementById('table-grid-picker'),grid=document.getElementById('table-grid'),status=document.getElementById('table-grid-size');let position=0,columns=1,rows=1;const cells=[];
+ function close(){popup.hidden=true;button.setAttribute('aria-expanded','false');}
+ function highlight(c,r){columns=c;rows=r;status.textContent=c+' × '+r;cells.forEach((cell,i)=>cell.classList.toggle('selected',i%10<c&&Math.floor(i/10)<r));}
+ function insert(c,r){close();q.history.cutoff();const at=Math.min(position,q.getLength()-1);q.insertEmbed(at,'comparisonTable',{layout:'grid',caption:'',columns:Array(c).fill(''),rows:Array.from({length:r-1},()=>Array(c).fill('')),source:'',notes:''},'user');q.history.cutoff();cellAt(at,0,0)?.focus();}
+ for(let r=1;r<=10;r++)for(let c=1;c<=10;c++){const cell=el('button');cell.type='button';cell.setAttribute('aria-label',c+'열 '+r+'행 표');cell.addEventListener('pointerenter',()=>highlight(c,r));cell.addEventListener('focus',()=>highlight(c,r));cell.addEventListener('click',()=>insert(c,r));cells.push(cell);grid.append(cell);}
+ button.addEventListener('click',()=>{position=q.getSelection()?.index??position;if(!popup.hidden){close();return;}popup.hidden=false;button.setAttribute('aria-expanded','true');highlight(1,1);const rect=button.getBoundingClientRect();popup.style.left=Math.max(8,Math.min(rect.left,innerWidth-244))+'px';popup.style.top=Math.max(8,Math.min(rect.bottom+5,innerHeight-280))+'px';cells[0].focus({preventScroll:true});});q.on('selection-change',range=>{if(range)position=range.index;});
+ popup.addEventListener('keydown',e=>{if(e.key==='Escape'){close();button.focus();}else if(['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)){e.preventDefault();const c=Math.max(1,Math.min(10,columns+(e.key==='ArrowLeft'?-1:e.key==='ArrowRight'?1:0))),r=Math.max(1,Math.min(10,rows+(e.key==='ArrowUp'?-1:e.key==='ArrowDown'?1:0)));cells[(r-1)*10+c-1].focus();}});
+ document.addEventListener('pointerdown',e=>{if(!popup.contains(e.target)&&!button.contains(e.target))close();});window.addEventListener('scroll',close,true);
+ q.root.addEventListener('input',e=>{const f=e.target,figure=f.closest('.comparison-table-blot');if(!figure||f.tagName!=='TEXTAREA')return;e.stopImmediatePropagation();if(e.isComposing)return;const value=JSON.parse(figure.dataset.table),r=Number(f.dataset.row),c=Number(f.dataset.col);(r===0?value.columns:value.rows[r-1])[c]=f.value;replace(figure,value,{r,c,start:f.selectionStart,end:f.selectionEnd});},true);
+ q.root.addEventListener('compositionend',e=>{if(e.target.matches('.comparison-table-blot textarea'))e.target.dispatchEvent(new InputEvent('input',{bubbles:true}));},true);
+ q.root.addEventListener('paste',e=>{if(e.target.matches('.comparison-table-blot textarea'))e.stopImmediatePropagation();},true);
+ q.root.addEventListener('keydown',e=>{const f=e.target;if(!f.matches('.comparison-table-blot textarea'))return;e.stopImmediatePropagation();if((e.ctrlKey||e.metaKey)&&['z','y'].includes(e.key.toLowerCase())){e.preventDefault();const index=q.getIndex(Quill.find(f.closest('.comparison-table-blot'))),r=f.dataset.row,c=f.dataset.col;q.history[e.key.toLowerCase()==='y'||e.shiftKey?'redo':'undo']();cellAt(index,r,c)?.focus();}},true);
+ q.root.addEventListener('click',e=>{const b=e.target.closest('[data-table-action]');if(!b)return;const figure=b.closest('.comparison-table-blot'),value=JSON.parse(figure.dataset.table),action=b.dataset.tableAction;q.history.cutoff();if(action==='remove'){q.deleteText(q.getIndex(Quill.find(figure)),1,'user');return;}if(action==='row-add'&&value.rows.length<49)value.rows.push(Array(value.columns.length).fill(''));else if(action==='col-add'&&value.columns.length<10){value.columns.push('');value.rows.forEach(row=>row.push(''));}else if(action==='row-remove'&&value.rows.length>0)value.rows.pop();else if(action==='col-remove'&&value.columns.length>1){value.columns.pop();value.rows.forEach(row=>row.pop());}else return;replace(figure,value);q.history.cutoff();});
+}
+window.UK_TABLE_GRID={create,install};
+})();
