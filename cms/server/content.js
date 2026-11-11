@@ -45,7 +45,10 @@ export function cleanSnapshot(input,authorName) {
     else if(v2&&op.insert?.comparisonTable)insert={comparisonTable:cleanTable(op.insert.comparisonTable)};
     else throw new Error('사진·표는 편집기의 추가 버튼으로 등록해 주세요.');
     const attributes={},a=op.attributes||{};
-    for(const k of ['bold','italic','underline','blockquote'])if(a[k]===true)attributes[k]=true;
+    for(const k of ['bold','italic','underline','strike','blockquote'])if(a[k]===true)attributes[k]=true;
+    if(['small','large','huge'].includes(a.size))attributes.size=a.size;
+    if(['center','right'].includes(a.align))attributes.align=a.align;
+    for(const key of ['color','background'])if(['#000000','#e60000','#ff9900','#ffff00','#008a00','#0066cc','#9933ff','#ffffff'].includes(a[key]))attributes[key]=a[key];
     if([2,3].includes(a.header))attributes.header=a.header;
     if(['ordered','bullet'].includes(a.list))attributes.list=a.list;
     if(a.link){const url=safeLink(a.link);if(url)attributes.link=url;}
@@ -133,29 +136,34 @@ export function renderTable(t) {
   return `<figure class="comparison-figure"><p class="table-hint">표가 넓으면 좌우로 밀어 확인해 주세요.</p><div class="table-scroll" role="region" aria-label="${esc(t.caption)}" tabindex="0"><table><caption>${esc(t.caption)}</caption><thead><tr>${t.columns.map(c=>'<th scope="col">'+esc(c)+'</th>').join('')}</tr></thead><tbody>${t.rows.map(row=>'<tr>'+row.map((v,i)=>i?'<td>'+esc(v)+'</td>':'<th scope="row">'+esc(v)+'</th>').join('')+'</tr>').join('')}</tbody></table></div>${t.notes?'<figcaption>'+esc(t.notes)+'</figcaption>':''}${t.source?'<p class="table-source">표 출처: <a href="'+esc(t.source)+'">'+esc(t.source)+'</a></p>':''}</figure>`;
 }
 export function renderDelta(delta,imageMeta={},heroImageId='') {
-  let html='',line='',list=null;
+  let html='',line='',list=null,pendingImage='';
   const closeList=()=>{if(list){html+=`</${list}>`;list=null;}};
   function endLine(a={}) {
+    if(pendingImage){closeList();html+=pendingImage.replace('article-image','article-image'+(['center','right'].includes(a.align)?' ql-align-'+a.align:''));pendingImage='';}
     if(!line&&!a.list){closeList();return;}
-    if(a.list){const kind=a.list==='ordered'?'ol':'ul';if(list!==kind){closeList();html+=`<${kind}>`;list=kind;}html+=`<li>${line||'<br>'}</li>`;}
-    else{closeList();const tag=a.header?'h'+a.header:a.blockquote?'blockquote':'p';html+=`<${tag}>${line||'<br>'}</${tag}>`;}
+    if(a.list){const kind=a.list==='ordered'?'ol':'ul';if(list!==kind){closeList();html+=`<${kind}>`;list=kind;}html+=`<li${['center','right'].includes(a.align)?' class="ql-align-'+a.align+'"':''}>${line||'<br>'}</li>`;}
+    else{closeList();const tag=a.header?'h'+a.header:a.blockquote?'blockquote':'p';html+=`<${tag}${['center','right'].includes(a.align)?' class="ql-align-'+a.align+'"':''}>${line||'<br>'}</${tag}>`;}
     line='';
   }
   for(const op of delta.ops) {
     const a=op.attributes||{};
     if(typeof op.insert?.image==='string') {
-      if(line)endLine();closeList();const id=op.insert.image.slice(7),m=imageMeta[id]||{},hero=id===heroImageId;
+      if(line||pendingImage)endLine();closeList();const id=op.insert.image.slice(7),m=imageMeta[id]||{},hero=id===heroImageId;
       const dimensions=m.width&&m.height?` width="${Number(m.width)}" height="${Number(m.height)}"`:'';
-      html+=`<figure class="article-image"><img src="${esc(op.insert.image)}" alt="${esc(m.decorative?'':m.alt||'')}"${dimensions}${hero?' fetchpriority="high"':' loading="lazy"'} decoding="async">${m.caption?'<figcaption>'+esc(m.caption)+'</figcaption>':''}${safeLink(m.source)?'<p class="image-source"><a href="'+esc(m.source)+'" rel="noopener noreferrer">사진 출처</a></p>':''}</figure>`;continue;
+      pendingImage=`<figure class="article-image"><img src="${esc(op.insert.image)}" alt="${esc(m.decorative?'':m.alt||'')}"${dimensions}${hero?' fetchpriority="high"':' loading="lazy"'} decoding="async">${m.caption?'<figcaption>'+esc(m.caption)+'</figcaption>':''}${safeLink(m.source)?'<p class="image-source"><a href="'+esc(m.source)+'" rel="noopener noreferrer">사진 출처</a></p>':''}</figure>`;continue;
     }
-    if(op.insert?.comparisonTable){if(line)endLine();closeList();html+=renderTable(op.insert.comparisonTable);continue;}
+    if(op.insert?.comparisonTable){if(line||pendingImage)endLine();closeList();html+=renderTable(op.insert.comparisonTable);continue;}
     if(typeof op.insert!=='string')continue;
     const parts=op.insert.split('\n');
     parts.forEach((part,i)=>{
       let value=esc(part);if(a.bold)value=`<strong>${value}</strong>`;if(a.italic)value=`<em>${value}</em>`;if(a.underline)value=`<u>${value}</u>`;
+      if(a.strike)value=`<s>${value}</s>`;
+      const classes=[];if(['small','large','huge'].includes(a.size))classes.push('ql-size-'+a.size);
+      for(const key of ['color','background'])if(['#000000','#e60000','#ff9900','#ffff00','#008a00','#0066cc','#9933ff','#ffffff'].includes(a[key]))classes.push('ql-'+(key==='background'?'bg':key)+'-'+a[key]);
+      if(classes.length)value=`<span class="${classes.join(' ')}">${value}</span>`;
       if(a.link&&safeLink(a.link))value=`<a href="${esc(a.link)}" rel="noopener noreferrer">${value}</a>`;
       line+=value;if(i<parts.length-1)endLine(a);
     });
   }
-  if(line)endLine();closeList();return html;
+  if(line||pendingImage)endLine();closeList();return html;
 }

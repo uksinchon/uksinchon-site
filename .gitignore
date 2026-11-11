@@ -8,3 +8,6 @@ __pycache__/
 
 # Private local price-management data must never enter this public site repo.
 /price_manager/
+
+# Task scratch files and development dependency cache
+/work/

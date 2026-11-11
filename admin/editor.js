@@ -6,7 +6,7 @@ const state={user:null,setup:false,post:null,snapshot:null,factReview:null,revis
 const extra=window.UK_EDITORIAL;
 let naverTextDirty=false;
 let editor;
-function notice(message='',error=false){$('notice').textContent=message;$('notice').classList.toggle('error',error);}
+function notice(message='',error=false){$('notice').textContent=message;$('notice').classList.toggle('error',error);$('notice').setAttribute('role',error?'alert':'status');}
 function show(id){views.forEach(v=>$(v).hidden=v!==id);}
 async function api(path,options={}) {
  const settings={credentials:'same-origin',...options,headers:{...options.headers}};
@@ -18,6 +18,7 @@ async function api(path,options={}) {
 function node(tag,text,className){const n=document.createElement(tag);if(text!==undefined)n.textContent=text;if(className)n.className=className;return n;}
 function bind(id,fn){$(id).addEventListener('click',()=>Promise.resolve().then(fn).catch(e=>notice(e.message,true)));}
 function signedIn(user){state.user=user;$('account-name').textContent=user.name+' · '+(user.role==='admin'?'관리자':'직원');$('account-nav').hidden=false;$('users-tab').hidden=user.role!=='admin';$('naver-tab').hidden=user.role!=='admin';$('counsel-tab').hidden=user.role!=='admin';$('trash-view').hidden=user.role!=='admin';$('trash-filter').hidden=user.role!=='admin';if(user.role!=='admin'&&$('status-filter').value==='trash')$('status-filter').value='';$('list-title').textContent=user.role==='admin'?'전체 직원의 글':'내가 작성한 글';}
+async function enterWorkspace(){const id=new URLSearchParams(location.search).get('edit');if(id){await openPost(id);history.replaceState(null,'',location.pathname);}else await loadList();}
 async function boot(){
  try{const status=await api('status');
   if(!status.storageConfigured||(!status.initialized&&!status.setupKeyConfigured)){
@@ -25,12 +26,12 @@ async function boot(){
   }
   state.setup=!status.initialized;
   if(state.setup){authView();notice('첫 관리자 계정을 만들면 직원 계정을 추가할 수 있습니다.');return;}
-  try{const data=await api('me');signedIn(data.user);notice();if(data.user.mustChange)show('password-view');else await loadList();}
+  try{const data=await api('me');signedIn(data.user);notice();if(data.user.mustChange)show('password-view');else await enterWorkspace();}
   catch(e){if(e.status===401){authView();notice();}else throw e;}
  }catch(e){notice(e.message,true);}
 }
 function authView(){show('auth');$('account-nav').hidden=true;$('first-admin').hidden=!state.setup;$('setup-token').required=state.setup;$('setup-name').required=state.setup;$('auth-kicker').textContent=state.setup?'첫 관리자 만들기':'직원 로그인';$('auth-title').textContent=state.setup?'첫 관리자 계정을 만들어 주세요.':'오늘의 이야기를 기록해 주세요.';$('auth-submit').textContent=state.setup?'관리자 만들고 시작하기':'로그인';$('auth-help').textContent=state.setup?'한 번만 설정합니다. 직원은 로그인한 뒤 ‘직원 계정’에서 추가합니다.':'계정이 없거나 비밀번호를 잊으셨다면 관리자에게 요청해 주세요.';}
-$('auth-form').addEventListener('submit',async event=>{event.preventDefault();$('auth-submit').disabled=true;try{const data=await api(state.setup?'setup':'login',{method:'POST',body:{email:$('email').value,password:$('password').value,name:$('setup-name').value,setupToken:$('setup-token').value}});$('password').value='';$('setup-token').value='';$('replacement-key').value='';$('replacement-key-area').hidden=true;state.setup=false;signedIn(data.user);notice();if(data.user.mustChange)show('password-view');else await loadList();}catch(e){notice(e.message,true);}finally{$('auth-submit').disabled=false;}});
+$('auth-form').addEventListener('submit',async event=>{event.preventDefault();$('auth-submit').disabled=true;try{const data=await api(state.setup?'setup':'login',{method:'POST',body:{email:$('email').value,password:$('password').value,name:$('setup-name').value,setupToken:$('setup-token').value}});$('password').value='';$('setup-token').value='';$('replacement-key').value='';$('replacement-key-area').hidden=true;state.setup=false;signedIn(data.user);notice();if(data.user.mustChange)show('password-view');else await enterWorkspace();}catch(e){notice(e.message,true);}finally{$('auth-submit').disabled=false;}});
 bind('generate-key',()=>{$('generated-key').value=Array.from(crypto.getRandomValues(new Uint8Array(24)),b=>b.toString(16).padStart(2,'0')).join('');$('generated-key').focus();$('generated-key').select();notice('설정키를 선택했습니다. Cloudflare의 암호화된 CMS_SETUP_TOKEN 값에 붙여넣어 주세요. 이 화면에는 따로 저장되지 않습니다.');});
 bind('replace-setup-key',()=>{
  if(!state.setup)throw new Error('첫 관리자 등록 단계에서만 사용할 수 있습니다.');
@@ -53,7 +54,7 @@ bind('recheck',boot);
 bind('logout',async()=>{if(!discardNaverText())return;if(state.dirty)await save(true);await api('logout',{method:'POST',body:{}});state.post=null;state.user=null;state.dirty=false;state.naver=null;state.naverItem=null;$('naver-cron-key').value='';clearTimeout(state.autoTimer);authView();notice('로그아웃했습니다.');});
 bind('password-button',async()=>{if(state.dirty)await save(true);show('password-view');notice();});
 bind('password-cancel',async()=>{if(state.user.mustChange)throw new Error('임시 비밀번호를 먼저 변경해 주세요.');await loadList();});
-$('password-form').addEventListener('submit',async event=>{event.preventDefault();try{if($('new-password').value!==$('new-password-again').value)throw new Error('새 비밀번호가 서로 다릅니다.');await api('password',{method:'POST',body:{currentPassword:$('old-password').value,password:$('new-password').value}});$('password-form').reset();state.user.mustChange=false;notice('비밀번호를 변경했습니다.');await loadList();}catch(e){notice(e.message,true);}});
+$('password-form').addEventListener('submit',async event=>{event.preventDefault();try{if($('new-password').value!==$('new-password-again').value)throw new Error('새 비밀번호가 서로 다릅니다.');await api('password',{method:'POST',body:{currentPassword:$('old-password').value,password:$('new-password').value}});$('password-form').reset();state.user.mustChange=false;notice('비밀번호를 변경했습니다.');await enterWorkspace();}catch(e){notice(e.message,true);}});
 function statusText(post){if(post.is_trashed)return '휴지통';if(post.published_revision){if(post.published_revision===post.revision)return '공개 중';return post.status==='review'?'공개 중 · 수정 검토 요청':'공개 중 · 수정 초안';}return {draft:'초안',review:'검토 요청',published:'공개 승인됨'}[post.status]||'초안';}
 async function moveListPost(post,restore,button){
  const title=post.title||'제목 없는 글';
@@ -80,16 +81,20 @@ bind('trash-view',async()=>{$('status-filter').value=$('status-filter').value===
 bind('new-post',async()=>{if(state.dirty)await save(true);$('new-post').disabled=true;try{const data=await api('posts',{method:'POST',body:{}});await openPost(data.id);}finally{$('new-post').disabled=false;}});
 function ensureEditor(){
  if(editor)return;
- editor=new Quill('#rich-editor',{theme:'snow',placeholder:'학생이 궁금해한 질문과 안내할 내용을 적어 주세요. 사진도 넣을 수 있습니다.',formats:['header','bold','italic','underline','list','blockquote','link','image','comparisonTable'],modules:{toolbar:{container:'#toolbar',handlers:{link(){const range=this.quill.getSelection();if(!range||!range.length){notice('링크를 넣을 글자를 먼저 선택해 주세요.',true);return;}const value=prompt('연결할 http 또는 https 주소를 입력해 주세요.');if(value===null)return;try{const u=new URL(value);if(!['http:','https:'].includes(u.protocol))throw new Error();this.quill.format('link',u.href);}catch{notice('올바른 웹 주소를 입력해 주세요.',true);}}}}}});
+ const palette=['#000000','#e60000','#ff9900','#ffff00','#008a00','#0066cc','#9933ff','#ffffff'];
+ ['color','background'].forEach(name=>{const attr=Quill.import('attributors/class/'+name);attr.whitelist=palette;Quill.register(attr,true);});
+ editor=new Quill('#rich-editor',{theme:'snow',placeholder:'학생이 궁금해한 질문과 안내할 내용을 적어 주세요. 사진도 넣을 수 있습니다.',formats:['header','bold','italic','underline','strike','size','color','background','align','list','blockquote','link','image','comparisonTable'],modules:{toolbar:{container:'#toolbar',handlers:{link(){const range=this.quill.getSelection();if(!range||!range.length){notice('링크를 넣을 글자를 먼저 선택해 주세요.',true);return;}const value=prompt('연결할 http 또는 https 주소를 입력해 주세요.');if(value===null)return;try{const u=new URL(value);if(!['http:','https:'].includes(u.protocol))throw new Error();this.quill.format('link',u.href);}catch{notice('올바른 웹 주소를 입력해 주세요.',true);}}}}}});
  extra.install(editor,changed,notice);
+ $('undo').addEventListener('click',()=>editor.history.undo());$('redo').addEventListener('click',()=>editor.history.redo());
+ editor.getModule('toolbar').addHandler('align',value=>{editor.formatLine(editor.getSelection(true), 'align',value, 'user');});
  editor.clipboard.addMatcher('IMG',()=>new (Quill.import('delta'))());
  editor.on('text-change',(_d,_old,source)=>{if(source==='user'){extra.syncImages();changed();}});
  $('rich-editor').addEventListener('drop',event=>{if(event.dataTransfer?.files.length){event.preventDefault();event.stopImmediatePropagation();uploadImages(event.dataTransfer.files).catch(e=>notice(e.message,true));}},true);
  $('rich-editor').addEventListener('paste',event=>{const files=[...(event.clipboardData?.files||[])];if(files.length){event.preventDefault();event.stopImmediatePropagation();uploadImages(files).catch(e=>notice(e.message,true));}},true);
 }
-function fillSnapshot(snapshot){state.loading=true;ensureEditor();state.snapshot=snapshot;$('title').value=snapshot.title||'';$('category').value=snapshot.category;$('summary').value=snapshot.summary||'';$('sources').value=snapshot.sources||'';$('verified-at').value=snapshot.verifiedAt||'';$('post-author').textContent=snapshot.authorName;editor.setContents(snapshot.delta,'silent');extra.fill(snapshot);state.loading=false;}
-async function openPost(id){
- if(state.dirty)await save(true);const data=await api('posts/'+id);state.post=data.post;state.naver=data.naver||null;state.factReview=data.factReview||null;state.revision=data.post.revision;state.dirty=false;state.changes=0;state.autoStopped=false;fillSnapshot(data.snapshot);$('version-list').replaceChildren();show('editor-view');fillNaverReview();updateState();notice();$('title').focus();
+function fillSnapshot(snapshot){state.loading=true;ensureEditor();state.snapshot=snapshot;$('title').value=snapshot.title||'';$('category').value=snapshot.category;$('summary').value=snapshot.summary||'';$('sources').value=snapshot.sources||'';$('verified-at').value=snapshot.verifiedAt||'';$('post-author').textContent=snapshot.authorName;editor.setContents(snapshot.delta,'silent');editor.history.clear();extra.fill(snapshot);state.loading=false;}
+async function openPost(id,{preservePosition=false}={}){
+ if(state.dirty)await save(true);const data=await api('posts/'+id);state.post=data.post;state.naver=data.naver||null;state.factReview=data.factReview||null;state.revision=data.post.revision;state.dirty=false;state.changes=0;state.autoStopped=false;fillSnapshot(data.snapshot);$('version-list').replaceChildren();show('editor-view');fillNaverReview();updateState();notice();$('title').focus({preventScroll:preservePosition});
 }
 function updateState(){if(!state.post)return;updateNaverReviewState();extra.status({user:state.user,post:state.post,dirty:state.dirty,revision:state.revision,review:state.factReview,snapshot:state.snapshot});$('editor-state').textContent=statusText({...state.post,revision:state.revision});$('save-state').textContent=state.dirty?'저장할 변경 사항이 있습니다.':'저장 완료 · 버전 '+state.revision;$('publish').hidden=state.user.role!=='admin';$('unpublish').hidden=state.user.role!=='admin'||!state.post.published_revision;$('public-link').hidden=!state.post.published_revision;$('public-link').href='/blog/'+state.post.slug+'/';$('publication-note').textContent=state.post.published_revision?'현재 공개본은 별도로 유지됩니다. 관리자 승인 전에는 수정 내용이 공개되지 않습니다.':'초안은 로그인한 작성자와 관리자만 볼 수 있습니다.';}
 function changed(){if(state.loading||!state.post)return;state.dirty=true;state.changes++;updateState();clearTimeout(state.autoTimer);if(!state.autoStopped)state.autoTimer=setTimeout(()=>save(false).catch(e=>notice(e.message,true)),1800);}
@@ -108,7 +113,7 @@ async function save(flush=false){
 bind('save',async()=>{state.autoStopped=false;await save(true);notice('공동 DB에 저장했습니다.');});
 bind('back-list',async()=>{await save(true);await loadList();notice();});
 bind('preview',async()=>{const popup=window.open('about:blank','_blank');if(!popup)throw new Error('미리보기를 위해 팝업을 허용해 주세요.');try{await save(true);popup.location.href='/api/cms/posts/'+state.post.id+'/preview';}catch(e){popup.close();throw e;}});
-async function action(kind){await save(true);if(kind==='publish'&&!confirm('저장된 이 버전을 공개하시겠습니까? 누구나 읽을 수 있습니다.'))return;if(kind==='unpublish'&&!confirm('현재 공개본을 내릴까요? 원고와 수정 이력은 보관됩니다.'))return;const data=await api('posts/'+state.post.id+'/'+kind,{method:'POST',body:{revision:state.revision}});await openPost(state.post.id);notice(kind==='publish'?'공개했습니다. ‘현재 공개본 보기’에서 확인해 주세요.':kind==='review'?'관리자에게 검토를 요청했습니다. 별도 메일·메신저 알림은 발송하지 않습니다.':'공개를 내렸습니다. 원고와 이력은 유지됩니다.');return data;}
+async function action(kind){await save(true);if(kind==='publish'&&!confirm('저장된 이 버전을 공개하시겠습니까? 누구나 읽을 수 있습니다.'))return;if(kind==='unpublish'&&!confirm('현재 공개본을 내릴까요? 원고와 수정 이력은 보관됩니다.'))return;const data=await api('posts/'+state.post.id+'/'+kind,{method:'POST',body:{revision:state.revision}});await openPost(state.post.id,{preservePosition:true});notice(kind==='publish'?'공개했습니다. ‘현재 공개본 보기’에서 확인해 주세요.':kind==='review'?'관리자에게 검토를 요청했습니다. 별도 메일·메신저 알림은 발송하지 않습니다.':'공개를 내렸습니다. 원고와 이력은 유지됩니다.');return data;}
 bind('review',()=>action('review'));bind('publish',()=>action('publish'));bind('unpublish',()=>action('unpublish'));
 bind('record-facts',async()=>{await save(true);await api('posts/'+state.post.id+'/factcheck',{method:'POST',body:{revision:state.revision,checks:extra.checks()}});await openPost(state.post.id);notice('현재 버전의 사실 확인을 기록했습니다. 별도로 공개 승인해 주세요.');});
 async function webpImage(file){

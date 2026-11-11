@@ -47,6 +47,7 @@ with sync_playwright() as p:
  v.screenshot(path='/workspace/신촌점_직원블로그_공개글.png',full_page=True)
  a.screenshot(path='/workspace/신촌점_직원글쓰기_관리자.png',full_page=True)
  passed('admin approval produces public Korean HTML with working image and source link')
+ s.goto(BASE+public_url,wait_until='networkidle');expect(s.locator('#edit-post')).to_be_visible();s.locator('#edit-post').click();expect(s.locator('#editor-view')).to_be_visible();expect(s.locator('#title')).to_have_value(title)
  s.get_by_role('button',name='← 글 목록',exact=True).click();s.get_by_role('button',name=title,exact=True).click();s.locator('#title').fill('아직 승인하지 않은 수정 제목');s.get_by_role('button',name='초안 저장',exact=True).click();expect(s.locator('#save-state')).to_have_text(re.compile('^저장 완료'))
  v.reload(wait_until='networkidle');assert v.get_by_role('heading',name=title,exact=True).is_visible()
  passed('staff editing after publication keeps the previous approved article live')

@@ -117,6 +117,12 @@ export async function handleCMS(context){
    if(parts[2]==='reset'){const salt=uuid();await db.batch([db.prepare('UPDATE cms_users SET password_salt=?,password_hash=?,must_change=1 WHERE id=?').bind(salt,await passwordHash(password(b.password),salt),target.id),db.prepare('DELETE FROM cms_sessions WHERE user_id=?').bind(target.id)]);return json({ok:true});}
    if(parts[2]==='active'){await db.batch([db.prepare('UPDATE cms_users SET active=? WHERE id=?').bind(b.active===true?1:0,target.id),db.prepare('DELETE FROM cms_sessions WHERE user_id=?').bind(target.id)]);return json({ok:true});}
   }
+  if(path==='edit-target'&&request.method==='GET'){
+   const p=await db.prepare('SELECT id FROM cms_posts WHERE slug=? AND published_revision IS NOT NULL').bind(url.searchParams.get('slug')||'').first();
+   if(!p)fail(404,'글을 찾을 수 없습니다.');
+   const post=await ownPost(db,p.id,user);if(post.is_trashed)fail(404,'글을 찾을 수 없습니다.');
+   return json({id:p.id});
+  }
   if(path==='posts'&&request.method==='GET'){
    const term=String(url.searchParams.get('q')||'').slice(0,100);const page=Math.max(1,Number(url.searchParams.get('page'))||1);const offset=(page-1)*30;
    const condition=user.role==='admin'?'1=1':'p.owner_id=?';const args=user.role==='admin'?[]:[user.id];const status=url.searchParams.get('status');if(status==='trash')admin(user);let extra=status==='trash'?' AND t.post_id IS NOT NULL':' AND t.post_id IS NULL';
