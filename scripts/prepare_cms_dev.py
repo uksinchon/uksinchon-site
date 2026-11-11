@@ -7,7 +7,7 @@ import shutil
 from package_site import PUBLIC_FILES
 ROOT=Path(__file__).resolve().parents[1]
 OUTPUT=ROOT/'.wrangler/dev-public'
-EXTRA=('assets/youtube.js','assets/blog-edit.js','_routes.json','_headers','robots.txt','blog/styles.css','admin/index.html','admin/naver-help.html','workers/naver-scheduler/index.js','admin/help.html','admin/editor.css','admin/editor.js','admin/editorial.js','admin/naver-images.js','admin/counsel.html','admin/counsel.js','admin/counsel.css','counsel/index.html','counsel/privacy.html','counsel/logo.png','admin/vendor/quill-2.0.3.js','admin/vendor/quill-2.0.3.css','admin/vendor/QUILL-LICENSE.txt')
+EXTRA=('admin/image-resize.js','assets/image-sizes.css','assets/youtube.js','assets/blog-edit.js','_routes.json','_headers','robots.txt','blog/styles.css','admin/index.html','admin/naver-help.html','workers/naver-scheduler/index.js','admin/help.html','admin/editor.css','admin/editor.js','admin/editorial.js','admin/naver-images.js','admin/counsel.html','admin/counsel.js','admin/counsel.css','counsel/index.html','counsel/privacy.html','counsel/logo.png','admin/vendor/quill-2.0.3.js','admin/vendor/quill-2.0.3.css','admin/vendor/QUILL-LICENSE.txt')
 if __name__=='__main__':
  OUTPUT.mkdir(parents=True,exist_ok=True)
  for name in (*PUBLIC_FILES,*EXTRA):

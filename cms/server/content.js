@@ -54,7 +54,8 @@ export function cleanSnapshot(input,authorName) {
     if([2,3].includes(a.header))attributes.header=a.header;
     if(['ordered','bullet'].includes(a.list))attributes.list=a.list;
     if(a.link){const url=safeLink(a.link);if(url)attributes.link=url;}
-    ops.push(typeof insert==='string'&&Object.keys(attributes).length?{insert,attributes}:{insert});
+    if(insert.image&&Number.isInteger(a.imageWidth)&&a.imageWidth>=10&&a.imageWidth<=100)ops.push({insert,attributes:{imageWidth:a.imageWidth}});
+    else ops.push(typeof insert==='string'&&Object.keys(attributes).length?{insert,attributes}:{insert});
   }
   const plain=ops.map(opText).join('').trim();
   if(plain.length>60000)throw new Error('한 글의 본문은 표를 포함해 6만 자 이내로 작성해 주세요.');
@@ -150,7 +151,8 @@ export function renderDelta(delta,imageMeta={},heroImageId='') {
     if(typeof op.insert?.image==='string') {
       if(line||pendingImage)endLine();closeList();const id=op.insert.image.slice(7),m=imageMeta[id]||{},hero=id===heroImageId;
       const dimensions=m.width&&m.height?` width="${Number(m.width)}" height="${Number(m.height)}"`:'';
-      pendingImage=`<figure class="article-image"><img src="${esc(op.insert.image)}" alt="${esc(m.decorative?'':m.alt||'')}"${dimensions}${hero?' fetchpriority="high"':' loading="lazy"'} decoding="async">${m.caption?'<figcaption>'+esc(m.caption)+'</figcaption>':''}${safeLink(m.source)?'<p class="image-source"><a href="'+esc(m.source)+'" rel="noopener noreferrer">사진 출처</a></p>':''}</figure>`;continue;
+      const size=Number.isInteger(a.imageWidth)&&a.imageWidth>=10&&a.imageWidth<=100?` class="image-width-${a.imageWidth}"`:'';
+      pendingImage=`<figure class="article-image"><img${size} src="${esc(op.insert.image)}" alt="${esc(m.decorative?'':m.alt||'')}"${dimensions}${hero?' fetchpriority="high"':' loading="lazy"'} decoding="async">${m.caption?'<figcaption>'+esc(m.caption)+'</figcaption>':''}${safeLink(m.source)?'<p class="image-source"><a href="'+esc(m.source)+'" rel="noopener noreferrer">사진 출처</a></p>':''}</figure>`;continue;
     }
     if(validYouTubeId(op.insert?.youtube)){if(line||pendingImage)endLine();closeList();html+=`<figure class="youtube-video"><iframe src="https://www.youtube-nocookie.com/embed/${op.insert.youtube}" title="YouTube 영상" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></figure>`;continue;}
     if(op.insert?.comparisonTable){if(line||pendingImage)endLine();closeList();html+=renderTable(op.insert.comparisonTable);continue;}

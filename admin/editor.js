@@ -1,6 +1,7 @@
 /* Staff editor: shared server storage only; no localStorage or fake publication. */
 (async()=>{'use strict';
 const {youtubeId,validYouTubeId}=await import('/assets/youtube.js');
+const {registerImageSize,installImageResize}=await import('/admin/image-resize.js');
 const $=id=>document.getElementById(id);
 const views=['connection','auth','password-view','workspace','editor-view'];
 const state={user:null,setup:false,post:null,snapshot:null,factReview:null,revision:0,dirty:false,changes:0,loading:false,saving:null,autoTimer:null,autoStopped:false,page:1,hasMore:false,naver:null,naverItem:null};
@@ -87,14 +88,14 @@ function ensureEditor(){
   static create(id){const n=super.create();if(!validYouTubeId(id))return n;n.dataset.video=id;n.setAttribute('contenteditable','false');const frame=document.createElement('iframe');frame.src='https://www.youtube-nocookie.com/embed/'+id;frame.title='YouTube 영상';frame.setAttribute('allowfullscreen','');frame.setAttribute('allow','accelerometer; encrypted-media; gyroscope; picture-in-picture');frame.referrerPolicy='strict-origin-when-cross-origin';n.append(frame);return n;}
   static value(n){return n.dataset.video;}
  }
- Quill.register(YouTube,true);
+ Quill.register(YouTube,true);registerImageSize(Quill);
  const palette=['#000000','#e60000','#ff9900','#ffff00','#008a00','#0066cc','#9933ff','#ffffff'];
  ['color','background'].forEach(name=>{const attr=Quill.import('attributors/class/'+name);attr.whitelist=palette;Quill.register(attr,true);});
  editor=new Quill('#rich-editor',{theme:'snow',placeholder:'학생이 궁금해한 질문과 안내할 내용을 적어 주세요. 사진도 넣을 수 있습니다.',formats:['header','bold','italic','underline','strike','size','color','background','align','list','blockquote','link','image','youtube','comparisonTable'],modules:{toolbar:{container:'#toolbar',handlers:{link(){const range=this.quill.getSelection();if(!range||!range.length){notice('링크를 넣을 글자를 먼저 선택해 주세요.',true);return;}const value=prompt('연결할 http 또는 https 주소를 입력해 주세요.');if(value===null)return;const video=youtubeId(value);if(video){insertYouTube(video,range);return;}try{const u=new URL(value);if(!['http:','https:'].includes(u.protocol))throw new Error();this.quill.format('link',u.href);}catch{notice('올바른 웹 주소를 입력해 주세요.',true);}}}}}});
- extra.install(editor,changed,notice);
+ extra.install(editor,changed,notice);installImageResize(editor,Quill);
  const toolbar=editor.getModule('toolbar');toolbar.addHandler('image',chooseImage);toolbar.addHandler('youtube',()=>{const value=prompt('YouTube 영상 주소를 입력해 주세요.');if(value===null)return;const id=youtubeId(value);if(!id){notice('올바른 YouTube 영상 링크를 입력해 주세요.',true);return;}insertYouTube(id);});
  editor.on('selection-change',range=>{if(range)imagePosition=range.index;});
- editor.root.addEventListener('click',event=>{if(event.target.tagName!=='IMG')return;const blot=Quill.find(event.target);if(blot){editor.setSelection(editor.getIndex(blot),1,'silent');editor.focus({preventScroll:true});}});
+ editor.root.addEventListener('click',event=>{if(event.target.tagName!=='IMG')return;const blot=Quill.find(event.target);if(blot){editor.setSelection(editor.getIndex(blot),0,'silent');editor.focus({preventScroll:true});}});
  function insertYouTube(id,range=editor.getSelection(true)){const at=range?.index??editor.getLength()-1;editor.history.cutoff();if(range?.length)editor.deleteText(at,range.length,'user');editor.insertEmbed(at,'youtube',id,'user');editor.setSelection(at+1,0,'silent');editor.history.cutoff();}
  editor.root.addEventListener('paste',event=>{const id=youtubeId(event.clipboardData?.getData('text/plain')||'');if(!id)return;event.preventDefault();event.stopImmediatePropagation();insertYouTube(id);},true);
  editor.root.addEventListener('keydown',event=>{if(event.isComposing||!['Enter',' '].includes(event.key))return;const range=editor.getSelection();if(!range||range.length)return;const [line]=editor.getLine(range.index);if(!line)return;const start=editor.getIndex(line),id=youtubeId(editor.getText(start,range.index-start));if(!id)return;event.preventDefault();event.stopImmediatePropagation();insertYouTube(id,{index:start,length:range.index-start});},true);
