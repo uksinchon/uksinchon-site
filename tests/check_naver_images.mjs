@@ -60,7 +60,7 @@ try{
  const reviewChecks={facts:true,conditions:true,rights:true};await a.api('naver/items/'+source.id+'/review',{method:'POST',body:{revision:current.post.revision,sourceHash,checks:reviewChecks}});await a.api('posts/'+draft.postId+'/factcheck',{method:'POST',body:{revision:current.post.revision,checks:reviewChecks}});
  const published=await a.api('posts/'+draft.postId+'/publish',{method:'POST',body:{revision:current.post.revision}});const html=(await anonymous.request(published.url)).data;assert(html.includes('src="/media/'));assert(!html.includes('<img src="https://postfiles.pstatic.net'));await anonymous.request(uploaded.url);
  assert.equal((await a.api('naver/items/'+source.id)).item.images,registered.item.images);
- pass('imported bytes use existing private WebP storage; source metadata persists and publication still requires descriptions, rights and current review');
+ pass('imported bytes use existing private WebP storage; source metadata persists and optional descriptions/rights persist and publication still requires current source review');
 
  current=await a.api('posts/'+draft.postId);await a.api('posts/'+draft.postId+'/trash',{method:'POST',body:{revision:current.post.revision}});await a.api(base+query,{expected:410});await a.api(path(0),{expected:410});
  pass('trashed articles cannot download or import source images');

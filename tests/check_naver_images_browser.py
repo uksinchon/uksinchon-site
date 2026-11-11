@@ -51,6 +51,7 @@ with sync_playwright() as p:
  final=a.evaluate('''async(id)=>(await(await fetch('/api/cms/posts/'+id)).json())''',seed['id']);order=[final['snapshot']['imageMeta'][op['insert']['image'].split('/')[-1]]['source'].split('photo-')[-1] for op in final['snapshot']['delta']['ops'] if isinstance(op.get('insert'),dict) and 'image' in op['insert']];assert order==['0.png','1.png','5.png','6.png','7.png','8.png'],order
  passed('partial upload and draft-save failures retain progress; retry resumes without duplicate photos or reversed source order')
 
+ a.locator('#image-metadata-panel > summary').click()
  for i,box in enumerate(a.locator('.image-detail').all()):
   box.get_by_label('독자에게 전달할 사진 설명',exact=True).fill('직접 만든 가상 사진 '+str(i+1));box.get_by_label('사용 근거 · 예: 직접 촬영, 학교의 사용 허락',exact=True).fill('직접 생성한 가상 검증 이미지')
  a.get_by_text('함께 읽을 글·수정 기록',exact=True).click();a.locator('#change-note').fill('가상 사진 추가 및 설명 검증')

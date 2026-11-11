@@ -1,3 +1,4 @@
+import {validYouTubeId} from '../../assets/youtube.js';
 export const CATEGORY_DEFINITIONS = [
   ['english','어학연수'], ['undergraduate','대학·파운데이션'], ['postgraduate','석사·대학원'],
   ['costs','비용·장학금'], ['preparation','유학 준비·생활'], ['stories','상담 사례·소식']
@@ -42,6 +43,7 @@ export function cleanSnapshot(input,authorName) {
     let insert;
     if(typeof op.insert==='string')insert=op.insert;
     else if(typeof op.insert?.image==='string'&&/^\/media\/[a-f0-9-]{36}$/.test(op.insert.image)&&UUID.test(op.insert.image.slice(7)))insert={image:op.insert.image};
+    else if(validYouTubeId(op.insert?.youtube))insert={youtube:op.insert.youtube};
     else if(v2&&op.insert?.comparisonTable)insert={comparisonTable:cleanTable(op.insert.comparisonTable)};
     else throw new Error('사진·표는 편집기의 추가 버튼으로 등록해 주세요.');
     const attributes={},a=op.attributes||{};
@@ -105,9 +107,7 @@ export function imageReadiness(s) {
   if(s.schemaVersion!==2)return '';
   for(const id of imageIds(s)) {
     const m=s.imageMeta?.[id];
-    if(!m||(!m.decorative&&!m.alt))return '본문 사진의 설명을 입력하거나 장식용 여부를 선택해 주세요.';
-    if(!m.rights)return '본문 사진의 사용 근거를 입력해 주세요.';
-    if(m.source&&!safeLink(m.source))return '사진 출처의 웹 주소를 완성하거나 지워 주세요.';
+    if(m?.source&&!safeLink(m.source))return '사진 출처의 웹 주소를 완성하거나 지워 주세요.';
   }
   if(s.heroImageId&&s.imageMeta[s.heroImageId]?.decorative)return '장식용 사진은 대표 사진으로 선택할 수 없습니다.';
   return '';
@@ -152,6 +152,7 @@ export function renderDelta(delta,imageMeta={},heroImageId='') {
       const dimensions=m.width&&m.height?` width="${Number(m.width)}" height="${Number(m.height)}"`:'';
       pendingImage=`<figure class="article-image"><img src="${esc(op.insert.image)}" alt="${esc(m.decorative?'':m.alt||'')}"${dimensions}${hero?' fetchpriority="high"':' loading="lazy"'} decoding="async">${m.caption?'<figcaption>'+esc(m.caption)+'</figcaption>':''}${safeLink(m.source)?'<p class="image-source"><a href="'+esc(m.source)+'" rel="noopener noreferrer">사진 출처</a></p>':''}</figure>`;continue;
     }
+    if(validYouTubeId(op.insert?.youtube)){if(line||pendingImage)endLine();closeList();html+=`<figure class="youtube-video"><iframe src="https://www.youtube-nocookie.com/embed/${op.insert.youtube}" title="YouTube 영상" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></figure>`;continue;}
     if(op.insert?.comparisonTable){if(line||pendingImage)endLine();closeList();html+=renderTable(op.insert.comparisonTable);continue;}
     if(typeof op.insert!=='string')continue;
     const parts=op.insert.split('\n');

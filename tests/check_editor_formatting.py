@@ -25,7 +25,7 @@ with sync_playwright() as p:
  for alignment in ['center','','right']:
   a.locator('.ql-align[value="'+alignment+'"]').click()
   assert a.locator('.ql-editor img').evaluate('(e)=>getComputedStyle(e.parentElement).textAlign')=={'center':'center','':'left','right':'right'}[alignment]
- a.get_by_label('독자에게 전달할 사진 설명',exact=True).fill('서식 확인 사진');a.get_by_label('사용 근거 · 예: 직접 촬영, 학교의 사용 허락',exact=True).fill('가상 생성')
+ a.locator('#image-metadata-panel > summary').click();a.get_by_label('독자에게 전달할 사진 설명',exact=True).fill('서식 확인 사진');a.get_by_label('사용 근거 · 예: 직접 촬영, 학교의 사용 허락',exact=True).fill('가상 생성')
  a.locator('#save').click();expect(a.locator('#save-state')).to_contain_text('저장 완료')
  delta=a.evaluate('()=>Quill.find(document.querySelector("#rich-editor")).getContents()')
  assert any(o.get('attributes',{}).get('color')=='#e60000' and o.get('attributes',{}).get('background')=='#ffff00' and o.get('attributes',{}).get('size')=='large' and o.get('attributes',{}).get('strike') for o in delta['ops']),delta

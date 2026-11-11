@@ -1,0 +1,12 @@
+import assert from 'node:assert/strict';
+import {youtubeId} from '../assets/youtube.js';
+import {cleanSnapshot,renderDelta,semanticContent} from '../cms/server/content.js';
+const id='M7lc1UVf-VE';
+for(const url of [`https://youtu.be/${id}`,`https://www.youtube.com/watch?v=${id}&t=30`, `https://m.youtube.com/shorts/${id}`,`https://youtube.com/live/${id}`,`https://www.youtube-nocookie.com/embed/${id}`])assert.equal(youtubeId(url),id);
+for(const url of [`https://youtube.com.evil.test/watch?v=${id}`,`https://evil.test/?v=${id}`,`javascript:${id}`,`https://youtube.com@evil.test/watch?v=${id}`,`https://youtube.com/watch?v=bad`, `https://youtu.be/${id}/extra`,`https://youtube.com:8000/watch?v=${id}`])assert.equal(youtubeId(url),null);
+const base={schemaVersion:2,title:'가상 영상',delta:{ops:[{insert:{youtube:id}},{insert:'\n'}]}};
+const s=cleanSnapshot(base,'가상 작성자');assert.equal(s.delta.ops[0].insert.youtube,id);
+const html=renderDelta(s.delta);assert(html.includes(`https://www.youtube-nocookie.com/embed/${id}`));assert(html.includes('allowfullscreen'));assert(!html.includes('autoplay'));
+for(const youtube of ['https://evil.test/embed','M7lc1UVf-VE" onload="alert(1)',null])assert.throws(()=>cleanSnapshot({...base,delta:{ops:[{insert:{youtube}}]}},'가상 작성자'));
+assert.notEqual(semanticContent(s),semanticContent(cleanSnapshot({...base,delta:{ops:[{insert:{youtube:'aqz-KE-bpKQ'}},{insert:'\n'}]}},'가상 작성자')));
+console.log('PASS shared YouTube URL allowlist, safe serialization/rendering, hostile URLs and semantic revision tracking');

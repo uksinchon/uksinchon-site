@@ -5,7 +5,7 @@ const stamp=value=>value&&Number.isFinite(Date.parse(value))?new Date(value).toL
 const time=(value,label)=>value?`${label} <time datetime="${esc(value)}">${esc(stamp(value))}</time>`:'';
 const slugPattern=/^[A-Za-z0-9][A-Za-z0-9_-]{0,199}$/;
 export function htmlResponse(html,{status=200,privatePage=false}={}) {
- return new Response(html,{status,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':privatePage?'private, no-store':'public, max-age=0, must-revalidate','X-Content-Type-Options':'nosniff','Referrer-Policy':'strict-origin-when-cross-origin','Content-Security-Policy':"default-src 'none'; style-src 'self'; img-src 'self'; script-src 'self'; connect-src 'self'; base-uri 'none'; frame-ancestors 'none'; form-action 'self'",...(privatePage?{'X-Robots-Tag':'noindex, nofollow'}:{})}});
+ return new Response(html,{status,headers:{'Content-Type':'text/html; charset=utf-8','Cache-Control':privatePage?'private, no-store':'public, max-age=0, must-revalidate','X-Content-Type-Options':'nosniff','Referrer-Policy':'strict-origin-when-cross-origin','Content-Security-Policy':"default-src 'none'; style-src 'self'; img-src 'self'; script-src 'self'; connect-src 'self'; frame-src https://www.youtube-nocookie.com; base-uri 'none'; frame-ancestors 'none'; form-action 'self'",...(privatePage?{'X-Robots-Tag':'noindex, nofollow'}:{})}});
 }
 function shell(title,description,body,{path='/blog/',schema=null,robots='',article=false,image=null}={}) {
  const metaImage=image?`<meta property="og:image" content="${esc(image.url)}"><meta property="og:image:alt" content="${esc(image.alt)}"><meta name="twitter:card" content="summary_large_image">`:'';

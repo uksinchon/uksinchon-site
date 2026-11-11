@@ -19,3 +19,5 @@
 .ql-snow .ql-picker.ql-size .ql-picker-label::before,.ql-snow .ql-picker.ql-size .ql-picker-item::before{content:'보통'}.ql-snow .ql-picker.ql-size [data-value="small"]::before{content:'작게'}.ql-snow .ql-picker.ql-size [data-value="large"]::before{content:'크게'}.ql-snow .ql-picker.ql-size [data-value="huge"]::before{content:'아주 크게'}
 /* Status messages must not intercept controls underneath them. */
 #notice{pointer-events:none}
+
+.youtube-video{margin:22px 0;max-width:100%}.youtube-video iframe{display:block;width:100%;aspect-ratio:16/9;border:0}#rich-editor .ql-editor img{cursor:pointer}#rich-editor .ql-editor img:focus{outline:3px solid #3579ad}#toolbar .ql-youtube{font-size:18px}#image-metadata-panel>summary{cursor:pointer;font-weight:650}

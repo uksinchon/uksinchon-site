@@ -1,6 +1,6 @@
 /** Pure model boundaries. No network, accounts or database writes. */
 import assert from 'node:assert/strict';
-import {cleanSnapshot,cleanTable,imageIds,renderDelta,factReadiness,semanticContent,webpDimensions} from '../cms/server/content.js';
+import {cleanSnapshot,cleanTable,imageReadiness,imageIds,renderDelta,factReadiness,semanticContent,webpDimensions} from '../cms/server/content.js';
 import {sealPublication,publicationDates,publicationProblem} from '../cms/server/publication.js';
 const checks=[];const pass=name=>{checks.push(name);console.log('PASS',name);};
 const id='11111111-1111-4111-8111-111111111111';
@@ -23,7 +23,8 @@ assert(html.includes('<table>')&&html.includes('scope="col"')&&html.includes('sc
 assert.throws(()=>cleanTable({...table,rows:[['wrong']]}));assert.throws(()=>cleanTable({...table,source:'javascript:alert(1)'}));
 pass('tables preserve headers, text, sources and escaping; image traversal and hero dimensions handle mixed embeds');
 assert(publicationProblem(s,null).includes('사실 확인'));
-assert(publicationProblem({...rich,imageMeta:{[id]:{alt:'',rights:'가상'}}},null).includes('사진'));
+assert.equal(imageReadiness({...rich,imageMeta:{[id]:{}}}),'');
+assert(imageReadiness({...rich,imageMeta:{[id]:{source:'javascript:alert(1)'}}}).includes('주소'));
 const user={id:'admin-id',name:'가상 검토자'},post={owner_id:'writer-id',revision:3,published_at:null};
 const review={actor_id:user.id,name:user.name,created_at:'2026-11-05T01:00:00Z'};
 const first=sealPublication(s,post,null,review,user,'2026-11-05T02:00:00Z');

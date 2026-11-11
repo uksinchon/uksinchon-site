@@ -28,7 +28,7 @@ with sync_playwright() as p:
  s.locator('#image-file').set_input_files(str(image));expect(s.locator('.ql-editor img')).to_be_visible()
  expect(s.locator('#notice')).to_have_text('사진과 글을 공동 DB에 저장했습니다.')
  assert s.locator('.ql-editor img').evaluate('(e)=>e.naturalHeight')==960
- s.get_by_label('독자에게 전달할 사진 설명',exact=True).fill('가상 검증 이미지');s.get_by_label('사용 근거 · 예: 직접 촬영, 학교의 사용 허락',exact=True).fill('직접 생성한 가상 이미지');s.locator('#save').click();expect(s.locator('#save-state')).to_have_text(re.compile('^저장 완료'))
+ s.locator('#image-metadata-panel > summary').click();s.get_by_label('독자에게 전달할 사진 설명',exact=True).fill('가상 검증 이미지');s.get_by_label('사용 근거 · 예: 직접 촬영, 학교의 사용 허락',exact=True).fill('직접 생성한 가상 이미지');s.locator('#save').click();expect(s.locator('#save-state')).to_have_text(re.compile('^저장 완료'))
  passed('rich-text editor, Korean summary, sources and actual server photo upload with 1600px resizing')
  for width in [320,375,390,430,768]:
   s.set_viewport_size({'width':width,'height':900});assert not s.evaluate('document.documentElement.scrollWidth>innerWidth'),width
