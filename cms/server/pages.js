@@ -1,6 +1,13 @@
 import {esc,renderDelta,CATEGORY_DEFINITIONS,safeLink,todayKorea} from './content.js';
 import {publicationDates} from './publication.js';
 const ORIGIN='https://uksinchon.com';
+// Public attribution is distinct from the account that owns or reviews a draft.
+// Keep named authors; generic account labels represent the branch editorial team.
+export function publicAuthor(snapshot) {
+ const name=String(snapshot.authorName||'').trim();
+ if(!name||/^(admin(?:istrator)?|editor|관리자|운영자|작성자)$/i.test(name)||name==='영국유학센터 신촌점')return {'@type':'Organization','@id':ORIGIN+'/#organization',name:'영국유학센터 신촌점',url:ORIGIN+'/'};
+ return {'@type':'Person',name,...(snapshot.publication?.authorId?{'@id':ORIGIN+'/#author-'+snapshot.publication.authorId}:{})};
+}
 const stamp=value=>value&&Number.isFinite(Date.parse(value))?new Date(value).toLocaleDateString('ko-KR',{timeZone:'Asia/Seoul'}):'';
 const time=(value,label)=>value?`${label} <time datetime="${esc(value)}">${esc(stamp(value))}</time>`:'';
 const slugPattern=/^[A-Za-z0-9][A-Za-z0-9_-]{0,199}$/;
@@ -20,15 +27,16 @@ function sourcesHTML(s) {
 }
 export function articlePage(s,p,preview=false,{related=[]}={}) {
  const {publishedAt,modifiedAt}=publicationDates(s,p),path='/blog/'+p.slug+'/';
+ const author=publicAuthor(s);
  const checked=!preview?s.publication?.factCheck:null;
  const hero=s.heroImageId&&s.imageMeta?.[s.heroImageId]&&!s.imageMeta[s.heroImageId].decorative?{url:ORIGIN+'/media/'+s.heroImageId,alt:s.imageMeta[s.heroImageId].alt||''}:null;
  const article={'@type':['guide','comparison'].includes(s.contentType)?'Article':'BlogPosting','@id':ORIGIN+path+'#article',headline:s.title,description:s.summary,
   ...(publishedAt?{datePublished:publishedAt}:{}),...(modifiedAt?{dateModified:modifiedAt}:{}),...(hero?{image:[hero.url]}:{}),
-  author:{'@type':'Person',name:s.authorName,...(s.publication?.authorId?{'@id':ORIGIN+'/#author-'+s.publication.authorId}:{})},
+  author,
   publisher:{'@type':'Organization','@id':ORIGIN+'/#organization',name:'영국유학센터 신촌점',url:ORIGIN,logo:{'@type':'ImageObject',url:ORIGIN+'/logo.png'}},mainEntityOfPage:ORIGIN+path};
  const breadcrumbs={'@type':'BreadcrumbList',itemListElement:[{name:'홈',item:ORIGIN+'/'},{name:'블로그',item:ORIGIN+'/blog/'},{name:s.title,item:ORIGIN+path}].map((x,i)=>({'@type':'ListItem',position:i+1,...x}))};
  const schema=preview?null:{'@context':'https://schema.org','@graph':[article,breadcrumbs]};
- const byline=preview?esc(s.authorName)+' · 공개 전 초안':esc(s.authorName)+' · '+time(publishedAt,'최초 발행')+(modifiedAt&&modifiedAt!==publishedAt?' · '+time(modifiedAt,'내용 수정'):'');
+ const byline=preview?esc(author.name)+' · 공개 전 초안':esc(author.name)+' · '+time(publishedAt,'최초 발행')+(modifiedAt&&modifiedAt!==publishedAt?' · '+time(modifiedAt,'내용 수정'):'');
  const review=checked?`<section class="fact-review" aria-label="자료 확인"><p>${time(checked.checkedAt,'마지막 사실 확인')} · 검토 ${esc(checked.reviewerName)}</p><p>확인 범위: ${esc(checked.scope)}</p></section>`:'';
  const due=!preview&&s.reviewDueAt&&s.reviewDueAt<todayKorea()?'<p class="freshness-note">이 안내의 재확인 시점이 지났습니다. 현재 적용 조건은 공식 자료와 상담으로 다시 확인해 주세요.</p>':'';
  const relatedHTML=related.length?'<nav class="related" aria-label="함께 읽을 글"><h2>다음 질문도 함께 살펴보세요</h2><ul>'+related.map(row=>'<li><a href="/blog/'+esc(row.slug)+'/">'+esc(row.title)+'</a></li>').join('')+'</ul></nav>':'';
@@ -72,7 +80,7 @@ export async function publicBlog({request,env}) {
   query+=' ORDER BY p.published_at DESC,p.id DESC LIMIT 13 OFFSET ?';args.push((page-1)*12);
   const rows=(await env.CMS_DB.prepare(query).bind(...args).all()).results;
   if(page>1&&!rows.length)return head(missing(),request);
-  const cards=rows.slice(0,12).map(row=>{const s=JSON.parse(row.snapshot);return `<article class="post-card"><p class="eyebrow">${esc(s.category)}</p><h2><a href="/blog/${esc(row.slug)}/">${esc(s.title)}</a></h2><p>${esc(s.summary)}</p><small>${esc(s.authorName)} · ${time(row.published_at,'발행')}</small></article>`;}).join('');
+  const cards=rows.slice(0,12).map(row=>{const s=JSON.parse(row.snapshot);return `<article class="post-card"><p class="eyebrow">${esc(s.category)}</p><h2><a href="/blog/${esc(row.slug)}/">${esc(s.title)}</a></h2><p>${esc(s.summary)}</p><small>${esc(publicAuthor(s).name)} · ${time(row.published_at,'발행')}</small></article>`;}).join('');
   const paging=n=>{const q=new URLSearchParams();if(category)q.set('category',category.code);if(n>1)q.set('page',String(n));return '/blog/'+(q.size?'?'+q.toString():'');};
   const title=(category?category.label+' 글':'신촌점 블로그')+(page>1?' · '+page+'페이지':'');
   const body=`<section class="intro"><p class="eyebrow">FROM OUR CONSULTATIONS</p><h1>${category?esc(category.label)+' 안내와 이야기':'영국 유학, 궁금한 것부터 차근차근.'}</h1><p>신촌점에서 전하는 준비 안내와 상담 이야기입니다.</p></section><nav class="categories" aria-label="글 주제"><a href="/blog/" ${!category?'aria-current="page"':''}>전체</a>${CATEGORY_DEFINITIONS.map(c=>'<a href="/blog/?category='+c.code+'" '+(category?.code===c.code?'aria-current="page"':'')+'>'+esc(c.label)+'</a>').join('')}</nav><section class="post-list">${cards||'<p class="empty">아직 공개된 글이 없습니다. 첫 이야기를 준비하고 있습니다.</p>'}</section><nav class="pagination" aria-label="글 목록 페이지">${page>1?'<a rel="prev" href="'+esc(paging(page-1))+'">← 이전</a>':''}<span>${page}페이지</span>${rows.length>12?'<a rel="next" href="'+esc(paging(page+1))+'">다음 →</a>':''}</nav>`;
