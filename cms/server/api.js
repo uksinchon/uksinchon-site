@@ -1,6 +1,6 @@
 import {SCHEMA} from './schema.js';
 import {ensureTrash,movePost} from './trash.js';
-import {cleanSnapshot,imageIds,textOf,safeLink,webpDimensions,factReadiness,semanticContent} from './content.js';
+import {cleanSnapshot,imageIds,textOf,safeLink,webpDimensions,factReadiness} from './content.js';
 import {publicationProblem,sealPublication} from './publication.js';
 import {articlePage,relatedPosts} from './pages.js';
 import {syncNaver,importedItem,guardNaverPublish,readSource} from './naver.js';
@@ -199,7 +199,6 @@ export async function handleCMS(context){
       const problem=publicationProblem(s);if(problem)fail(400,problem);
       const last=post.published_revision?{revision:post.published_revision}:await db.prepare("SELECT revision FROM cms_events WHERE post_id=? AND action='publish' ORDER BY created_at DESC,id DESC LIMIT 1").bind(post.id).first();
       const previous=last?await snapshot(db,post.id,last.revision):null;
-      if(s.schemaVersion===2&&previous&&semanticContent(previous)!==semanticContent(s)&&!s.changeNote)fail(400,'이번 수정의 이유와 범위를 입력해 주세요.');
       const approved=sealPublication(s,post,previous,reviewed,user,stamp);resultingRevision=post.revision+1;
       const gate=source?" AND EXISTS(SELECT 1 FROM cms_naver_items n WHERE n.post_id=cms_posts.id AND n.source_complete=1 AND n.status<>'source_changed' AND n.approved_revision=cms_posts.revision AND n.approved_source_hash=n.source_hash AND n.source_hash=?) AND NOT EXISTS(SELECT 1 FROM cms_naver_source WHERE poll_until>?)":'';
       const params=[stamp,stamp,saveToken,post.id,post.revision,...(source?[source.source_hash,stamp]:[])];

@@ -1,7 +1,7 @@
 /* Versioned editorial fields and safe table embeds. Loaded before editor.js. */
 (()=>{'use strict';
 const $=id=>document.getElementById(id),node=(tag,value)=>{const n=document.createElement(tag);if(value!==undefined)n.textContent=value;return n;};
-let quill,changed,notify,imageMeta={},hero='',tableIndex=null,newIndex=0,installed=false;
+let quill,changed,notify,imageMeta={},hero='',reviewScope='',tableIndex=null,newIndex=0,installed=false;
 const idOf=url=>url.match(/^\/media\/([a-f0-9-]{36})$/)?.[1];
 const imageIds=()=>[...new Set((quill?.getContents().ops||[]).map(op=>typeof op.insert?.image==='string'?idOf(op.insert.image):null).filter(Boolean))];
 class ComparisonTable extends Quill.import('blots/block/embed') {
@@ -81,7 +81,7 @@ function relatedIds(){
 window.UK_EDITORIAL={
  install(q,onChanged,onNotice){
   quill=q;changed=onChanged;notify=onNotice;if(installed)return;installed=true;
-  for(const id of ['applies-to','requires-fact-check','review-scope','review-due','related-links','change-kind','change-note'])$(id).addEventListener('input',()=>changed());
+  for(const id of ['applies-to','requires-fact-check','review-due','related-links','change-kind','change-note'])$(id).addEventListener('input',()=>changed());
   $('content-type').addEventListener('change',()=>{typeHelp();changed();});$('hero-image').addEventListener('change',()=>{hero=$('hero-image').value;changed();});
   $('add-source').addEventListener('click',()=>{addSource();changed();});window.UK_TABLE_GRID.install(quill);
   $('rich-editor').addEventListener('click',event=>{const figure=event.target.closest('.comparison-table-blot');if(!figure||!event.target.closest('button')||figure.querySelector('[data-table-action]'))return;const blot=Quill.find(figure);openTable(ComparisonTable.value(figure),quill.getIndex(blot));});
@@ -90,7 +90,7 @@ window.UK_EDITORIAL={
   $('table-form').addEventListener('submit',event=>{event.preventDefault();try{const value=tableValue(),index=tableIndex??newIndex;if(tableIndex!==null)quill.deleteText(index,1,'user');quill.insertEmbed(index,'comparisonTable',value,'user');if(tableIndex===null)quill.insertText(index+1,'\n','user');$('table-dialog').close();quill.setSelection(index+1,0,'silent');}catch(e){$('table-error').textContent=e.message;}});
  },
  fill(s){
-  imageMeta=structuredClone(s.imageMeta||{});hero=s.heroImageId||'';$('content-type').value=s.contentType||'news';$('applies-to').value=s.appliesTo||'';$('requires-fact-check').checked=!!s.requiresFactCheck;$('review-scope').value=s.reviewScope||'';$('review-due').value=s.reviewDueAt||'';$('related-links').value=(s.relatedIds||[]).map(id=>'https://uksinchon.com/blog/story-'+id+'/').join('\n');$('change-kind').value=s.changeKind||'substantive';$('change-note').value=s.changeNote||'';
+  imageMeta=structuredClone(s.imageMeta||{});hero=s.heroImageId||'';reviewScope=s.reviewScope||'';$('content-type').value=s.contentType||'news';$('applies-to').value=s.appliesTo||'';$('requires-fact-check').checked=!!s.requiresFactCheck;$('review-due').value=s.reviewDueAt||'';$('related-links').value=(s.relatedIds||[]).map(id=>'https://uksinchon.com/blog/story-'+id+'/').join('\n');$('change-kind').value=s.changeKind||'substantive';$('change-note').value=s.changeNote||'';
   $('source-details').replaceChildren();for(const item of s.sourceDetails||[])addSource(item);
   const structured=new Set((s.sourceDetails||[]).map(item=>item.url));$('sources').value=(s.sources||'').split('\n').filter(url=>!structured.has(url)).join('\n');
   $('image-metadata-list').dataset.ids='';$('image-metadata-list').replaceChildren();$('evidence-details').open=false;typeHelp();syncImages();
@@ -98,7 +98,7 @@ window.UK_EDITORIAL={
  snapshot(){
   const sourceDetails=[...$('source-details').children].map(row=>Object.fromEntries([...row.querySelectorAll('[data-field]')].map(input=>[input.dataset.field,input.value])));
   const visible={};for(const id of imageIds())visible[id]={...imageMeta[id]};
-  return {schemaVersion:2,contentType:$('content-type').value,appliesTo:$('applies-to').value,requiresFactCheck:$('requires-fact-check').checked,sourceDetails,reviewScope:$('review-scope').value,reviewDueAt:$('review-due').value,changeKind:$('change-kind').value,changeNote:$('change-note').value,relatedIds:relatedIds(),heroImageId:hero,imageMeta:visible};
+  return {schemaVersion:2,contentType:$('content-type').value,appliesTo:$('applies-to').value,requiresFactCheck:$('requires-fact-check').checked,sourceDetails,reviewScope,reviewDueAt:$('review-due').value,changeKind:$('change-kind').value,changeNote:$('change-note').value,relatedIds:relatedIds(),heroImageId:hero,imageMeta:visible};
  },
  imageUploaded(data){imageMeta[data.id]={...imageMeta[data.id],width:data.width,height:data.height,...(typeof data.source==='string'?{source:data.source}:{}),...(typeof data.rights==='string'?{rights:data.rights}:{})};},
  syncImages

@@ -19,14 +19,14 @@ with sync_playwright() as p:
  passed('full source extraction and non-AI draft open in editor with explicit provenance')
  page.once('dialog',lambda d:d.accept());page.locator('#publish').click();expect(page.locator('#notice')).to_have_text(re.compile('검수 완료'))
  passed('publish action is blocked before human review even for administrator')
- page.locator('#applies-to').fill('가상 2027 일반영어 과정');page.locator('#verified-at').fill('2026-11-02');page.locator('#review-scope').fill('검증용 공식 자료의 대상과 예외 대조');page.locator('#add-source').click();source=page.locator('.source-detail').first;source.get_by_label('자료 주소',exact=True).fill('https://example.org/official');source.get_by_label('자료 제목',exact=True).fill('가상 공식 안내');source.get_by_label('자료 발행 기관',exact=True).fill('가상 기관');page.locator('#title').fill('사람이 재편집한 어학연수 조건 안내');page.locator('.ql-editor').fill('2027년 일반영어 24주 과정은 원문 기준 주당 £300입니다. 적용 시점과 숙소 비용은 별도로 확인해야 합니다.');page.get_by_role('button',name='초안 저장',exact=True).click();expect(page.locator('#save-state')).to_have_text(re.compile('^저장 완료'))
+ page.locator('#title').fill('사람이 재편집한 어학연수 조건 안내');page.locator('.ql-editor').fill('2027년 일반영어 24주 과정은 원문 기준 주당 £300입니다. 적용 시점과 숙소 비용은 별도로 확인해야 합니다.');page.get_by_role('button',name='초안 저장',exact=True).click();expect(page.locator('#save-state')).to_have_text(re.compile('^저장 완료'))
  for key in ['facts','conditions','rights']:page.locator('#naver-check-'+key).check()
  page.get_by_role('button',name='현재 버전 검수 완료 기록',exact=True).click();expect(page.locator('#naver-review-state')).to_have_text(re.compile('검수 완료가 기록'))
 
  assert page.locator('#fact-review-panel,#record-facts,[id^=fact-check-]').count()==0
  page.once('dialog',lambda d:d.accept());page.locator('#publish').click();expect(page.locator('#public-link')).to_be_visible();href=page.locator('#public-link').get_attribute('href')
  public=b.new_page();response=public.goto(BASE+href,wait_until='networkidle');assert response.status==200;expect(public.get_by_role('heading',name='사람이 재편집한 어학연수 조건 안내',exact=True)).to_be_visible();assert 'AI를 사용하지 않은 원문 정리 초안' not in public.locator('body').inner_text();expect(public.get_by_role('heading',name='출처·참고 자료',exact=True)).to_be_visible()
- passed('editing, explicit review and separate approval publish only intended article with source; internal notes stay private')
+ passed('source comparison and publication work with optional review metadata empty; original source remains public and internal notes stay private')
  page.locator('#title').fill('검수 후 다시 수정한 제목');expect(page.locator('#naver-review-state')).to_have_text(re.compile('검수가 필요'))
  for width in [320,390,768,1440]:
   page.set_viewport_size({'width':width,'height':950});assert not page.evaluate('document.documentElement.scrollWidth>innerWidth'),width

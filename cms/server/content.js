@@ -98,7 +98,6 @@ export function textOf(snapshot) {return snapshot.delta.ops.map(opText).join('')
 export function needsFactCheck(s) {return s.schemaVersion===2&&(s.requiresFactCheck||['guide','comparison'].includes(s.contentType));}
 export function factReadiness(s) {
   if(!s.verifiedAt)return '실제로 자료를 확인한 날짜를 입력해 주세요.';
-  if(!s.reviewScope)return '이번에 대조한 조건과 자료의 범위를 적어 주세요.';
   if(s.sourceDetails?.some(x=>!safeLink(x.url)))return '자료 주소를 완성하거나 사용하지 않는 자료 줄을 지워 주세요.';
   if(needsFactCheck(s)&&!s.appliesTo)return '적용 학년도·기간·대상을 입력해 주세요.';
   if(needsFactCheck(s)&&!s.sourceDetails?.some(x=>x.kind==='official'&&safeLink(x.url)))return '학교·기관의 공식 자료를 한 개 이상 등록해 주세요.';

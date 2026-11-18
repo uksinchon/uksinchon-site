@@ -20,7 +20,7 @@ with sync_playwright() as p:
  staff=browser.new_context(viewport={'width':390,'height':844});s=staff.new_page();s.on('pageerror',lambda e:errors.append(str(e)))
  s.goto(BASE+'/admin/',wait_until='networkidle');s.locator('#email').fill(email);s.locator('#password').fill(TEMP);s.locator('#auth-submit').click();s.locator('#password-view').wait_for(state='visible');s.locator('#old-password').fill(TEMP);s.locator('#new-password').fill(PASS);s.locator('#new-password-again').fill(PASS);s.get_by_role('button',name='변경하기',exact=True).click();s.locator('#workspace').wait_for(state='visible')
  s.locator('#new-post').click();s.locator('#title').fill(title);s.locator('.ql-editor').fill('실제 학교 정보가 아닌 가상 비교 글입니다. 조건과 단위를 확인합니다.\n')
- s.locator('#content-type').select_option('comparison');s.locator('#applies-to').fill('가상 2027 학년도 · 동일 수업량과 숙소 조건');s.locator('#verified-at').fill('2026-11-02');s.locator('#review-scope').fill('검증용 공식 자료의 기간·수업량·포함/제외 대조');s.locator('#review-due').fill('2026-12-01')
+ s.locator('#content-type').select_option('comparison');s.locator('#applies-to').fill('가상 2027 학년도 · 동일 수업량과 숙소 조건');s.locator('#verified-at').fill('2026-11-02');s.locator('#review-due').fill('2026-12-01')
  s.locator('#add-source').click();row=s.locator('.source-detail').first;row.get_by_label('자료 제목',exact=True).fill('가상 기관 공식 안내');row.get_by_label('자료 주소',exact=True).fill('https://example.org/official');row.get_by_label('자료 발행 기관',exact=True).fill('가상 기관')
  s.locator('#save').click();expect(s.locator('#save-state')).to_have_text(re.compile('^저장 완료'))
  assert s.locator('#fact-review-panel,#record-facts,[id^=fact-check-]').count()==0;assert s.locator('#publish').is_visible()

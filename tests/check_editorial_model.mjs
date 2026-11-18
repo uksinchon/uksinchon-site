@@ -7,12 +7,18 @@ const id='11111111-1111-4111-8111-111111111111';
 const base={schemaVersion:2,title:'가상 글',category:'대학·파운데이션',contentType:'guide',appliesTo:'가상 2027 학년도 조건',verifiedAt:'2026-11-01',reviewScope:'가상 공식 자료의 대상과 예외 대조',sources:'https://example.org/reference',sourceDetails:[{url:'https://example.org/official',title:'가상 공식 안내',publisher:'가상 기관',kind:'official'}],delta:{ops:[{insert:'가상 본문\n'}]}};
 const s=cleanSnapshot({...base,publication:{contentModifiedAt:'2099-01-01'}},'가상 직원');
 assert.equal(s.schemaVersion,2);assert.equal(s.categoryCode,'undergraduate');assert(!s.publication);assert.equal(factReadiness(s),'');
+assert.equal(factReadiness({...s,reviewScope:''}),'');
 assert(s.sources.includes('https://example.org/official'));
 assert.throws(()=>cleanSnapshot({...base,verifiedAt:'2099-01-01'},'a'));
 assert.throws(()=>cleanSnapshot({...base,schemaVersion:3},'a'));
 assert.throws(()=>cleanSnapshot({...base,reviewDueAt:'2026-02-30'},'a'));
 assert.throws(()=>cleanSnapshot({...base,reviewDueAt:'2026-10-01'},'a'));
 pass('versioned scope and official sources normalize; forged publication metadata and invalid review dates cannot be saved');
+for(const contentType of ['news','guide','comparison','case']){
+ const minimal=cleanSnapshot({schemaVersion:2,title:'추가 입력 없는 가상 글',contentType,requiresFactCheck:true,delta:{ops:[{insert:'검증용 본문\n'}]}},'가상 직원');
+ assert.equal(publicationProblem(minimal),'');assert.equal(minimal.reviewScope,'');assert.equal(minimal.verifiedAt,'');assert.equal(minimal.appliesTo,'');assert.equal(minimal.sources,'');
+}
+pass('all article types publish with optional review metadata empty, without inventing a scope or verification date');
 const legacy=cleanSnapshot({title:'옛 글',delta:{ops:[{insert:'옛 본문\n'}]},verifiedAt:'2026-11-01'},'기존 직원');
 assert(!legacy.schemaVersion);assert(!legacy.publication);assert(renderDelta(legacy.delta).includes('옛 본문'));
 pass('legacy snapshots retain readable content without invented review responsibility');

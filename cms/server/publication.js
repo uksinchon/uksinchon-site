@@ -1,4 +1,4 @@
-import {semanticContent,needsFactCheck,factReadiness,imageReadiness,safeLink} from './content.js';
+import {semanticContent,imageReadiness,safeLink} from './content.js';
 
 export function publicationDates(snapshot,post) {
   const publishedAt=post.published_at||null;
@@ -11,9 +11,6 @@ export function publicationProblem(snapshot) {
   if(snapshot.schemaVersion!==2)return '';
   if(snapshot.sourceDetails?.some(s=>!safeLink(s.url)))return '자료 주소를 완성하거나 사용하지 않는 자료 줄을 지워 주세요.';
   const imageProblem=imageReadiness(snapshot);if(imageProblem)return imageProblem;
-  if(needsFactCheck(snapshot)) {
-    const problem=factReadiness(snapshot);if(problem)return problem;
-  }
   return '';
 }
 

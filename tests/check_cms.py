@@ -88,7 +88,7 @@ assert 'javascript:' not in preview
 passed('private images and preview require authorization; text renders safely without executing HTML')
 one.api('posts/'+id+'/review','POST',{'revision':revision})
 assert a.api('posts/'+id)['post']['status']=='review'
-one.api('posts/'+id+'/factcheck','POST',{'revision':revision,'checks':{'facts':True,'conditions':True,'rights':True}},400)
+one.api('posts/'+id+'/factcheck','POST',{'revision':revision,'checks':{'facts':True,'conditions':True,'rights':True}})
 one.api('posts/'+id+'/publish','POST',{'revision':revision})
 post=a.api('posts/'+id)['post'];revision=post['revision'];content['changeNote']='가상 조건 수정';public_url='/blog/'+post['slug']+'/'
 html,headers=anon.req(public_url)

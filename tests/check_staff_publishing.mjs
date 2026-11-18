@@ -58,16 +58,17 @@ try{
  assert.equal(live.snapshot.publication.publishedAt,first.publishedAt);assert.equal(live.snapshot.publication.contentModifiedAt,first.contentModifiedAt);assert.equal(live.post.slug,before.post.slug);
  pass('staff republish their edits on the same URL while saved drafts and original publication dates remain independent');
 
- const guideId=await create(staff,{title:'직원 사실 확인 가상 안내',contentType:'guide',appliesTo:'가상 2027 학년도 조건',verifiedAt:'2026-11-02',reviewScope:'가상 공식 자료의 대상·조건 대조',sourceDetails:[{url:'https://example.org/official',title:'가상 공식 자료',publisher:'가상 기관',kind:'official'}]});
+ const guideId=await create(staff,{title:'추가 검토 입력 없는 가상 안내',contentType:'guide',requiresFactCheck:true});
  const guidePublic=await action(staff,guideId,'publish',2);let guide=await read(guideId);
  assert.equal(guide.snapshot.publication.factCheck,null);
+ for(const key of ['reviewScope','verifiedAt','appliesTo','sources','changeNote'])assert.equal(guide.snapshot[key],'');
  assert(!(await anon.request(guidePublic.url)).data.includes('class="fact-review"'));
  assert.equal((await f.db.prepare("SELECT COUNT(*) AS n FROM cms_events WHERE post_id=? AND action='factcheck'").bind(guideId).first()).n,0);
- await staff.api('posts/'+guideId,{method:'PUT',body:{...guide.snapshot,revision:guide.post.revision,title:'조건이 바뀐 가상 안내',changeNote:'가상 조건 변경'}});
+ await staff.api('posts/'+guideId,{method:'PUT',body:{...guide.snapshot,revision:guide.post.revision,title:'조건이 바뀐 가상 안내'}});
  guide=await read(guideId);
  await action(staff,guideId,'publish',guide.post.revision);
  assert.equal((await read(guideId)).snapshot.publication.factCheck,null);
- pass('guides and edited conditions publish without checklist events or fabricated human verification records');
+ pass('guides and edited conditions publish with review metadata and revision reason empty, without fabricated verification records');
 
  const waiting=await create(staff,{title:'기존 검토 요청 상태의 가상 글'});
  await action(staff,waiting,'review',2);assert.equal((await read(waiting)).post.status,'review');
@@ -88,6 +89,9 @@ try{
  const disabled=(await other.api('me')).user;await admin.api('users/'+disabled.id+'/active',{method:'POST',body:{active:false}});
  await other.api('posts/'+id+'/publish',{method:'POST',body:{revision:live.post.revision},expected:401});
  pass('direct publishing grants no account, inbox, import or trash privileges; disabled staff sessions remain unusable');
+
+ const retained=await create(staff,{title:'이전 범위 보관 가상 글',reviewScope:'기존 원고에 남아 있는 실제 범위'});
+ assert.equal((await read(retained)).snapshot.reviewScope,'기존 원고에 남아 있는 실제 범위');
 
  console.log(JSON.stringify({passed:checks.length,checks,productionDataModified:false},null,2));
  if(process.env.CMS_STAFF_PUBLISH_UI_FIXTURE){console.log('STAFF PUBLISH FIXTURE READY '+f.base);await new Promise(resolve=>process.once('SIGTERM',resolve));}
