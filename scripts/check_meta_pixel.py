@@ -95,12 +95,16 @@ window.fbq.callMethod=function(){window.__metaCalls.push(Array.from(arguments));
                 ctx.close()
             passed('missing, numeric and invalid pixel IDs cannot initialize tracking')
 
-            ctx,stats=context(enabled);page=ctx.new_page()
-            for suffix in ['/', '/index.html', '/pharmacy/', '/pharmacy/index.html', '/seminar-2027/', '/seminar-2027/index.html#apply']:
+            ctx,stats=context(enabled)
+            routes = ['/', '/index.html', '/#team', '/#notes', '/pharmacy/', '/pharmacy/index.html', '/seminar-2027/', '/seminar-2027/index.html#apply']
+            for suffix in routes:
+                page=ctx.new_page()
                 page.goto(base+suffix,wait_until='networkidle');calls(page)
                 assert not page.evaluate('document.documentElement.scrollWidth>innerWidth')
-            assert stats['meta_requests']==6
-            assert page.locator('[data-registration-link]').get_attribute('href').endswith('#seminar')
+                if suffix.startswith('/seminar-2027/'):
+                    assert page.locator('[data-registration-link]').get_attribute('href').endswith('#seminar')
+                page.close()
+            assert stats['meta_requests']==len(routes)
             ctx.close();passed('home, pharmacy and seminar routes initialize one PageView each without mobile overlays')
 
             ctx,stats=context(enabled);page=ctx.new_page();page.goto(base+'/pharmacy/',wait_until='networkidle')

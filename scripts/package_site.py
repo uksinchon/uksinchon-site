@@ -13,6 +13,9 @@ PUBLIC_FILES = (
     'preview/pharmacy/index.html', 'preview/pharmacy/styles.css', 'preview/pharmacy/contact.js',
     'pharmacy/index.html', 'pharmacy/styles.css', 'pharmacy/consultation.js',
     'assets/meta-pixel-config.js', 'assets/meta-pixel.js', 'assets/blog-entry.js',
+    'assets/home.css', 'assets/home.js',
+    'assets/home/office.jpg', 'assets/home/team-jeongmin.jpg',
+    'assets/home/team-kyungmin.png', 'assets/home/team-kyungho.png',
     'seminar-2027/index.html', 'seminar-2027/styles.css', 'seminar-2027/source.json',
     'docs/PHARMACY_LANDING.md', 'docs/META_PIXEL.md', 'docs/SEMINAR_2027.md',
     *(str(p.relative_to(ROOT)) for p in sorted((ROOT / 'seminar-2027/images').iterdir())
@@ -56,8 +59,9 @@ def package(output):
 2. ‘약대_상담페이지_바로열기.html’을 두 번 클릭합니다.
    이 파일 하나에 화면 구성, 로고, 상담 기능이 모두 들어 있습니다.
    Python 설치나 서버 실행 없이 확인할 수 있습니다.
-3. 일반 홈페이지를 보려면 같은 폴더의 index.html을 엽니다.
-   ‘영국 약대 파운데이션 상담’을 누르면 pharmacy/index.html이 열립니다.
+3. 일반 홈페이지는 https://uksinchon.com/ 에서 확인합니다.
+   ZIP의 index.html은 웹 서버용이며, 파일 더블 클릭으로는 스타일·메뉴가 연결되지 않습니다.
+   최근 공개 글은 Cloudflare Pages와 기존 CMS_DB가 연결된 운영 환경에서 표시됩니다.
 
 중요: pharmacy 폴더만 D드라이브로 이동하거나 HTML 하나만 따로 꺼내지 마세요.
 폴더를 유지하면 CSS·JS·로고가 같은 위치에서 정상 연결됩니다.
@@ -69,7 +73,8 @@ def package(output):
 
 이 파일은 PC 확인용이며, 인터넷에 공개된 페이지는 아닙니다.
 광고 주소는 정적 홈페이지에 실제 배포한 뒤 사용합니다.
-배포 파일: index.html, logo.png, favicon.ico, apple-icon.png, pharmacy/ 폴더 전체
+약대 배포 파일: logo.png, favicon.ico, apple-icon.png, pharmacy/ 폴더 전체, assets/meta-pixel*.js
+메인 배포는 저장소의 Pages Functions·CMS와 함께 진행합니다. 이 ZIP만으로 CMS가 배포되지는 않습니다.
 배포 후 예정 주소: https://uksinchon.com/pharmacy/
 광고 주소 예시: https://uksinchon.com/pharmacy/?utm_source=studygroup&utm_medium=paid_social&utm_campaign=pharmacy_foundation&utm_content=showreel
 운영 안내: docs/PHARMACY_LANDING.md
