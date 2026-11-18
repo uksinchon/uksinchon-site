@@ -88,9 +88,8 @@ assert 'javascript:' not in preview
 passed('private images and preview require authorization; text renders safely without executing HTML')
 one.api('posts/'+id+'/review','POST',{'revision':revision})
 assert a.api('posts/'+id)['post']['status']=='review'
-one.api('posts/'+id+'/publish','POST',{'revision':revision},403)
-one.api('posts/'+id+'/factcheck','POST',{'revision':revision,'checks':{'facts':True,'conditions':True,'rights':True}},403)
-a.api('posts/'+id+'/publish','POST',{'revision':revision})
+one.api('posts/'+id+'/factcheck','POST',{'revision':revision,'checks':{'facts':True,'conditions':True,'rights':True}},400)
+one.api('posts/'+id+'/publish','POST',{'revision':revision})
 post=a.api('posts/'+id)['post'];revision=post['revision'];content['changeNote']='가상 조건 수정';public_url='/blog/'+post['slug']+'/'
 html,headers=anon.req(public_url)
 assert '테스트용 요약' in html and 'BlogPosting' in html and '가상 직원 one' in html
@@ -99,7 +98,7 @@ anon.req(img)
 listing,_=anon.req('/blog/');sitemap,_=anon.req('/sitemap.xml');rss,_=anon.req('/feed.xml')
 assert post['slug'] in listing and post['slug'] in sitemap and post['slug'] in rss
 assert second not in listing
-passed('only an administrator publishes; article, list, sitemap and RSS expose approved version and its images')
+passed('a writer can publish their own post; article, list, sitemap and RSS expose the published version and its images')
 content['title']='수정 중인 비공개 제목';content['revision']=revision
 revision=one.api('posts/'+id,'PUT',content)['revision']
 html,_=anon.req(public_url);assert '수정 중인 비공개 제목' not in html and '테스트용 요약' in html

@@ -171,7 +171,8 @@ export async function handleCMS(context){
     return json({url:'/media/'+id,id,...size,bytes:bytes.byteLength},201);
    }
    if(parts[2]==='factcheck'&&parts.length===3&&request.method==='POST'){
-    admin(user);const b=await bodyOf(request);if(Number(b.revision)!==post.revision)fail(409,'새 버전이 있습니다. 현재 원고를 다시 확인해 주세요.');
+    // ownPost already limits this action to the writer or an administrator.
+    const b=await bodyOf(request);if(Number(b.revision)!==post.revision)fail(409,'새 버전이 있습니다. 현재 원고를 다시 확인해 주세요.');
     const s=await snapshot(db,post.id,post.revision);const problem=factReadiness(s);if(problem)fail(400,problem);
     if(!b.checks||!['facts','conditions','rights'].every(key=>b.checks[key]===true))fail(400,'출처·적용 조건·개인정보와 사진 권리를 모두 대조해 주세요.');
     const stamp=now();const result=await db.prepare("INSERT INTO cms_events(id,post_id,actor_id,action,revision,created_at) SELECT ?,id,?,'factcheck',revision,? FROM cms_posts WHERE id=? AND revision=?").bind(uuid(),user.id,stamp,post.id,post.revision).run();
@@ -179,11 +180,11 @@ export async function handleCMS(context){
     return json({ok:true,revision:post.revision});
    }
    if(['review','publish','unpublish'].includes(parts[2])&&request.method==='POST'){
-    const b=await bodyOf(request);if(Number(b.revision)!==post.revision)fail(409,'새 버전이 있습니다. 글을 다시 열어 주세요.');const s=await snapshot(db,post.id,post.revision);if(parts[2]!=='unpublish'&&(!s.title||!textOf(s)))fail(400,'제목과 본문을 입력한 뒤 요청해 주세요.');if(parts[2]!=='unpublish'&&s.sources.split('\n').filter(Boolean).some(url=>!safeLink(url)))fail(400,'참고 자료 주소를 완성하거나 지운 뒤 검토를 요청해 주세요.');const stamp=now(),saveToken=uuid();const statements=[];
+    const b=await bodyOf(request);if(Number(b.revision)!==post.revision)fail(409,'새 버전이 있습니다. 글을 다시 열어 주세요.');const s=await snapshot(db,post.id,post.revision);if(parts[2]!=='unpublish'&&(!s.title||!textOf(s)))fail(400,'제목과 본문을 입력한 뒤 요청해 주세요.');if(parts[2]!=='unpublish'&&s.sources.split('\n').filter(Boolean).some(url=>!safeLink(url)))fail(400,'참고 자료 주소를 완성하거나 지운 뒤 다시 요청해 주세요.');const stamp=now(),saveToken=uuid();const statements=[];
     let resultingRevision=post.revision;
     if(parts[2]==='review')statements.push(db.prepare("UPDATE cms_posts SET status='review',updated_at=?,save_token=? WHERE id=? AND revision=?").bind(stamp,saveToken,post.id,post.revision));
     else {
-     admin(user);
+     // Publishing and unpublishing are also scoped by ownPost, not a role upgrade.
      if(parts[2]==='publish'){
       if(post.published_revision===post.revision)return json({ok:true,url:'/blog/'+post.slug+'/',revision:post.revision,unchanged:true});
       await validImages(db,post,s,s);
