@@ -16,22 +16,22 @@ with sync_playwright() as p:
  assert '재확인 시점' in a.locator('#pilot-state').inner_text()
  passed('bulk application preserves existing drafts, applies reviewed packets and exposes an expired packet without requesting human fact checks')
  a.locator('.naver-item-row').filter(has_text='224466258454').get_by_role('button',name='초안 열기',exact=True).click()
- expect(a.locator('#editor-view')).to_be_visible();expect(a.locator('#fact-review-state')).to_have_text(re.compile('Codex'))
+ expect(a.locator('#editor-view')).to_be_visible();expect(a.locator('#naver-review-state')).to_have_text(re.compile('Codex'))
  expect(a.locator('#naver-review-state')).to_have_text(re.compile('AI 검토가 완료'))
- assert not any(a.locator('#fact-check-'+key).is_checked() for key in ['facts','conditions','rights'])
+ assert a.locator('#fact-review-panel,#record-facts,[id^=fact-check-]').count()==0
  expect(a.locator('.comparison-table-blot')).to_have_count(1)
  for width in [320,390,768,1440]:
   a.set_viewport_size({'width':width,'height':950});assert not a.evaluate('document.documentElement.scrollWidth>innerWidth'),width
  passed('reviewed text, table, source scope and truthful AI identity load without checked human declarations or mobile overflow')
  a.set_viewport_size({'width':390,'height':844});a.once('dialog',lambda d:d.accept());a.locator('#apply-codex-post').click();expect(a.locator('#notice')).to_have_text(re.compile('Codex의 AI 검토 원고를 적용'))
- expect(a.locator('#fact-review-state')).to_have_text(re.compile('Codex'))
+ expect(a.locator('#naver-review-state')).to_have_text(re.compile('Codex'))
  a.once('dialog',lambda d:d.accept());a.locator('#publish').click();expect(a.locator('#public-link')).to_be_visible();href=a.locator('#public-link').get_attribute('href')
  passed('an existing draft receives an explicit new version and publishes through the normal UI without a fabricated human review')
  public=b.new_context(java_script_enabled=False,viewport={'width':390,'height':844});v=public.new_page();r=v.goto(BASE+href,wait_until='networkidle');assert r.status==200
  expect(v.locator('.fact-review')).to_contain_text('Codex (AI 검토)');expect(v.locator('table')).to_be_visible();assert not v.evaluate('document.documentElement.scrollWidth>innerWidth');assert v.locator('img').count()==0
  v.screenshot(path='/workspace/Codex_검토완료_공개글_모바일.png',full_page=True)
  a.locator('#title').fill('검증용 수정된 제목');expect(a.locator('#naver-review-state')).to_have_text(re.compile('검수가 필요'))
- a.locator('#save').click();expect(a.locator('#save-state')).to_have_text(re.compile('저장 완료'));assert '현재 버전의 사실 확인 기록이 없습니다' in a.locator('#fact-review-state').inner_text()
+ a.locator('#save').click();expect(a.locator('#save-state')).to_have_text(re.compile('저장 완료'));assert a.locator('#fact-review-panel,#record-facts,[id^=fact-check-]').count()==0
  a.once('dialog',lambda d:d.accept());a.locator('#publish').click();expect(a.locator('#notice')).to_have_text(re.compile('검수 완료'))
  v.reload(wait_until='networkidle');expect(v.get_by_role('heading',name='영국 어학원 한국인 비율, 숫자보다 먼저 볼 집계 기준 5가지',exact=True)).to_be_visible()
  passed('published HTML works without JavaScript and discloses AI review; later edits invalidate the proof and keep the live article intact')

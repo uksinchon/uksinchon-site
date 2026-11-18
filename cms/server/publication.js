@@ -7,18 +7,17 @@ export function publicationDates(snapshot,post) {
   return {publishedAt,modifiedAt};
 }
 
-export function publicationProblem(snapshot,review) {
+export function publicationProblem(snapshot) {
   if(snapshot.schemaVersion!==2)return '';
   if(snapshot.sourceDetails?.some(s=>!safeLink(s.url)))return '자료 주소를 완성하거나 사용하지 않는 자료 줄을 지워 주세요.';
   const imageProblem=imageReadiness(snapshot);if(imageProblem)return imageProblem;
   if(needsFactCheck(snapshot)) {
     const problem=factReadiness(snapshot);if(problem)return problem;
-    if(!review)return '현재 버전의 출처·조건을 대조한 뒤 사실 확인 기록을 남겨 주세요.';
   }
   return '';
 }
 
-// Only the server calls this after role, revision, source and fact-review guards.
+// Only the server calls this after role, revision, source and content guards.
 // A separate immutable version captures the approval; no old snapshot is rewritten.
 export function sealPublication(snapshot,post,previous,review,user,stamp) {
   const publishedAt=post.published_at||stamp;

@@ -1,7 +1,7 @@
 /* Versioned editorial fields and safe table embeds. Loaded before editor.js. */
 (()=>{'use strict';
 const $=id=>document.getElementById(id),node=(tag,value)=>{const n=document.createElement(tag);if(value!==undefined)n.textContent=value;return n;};
-let quill,changed,notify,imageMeta={},hero='',tableIndex=null,newIndex=0,installed=false,lastDirty=false;
+let quill,changed,notify,imageMeta={},hero='',tableIndex=null,newIndex=0,installed=false;
 const idOf=url=>url.match(/^\/media\/([a-f0-9-]{36})$/)?.[1];
 const imageIds=()=>[...new Set((quill?.getContents().ops||[]).map(op=>typeof op.insert?.image==='string'?idOf(op.insert.image):null).filter(Boolean))];
 class ComparisonTable extends Quill.import('blots/block/embed') {
@@ -93,7 +93,7 @@ window.UK_EDITORIAL={
   imageMeta=structuredClone(s.imageMeta||{});hero=s.heroImageId||'';$('content-type').value=s.contentType||'news';$('applies-to').value=s.appliesTo||'';$('requires-fact-check').checked=!!s.requiresFactCheck;$('review-scope').value=s.reviewScope||'';$('review-due').value=s.reviewDueAt||'';$('related-links').value=(s.relatedIds||[]).map(id=>'https://uksinchon.com/blog/story-'+id+'/').join('\n');$('change-kind').value=s.changeKind||'substantive';$('change-note').value=s.changeNote||'';
   $('source-details').replaceChildren();for(const item of s.sourceDetails||[])addSource(item);
   const structured=new Set((s.sourceDetails||[]).map(item=>item.url));$('sources').value=(s.sources||'').split('\n').filter(url=>!structured.has(url)).join('\n');
-  $('image-metadata-list').dataset.ids='';$('image-metadata-list').replaceChildren();$('evidence-details').open=false;typeHelp();syncImages();lastDirty=false;for(const key of ['facts','conditions','rights'])$('fact-check-'+key).checked=false;
+  $('image-metadata-list').dataset.ids='';$('image-metadata-list').replaceChildren();$('evidence-details').open=false;typeHelp();syncImages();
  },
  snapshot(){
   const sourceDetails=[...$('source-details').children].map(row=>Object.fromEntries([...row.querySelectorAll('[data-field]')].map(input=>[input.dataset.field,input.value])));
@@ -101,14 +101,6 @@ window.UK_EDITORIAL={
   return {schemaVersion:2,contentType:$('content-type').value,appliesTo:$('applies-to').value,requiresFactCheck:$('requires-fact-check').checked,sourceDetails,reviewScope:$('review-scope').value,reviewDueAt:$('review-due').value,changeKind:$('change-kind').value,changeNote:$('change-note').value,relatedIds:relatedIds(),heroImageId:hero,imageMeta:visible};
  },
  imageUploaded(data){imageMeta[data.id]={...imageMeta[data.id],width:data.width,height:data.height,...(typeof data.source==='string'?{source:data.source}:{}),...(typeof data.rights==='string'?{rights:data.rights}:{})};},
- status({user,post,dirty,revision,review,snapshot}){
-  $('fact-review-panel').hidden=false;
-  if(dirty&&!lastDirty)for(const key of ['facts','conditions','rights'])$('fact-check-'+key).checked=false;
-  lastDirty=dirty;
-  const sealed=post.published_revision===revision?snapshot?.publication?.factCheck:null;
-  $('fact-review-state').textContent=dirty?'변경한 내용을 저장한 뒤 사실 확인을 기록해 주세요.':review?.revision===revision?'현재 버전 확인 기록: '+review.name:sealed?'공개 승인본 확인 기록: '+sealed.reviewerName:'현재 버전의 사실 확인 기록이 없습니다. 필요한 글은 확인 후 공개해 주세요.';
- },
- checks(){return Object.fromEntries(['facts','conditions','rights'].map(key=>[key,$('fact-check-'+key).checked]));},
  syncImages
 };
 })();

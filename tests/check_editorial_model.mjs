@@ -22,7 +22,7 @@ assert.deepEqual(imageIds(rich),[id]);const html=renderDelta(rich.delta,rich.ima
 assert(html.includes('<table>')&&html.includes('scope="col"')&&html.includes('scope="row"'));assert(!html.includes('<script>가상'));assert(html.includes('&lt;script&gt;'));assert(html.includes('width="100"'));assert(html.includes('fetchpriority="high"'));assert(!html.includes('loading="lazy"'));
 assert.throws(()=>cleanTable({...table,rows:[['wrong']]}));assert.throws(()=>cleanTable({...table,source:'javascript:alert(1)'}));
 pass('tables preserve headers, text, sources and escaping; image traversal and hero dimensions handle mixed embeds');
-assert(publicationProblem(s,null).includes('사실 확인'));
+assert.equal(publicationProblem(s),'');
 assert.equal(imageReadiness({...rich,imageMeta:{[id]:{}}}),'');
 for(const source of ['', '학교 홍보팀 제공', 'www.example.org/photos', 'https://', 'javascript:alert(1)', '<script>alert(1)</script>']){
  const photo=cleanSnapshot({...rich,contentType:'news',requiresFactCheck:false,imageMeta:{[id]:{source}}},'가상 직원');
@@ -40,6 +40,7 @@ const user={id:'admin-id',name:'가상 검토자'},post={owner_id:'writer-id',re
 const review={actor_id:user.id,name:user.name,created_at:'2026-11-05T01:00:00Z'};
 const first=sealPublication(s,post,null,review,user,'2026-11-05T02:00:00Z');
 assert.equal(first.publication.publishedAt,first.publication.contentModifiedAt);assert.equal(first.publication.factCheck.checkedAt,'2026-11-01');assert.equal(first.publication.factCheck.sourceRevision,3);
+assert.equal(sealPublication(s,post,null,null,user,'2026-11-05T02:00:00Z').publication.factCheck,null);
 pass('approval records actual publication and review actors, independent of the date a draft was saved');
 const published={...post,published_at:first.publication.publishedAt};
 const minor=sealPublication({...s,title:'가상 글 오탈자',changeKind:'minor'},published,first,review,user,'2026-11-05T03:00:00Z');

@@ -59,17 +59,15 @@ try{
  pass('staff republish their edits on the same URL while saved drafts and original publication dates remain independent');
 
  const guideId=await create(staff,{title:'직원 사실 확인 가상 안내',contentType:'guide',appliesTo:'가상 2027 학년도 조건',verifiedAt:'2026-11-02',reviewScope:'가상 공식 자료의 대상·조건 대조',sourceDetails:[{url:'https://example.org/official',title:'가상 공식 자료',publisher:'가상 기관',kind:'official'}]});
- await staff.api('posts/'+guideId+'/publish',{method:'POST',body:{revision:2},expected:400});
- await staff.api('posts/'+guideId+'/factcheck',{method:'POST',body:{revision:2,checks:{facts:true,conditions:true,rights:false}},expected:400});
- await action(staff,guideId,'factcheck',2,{checks:{facts:true,conditions:true,rights:true}});
  const guidePublic=await action(staff,guideId,'publish',2);let guide=await read(guideId);
- assert.equal(guide.snapshot.publication.factCheck.reviewerId,guide.post.owner_id);assert.equal(guide.snapshot.publication.factCheck.kind,'human');
- assert((await anon.request(guidePublic.url)).data.includes('검토 가상 직원 writer'));
+ assert.equal(guide.snapshot.publication.factCheck,null);
+ assert(!(await anon.request(guidePublic.url)).data.includes('class="fact-review"'));
+ assert.equal((await f.db.prepare("SELECT COUNT(*) AS n FROM cms_events WHERE post_id=? AND action='factcheck'").bind(guideId).first()).n,0);
  await staff.api('posts/'+guideId,{method:'PUT',body:{...guide.snapshot,revision:guide.post.revision,title:'조건이 바뀐 가상 안내',changeNote:'가상 조건 변경'}});
- guide=await read(guideId);await staff.api('posts/'+guideId+'/publish',{method:'POST',body:{revision:guide.post.revision},expected:400});
- await action(staff,guideId,'factcheck',guide.post.revision,{checks:{facts:true,conditions:true,rights:true}});
+ guide=await read(guideId);
  await action(staff,guideId,'publish',guide.post.revision);
- pass('a writer records their own current-version fact check and publishes a guide; missing checks or changed conditions require author confirmation, not manager approval');
+ assert.equal((await read(guideId)).snapshot.publication.factCheck,null);
+ pass('guides and edited conditions publish without checklist events or fabricated human verification records');
 
  const waiting=await create(staff,{title:'기존 검토 요청 상태의 가상 글'});
  await action(staff,waiting,'review',2);assert.equal((await read(waiting)).post.status,'review');

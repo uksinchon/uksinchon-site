@@ -112,7 +112,7 @@ async function openPost(id,{preservePosition=false}={}){
 }
 function updateState(){
  if(!state.post)return;
- updateNaverReviewState();extra.status({user:state.user,post:state.post,dirty:state.dirty,revision:state.revision,review:state.factReview,snapshot:state.snapshot});
+ updateNaverReviewState();
  $('editor-state').textContent=statusText({...state.post,revision:state.revision});$('save-state').textContent=state.dirty?'저장할 변경 사항이 있습니다.':'저장 완료 · 버전 '+state.revision;
  $('publish').hidden=false;$('publish').textContent=state.post.published_revision?'수정 내용 발행하기':'발행하기';
  $('unpublish').hidden=!state.post.published_revision;$('public-link').hidden=!state.post.published_revision;$('public-link').href='/blog/'+state.post.slug+'/';
@@ -136,7 +136,6 @@ bind('back-list',async()=>{await save(true);await loadList();notice();});
 bind('preview',async()=>{const popup=window.open('about:blank','_blank');if(!popup)throw new Error('미리보기를 위해 팝업을 허용해 주세요.');try{await save(true);popup.location.href='/api/cms/posts/'+state.post.id+'/preview';}catch(e){popup.close();throw e;}});
 async function action(kind){await save(true);if(kind==='publish'&&!confirm('저장된 이 버전을 공개하시겠습니까? 누구나 읽을 수 있습니다.'))return;if(kind==='unpublish'&&!confirm('현재 공개본을 내릴까요? 원고와 수정 이력은 보관됩니다.'))return;const data=await api('posts/'+state.post.id+'/'+kind,{method:'POST',body:{revision:state.revision}});await openPost(state.post.id,{preservePosition:true});notice(kind==='publish'?'공개했습니다. ‘현재 공개본 보기’에서 확인해 주세요.':kind==='review'?'관리자에게 검토를 요청했습니다. 별도 메일·메신저 알림은 발송하지 않습니다.':'공개를 내렸습니다. 원고와 이력은 유지됩니다.');return data;}
 bind('review',()=>action('review'));bind('publish',()=>action('publish'));bind('unpublish',()=>action('unpublish'));
-bind('record-facts',async()=>{await save(true);await api('posts/'+state.post.id+'/factcheck',{method:'POST',body:{revision:state.revision,checks:extra.checks()}});await openPost(state.post.id,{preservePosition:true});notice('현재 버전의 사실 확인을 기록했습니다. ‘발행하기’로 직접 게시할 수 있습니다.');});
 async function webpImage(file){
  if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('JPG·PNG·WebP 사진을 선택해 주세요.');if(file.size>20*1024*1024)throw new Error('사진 한 장은 20MB 이하로 선택해 주세요.');
  const bitmap=await createImageBitmap(file);let canvas;

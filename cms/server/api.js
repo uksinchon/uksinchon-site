@@ -196,7 +196,7 @@ export async function handleCMS(context){
       let source;try{source=await guardNaverPublish(db,post,s);}catch(e){fail(400,e.message);}
       if(source?.approved_by===CODEX_REVIEWER&&!reviewed)fail(400,'이 원고의 Codex 검토가 현재 내용·원문·기한에 유효하지 않습니다. 재검토가 필요합니다.');
       if(!reviewed&&s.publication?.factCheck)reviewed=await factReview(db,post.id,s.publication.factCheck.sourceRevision);
-      const problem=publicationProblem(s,reviewed);if(problem)fail(400,problem);
+      const problem=publicationProblem(s);if(problem)fail(400,problem);
       const last=post.published_revision?{revision:post.published_revision}:await db.prepare("SELECT revision FROM cms_events WHERE post_id=? AND action='publish' ORDER BY created_at DESC,id DESC LIMIT 1").bind(post.id).first();
       const previous=last?await snapshot(db,post.id,last.revision):null;
       if(s.schemaVersion===2&&previous&&semanticContent(previous)!==semanticContent(s)&&!s.changeNote)fail(400,'이번 수정의 이유와 범위를 입력해 주세요.');

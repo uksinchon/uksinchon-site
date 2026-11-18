@@ -11,22 +11,18 @@ try{
  await a.api('setup',{method:'POST',body:{setupToken:SETUP_KEY,name:'가상 관리자',email:'seo-admin@example.test',password:PASSWORD}});
  let created=await a.api('posts',{method:'POST',body:{},expected:201});let p=(await a.api('posts/'+created.id)).post;
  let saved=await a.api('posts/'+p.id,{method:'PUT',body:{...guide,revision:p.revision}});p=(await a.api('posts/'+p.id)).post;
- await a.api('posts/'+p.id+'/publish',{method:'POST',body:{revision:p.revision},expected:400});
  await anonymous.api('posts/'+p.id+'/factcheck',{method:'POST',body:{revision:p.revision,checks:{facts:true,conditions:true,rights:true}},expected:401});
  await a.api('posts/'+p.id+'/factcheck',{method:'POST',body:{revision:p.revision,checks:{facts:true,conditions:false,rights:true}},expected:400});
- await a.api('posts/'+p.id+'/factcheck',{method:'POST',body:{revision:p.revision,checks:{facts:true,conditions:true,rights:true}}});
  let published=await a.api('posts/'+p.id+'/publish',{method:'POST',body:{revision:p.revision}});assert.equal(published.revision,p.revision+1);
- let current=await a.api('posts/'+p.id);assert.equal(current.post.published_revision,current.post.revision);assert(current.snapshot.publication.factCheck.reviewerName==='가상 관리자');
+ let current=await a.api('posts/'+p.id);assert.equal(current.post.published_revision,current.post.revision);assert.equal(current.snapshot.publication.factCheck,null);
  const first=current.snapshot.publication;const url=published.url;await anonymous.request(url);
- pass('official-condition guide cannot publish before a current authenticated human fact review; approval is immutable');
+ pass('a guide publishes without a checklist record; no reviewer is fabricated and the approved snapshot is immutable');
  await a.api('posts/'+p.id,{method:'PUT',body:{...current.snapshot,title:'사소한 오탈자 수정',changeKind:'minor',changeNote:'가상 오탈자 교정',revision:current.post.revision}});
  current=await a.api('posts/'+p.id);
- await a.api('posts/'+p.id+'/publish',{method:'POST',body:{revision:current.post.revision},expected:400});
  const still=(await anonymous.request(url)).data;assert(still.includes(guide.title)&&!still.includes('사소한 오탈자 수정'));
- await a.api('posts/'+p.id+'/factcheck',{method:'POST',body:{revision:current.post.revision,checks:{facts:true,conditions:true,rights:true}}});
  await a.api('posts/'+p.id+'/publish',{method:'POST',body:{revision:current.post.revision}});current=await a.api('posts/'+p.id);
  assert.equal(current.snapshot.publication.publishedAt,first.publishedAt);assert.equal(current.snapshot.publication.contentModifiedAt,first.contentModifiedAt);assert.equal(current.post.slug,p.slug);
- pass('editing retains live approval and URL; new draft requires a new review; minor edit preserves the modification date');
+ pass('editing retains the live snapshot and URL; republication needs no checklist and a minor edit preserves the modification date');
  await a.api('posts/'+p.id,{method:'PUT',body:{...current.snapshot,publication:{contentModifiedAt:'2099-01-01'},changeKind:'substantive',changeNote:'가상 내용 조건 변경',delta:{ops:[{insert:'판단 조건을 실질적으로 바꾼 가상 검증 본문입니다.\n'}]},revision:current.post.revision}});
  current=await a.api('posts/'+p.id);assert(!current.snapshot.publication);
  await a.api('posts/'+p.id+'/factcheck',{method:'POST',body:{revision:current.post.revision,checks:{facts:true,conditions:true,rights:true}}});
@@ -99,14 +95,13 @@ try{
   const id=(await a.api('posts',{method:'POST',body:{},expected:201})).id;
   await a.api('posts/'+id,{method:'PUT',body:{...guide,...sample,revision:1}});
   if(sample.requiresFactCheck){
-   await a.api('posts/'+id+'/publish',{method:'POST',body:{revision:2},expected:400});
    await a.api('posts/'+id+'/factcheck',{method:'POST',body:{revision:2,checks:{facts:true,conditions:true,rights:true}}});
   }
   const published=await a.api('posts/'+id+'/publish',{method:'POST',body:{revision:2}});const body=(await anonymous.request(published.url)).data;
   assert(!body.includes('FAQPage'));assert.equal(body.includes('마지막 사실 확인'),sample.requiresFactCheck);
   if(sample.reviewDueAt)assert(body.includes('재확인 시점이 지났습니다'));
  }
- pass('guide, comparison, time-based news, case and scholarship patterns use appropriate review rules without imposing a universal FAQ template');
+ pass('guide, comparison, news, case and scholarship patterns retain appropriate metadata and optional genuine review records without a universal FAQ template');
 
  const owner=(await a.api('me')).user.id,legacyId=crypto.randomUUID(),legacySlug='story-'+legacyId;
  const legacy={title:'기존 v1 가상 글',category:'어학연수',authorName:'기존 가상 작성자',summary:'기존 구조 읽기 검증',verifiedAt:'2026-10-20',sources:'https://example.org/legacy',delta:{ops:[{insert:'v1 원고의 본문을 그대로 읽는 검증입니다.\n'}]}};

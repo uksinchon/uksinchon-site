@@ -61,10 +61,9 @@ try {
  const editorial=await api('posts/'+p.id,{method:'PUT',body:{...s,revision:p.revision}});p.revision=editorial.revision;
  await api('naver/items/'+item.id+'/review',{method:'POST',body:{revision:p.revision,sourceHash:item.source_hash,checks:{facts:true}},expected:400});
  await api('naver/items/'+item.id+'/review',{method:'POST',body:{revision:p.revision,sourceHash:item.source_hash,checks:{facts:true,conditions:true,rights:true}}});
- await api('posts/'+p.id+'/publish',{method:'POST',body:{revision:p.revision},expected:400});
- await api('posts/'+p.id+'/factcheck',{method:'POST',body:{revision:p.revision,checks:{facts:true,conditions:true,rights:true}}});
  await api('posts/'+p.id+'/publish',{method:'POST',body:{revision:p.revision}});p=(await api('posts/'+p.id)).post;assert((await publicRead(p.slug)).includes(item.url));
- pass('publication requires explicit full checklist for the current revision and keeps the original source link');
+ assert.equal((await api('posts/'+p.id)).snapshot.publication.factCheck,null);
+ pass('Naver source comparison remains required, but publication needs no second generic checklist and keeps the original source link');
  const saved=await api('posts/'+p.id,{method:'PUT',body:{...s,title:'사람이 수정한 제목',revision:p.revision}});p.revision=saved.revision;
  await api('posts/'+p.id+'/publish',{method:'POST',body:{revision:p.revision},expected:400});assert(!(await publicRead(p.slug)).includes('사람이 수정한 제목'));
  pass('editing invalidates the reviewed revision while preserving the live approved article');

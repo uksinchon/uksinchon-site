@@ -16,7 +16,7 @@ with sync_playwright() as p:
  s.on('request',lambda r:actions.append(r.url) if r.method=='POST' else None)
  s.goto(BASE+'/admin/',wait_until='networkidle');s.locator('#email').fill('staff-writer@example.test');s.locator('#password').fill(PASSWORD);s.locator('#auth-submit').click();expect(s.locator('#workspace')).to_be_visible()
  for key in ['users-tab','naver-tab','counsel-tab','trash-view']:expect(s.locator('#'+key)).to_be_hidden()
- s.locator('#new-post').click();expect(s.locator('#publish')).to_be_visible();expect(s.locator('#publish')).to_have_text('발행하기');expect(s.locator('#publication-note')).to_contain_text('검토 요청 없이')
+ s.locator('#new-post').click();expect(s.locator('#publish')).to_be_visible();expect(s.locator('#publish')).to_have_text('발행하기');expect(s.locator('#publication-note')).to_contain_text('검토 요청 없이');assert s.locator('#fact-review-panel,#record-facts,[id^=fact-check-]').count()==0
  passed('staff see the primary direct-publish button while account, import, inquiry and trash administration stay hidden')
 
  s.locator('#title').fill(title);s.locator('.ql-editor').fill('실제 학생이나 학교 정보가 아닌 직원 직접 발행 화면 검증용 가상 글입니다.\n');s.locator('#save').click();expect(s.locator('#save-state')).to_have_text(re.compile('^저장 완료'))
@@ -48,13 +48,11 @@ with sync_playwright() as p:
  passed('the same staff writer can take their article down while keeping an editable draft')
 
  s.locator('#back-list').click();s.locator('#new-post').click();s.locator('#title').fill(title+' 조건 안내');s.locator('.ql-editor').fill('직원이 스스로 공식 자료를 대조하는 가상의 조건 안내입니다.\n');s.locator('#content-type').select_option('guide');s.locator('#applies-to').fill('가상 2027 학년도');s.locator('#verified-at').fill('2026-11-02');s.locator('#review-scope').fill('가상 공식 자료의 대상과 적용 조건 대조');s.locator('#add-source').click();row=s.locator('.source-detail').first;row.get_by_label('자료 주소',exact=True).fill('https://example.org/official');row.get_by_label('자료 제목',exact=True).fill('가상 공식 안내')
- s.locator('#save').click();expect(s.locator('#save-state')).to_have_text(re.compile('^저장 완료'));s.once('dialog',lambda d:d.accept());s.locator('#publish').click();expect(s.locator('#notice')).to_have_text(re.compile('.*사실 확인.*'));expect(s.locator('#public-link')).to_be_hidden()
- for key in ['facts','conditions','rights']:s.locator('#fact-check-'+key).check()
- s.locator('#record-facts').click();expect(s.locator('#fact-review-state')).to_have_text(re.compile('현재 버전 확인 기록: 가상 직원 writer'))
+ s.locator('#save').click();expect(s.locator('#save-state')).to_have_text(re.compile('^저장 완료'));assert s.locator('#fact-review-panel,#record-facts,[id^=fact-check-]').count()==0
  s.once('dialog',lambda d:d.accept());s.locator('#publish').click();expect(s.locator('#notice')).to_have_text(re.compile('^공개했습니다'))
- guide_url=s.locator('#public-link').get_attribute('href');v.goto(BASE+guide_url,wait_until='networkidle');expect(v.locator('.fact-review')).to_contain_text('검토 가상 직원 writer')
- assert not any(u.endswith('/review') for u in actions);assert not errors,errors
- passed('a conditional guide is published after the writer’s own fact check, with no manager session or review request')
+ guide_url=s.locator('#public-link').get_attribute('href');v.goto(BASE+guide_url,wait_until='networkidle');assert v.locator('.fact-review').count()==0
+ assert not any(u.endswith(('/review','/factcheck')) for u in actions);assert not errors,errors
+ passed('the fact-check panel and controls are absent; a guide publishes without checklist calls or a fabricated review section')
  browser.close()
 report={'passed':len(checks),'checks':checks,'testData':'fictional local accounts, sources and photo','productionDataModified':False}
 Path('/workspace/직원_직접발행_화면검증.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));print(json.dumps(report,ensure_ascii=False,indent=2))

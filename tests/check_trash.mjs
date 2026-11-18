@@ -80,10 +80,10 @@ try{
  await a.api('posts/'+guide.post.id+'/factcheck',{method:'POST',body:{revision:guide.post.revision,checks:{facts:true,conditions:true,rights:true}}});
  const guidePub=await action(guide.post.id,'publish',guide.post.revision);let g=await read(guide.post.id);const oldModified=g.snapshot.publication.contentModifiedAt;
  await action(g.post.id,'trash',g.post.revision);await action(g.post.id,'restore',g.post.revision+1);g=await read(g.post.id);
- await a.api('posts/'+g.post.id+'/publish',{method:'POST',body:{revision:g.post.revision},expected:400});
- await a.api('posts/'+g.post.id+'/factcheck',{method:'POST',body:{revision:g.post.revision,checks:{facts:true,conditions:true,rights:true}}});
+ assert.equal(g.snapshot.publication,undefined);await anonymous.request(guidePub.url,{expected:404});
  await action(g.post.id,'publish',g.post.revision);g=await read(g.post.id);assert.equal(g.snapshot.publication.contentModifiedAt,oldModified);await anonymous.request(guidePub.url);
- pass('restored sensitive guidance needs current review and separate publication; unchanged content does not acquire an invented modification date');
+ assert.equal(g.snapshot.publication.factCheck,null);
+ pass('restored guidance stays private until explicitly republished, requires no checklist and invents neither a review record nor a modification date');
 
  await a.api('naver/url',{method:'POST',body:{url:'https://blog.naver.com/pedu2/'+sourceId}});
  const draft=await a.api('naver/items/'+sourceId+'/draft',{method:'POST',body:{mode:'manual'}});let n=await read(draft.postId);await action(n.post.id,'trash',n.post.revision);

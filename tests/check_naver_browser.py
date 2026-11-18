@@ -23,7 +23,7 @@ with sync_playwright() as p:
  for key in ['facts','conditions','rights']:page.locator('#naver-check-'+key).check()
  page.get_by_role('button',name='현재 버전 검수 완료 기록',exact=True).click();expect(page.locator('#naver-review-state')).to_have_text(re.compile('검수 완료가 기록'))
 
- expect(page.locator('#fact-review-state')).to_have_text(re.compile('현재 버전 확인 기록'))
+ assert page.locator('#fact-review-panel,#record-facts,[id^=fact-check-]').count()==0
  page.once('dialog',lambda d:d.accept());page.locator('#publish').click();expect(page.locator('#public-link')).to_be_visible();href=page.locator('#public-link').get_attribute('href')
  public=b.new_page();response=public.goto(BASE+href,wait_until='networkidle');assert response.status==200;expect(public.get_by_role('heading',name='사람이 재편집한 어학연수 조건 안내',exact=True)).to_be_visible();assert 'AI를 사용하지 않은 원문 정리 초안' not in public.locator('body').inner_text();expect(public.get_by_role('heading',name='출처·참고 자료',exact=True)).to_be_visible()
  passed('editing, explicit review and separate approval publish only intended article with source; internal notes stay private')
