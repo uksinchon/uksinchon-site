@@ -30,7 +30,7 @@ try{
  const bytes=execFileSync('python3',['-c',"from PIL import Image;import io,sys;b=io.BytesIO();Image.new('RGB',(12,8),(80,120,160)).save(b,format='WEBP');sys.stdout.buffer.write(b.getvalue())"]);
  const image=await staff.api('posts/'+id+'/images',{method:'POST',body:new Uint8Array(bytes),headers:{'Content-Type':'image/webp'},expected:201});
  await anon.request(image.url,{expected:404});
- await staff.api('posts/'+id,{method:'PUT',body:{...news,revision:2,delta:{ops:[...news.delta.ops,{insert:{image:image.url}},{insert:'\n'}]},imageMeta:{[image.id]:{alt:'가상 검증 이미지',rights:'직접 생성한 가상 이미지'}}}});
+ await staff.api('posts/'+id,{method:'PUT',body:{...news,revision:2,delta:{ops:[...news.delta.ops,{insert:{image:image.url}},{insert:'\n'}]},imageMeta:{[image.id]:{alt:'가상 검증 이미지',rights:'직접 생성한 가상 이미지',source:'www.example.org/photos'}}}});
  const before=await read(id);assert.equal(before.post.status,'draft');
  const published=await action(staff,id,'publish',before.post.revision);
  let live=await read(id);const first=live.snapshot.publication;
@@ -39,6 +39,8 @@ try{
  assert.equal(live.post.revision,before.post.revision+1);assert.equal(live.post.published_revision,live.post.revision);
  for(const path of [published.url,'/blog/','/sitemap.xml','/feed.xml'])assert((await anon.request(path)).data.includes(path===published.url?news.title:published.url));
  await anon.request(image.url);
+ assert.equal(live.snapshot.imageMeta[image.id].source,'www.example.org/photos');
+ const photoHTML=(await anon.request(published.url)).data;assert(photoHTML.includes('사진 출처: www.example.org/photos'));assert(!photoHTML.includes('href="www.example.org/photos"'));
  pass('a staff writer publishes directly from draft without any review request or administrator action; HTML, media, sitemap and RSS become public');
 
  const unchanged=await action(staff,id,'publish',live.post.revision);assert(unchanged.unchanged);assert.equal(unchanged.revision,live.post.revision);

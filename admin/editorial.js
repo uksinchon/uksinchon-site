@@ -50,7 +50,7 @@ function syncImages() {
    box.append(field('독자에게 전달할 사진 설명',m.alt,{max:300,onInput:value=>{m.alt=value;changed();}}));
    box.append(field('사진 아래에 보일 설명 · 선택',m.caption,{multiline:true,max:600,onInput:value=>{m.caption=value;changed();}}));
    box.append(field('사용 근거 · 예: 직접 촬영, 학교의 사용 허락',m.rights,{max:300,onInput:value=>{m.rights=value;changed();}}));
-   box.append(field('사진 출처 주소 · 선택',m.source,{type:'url',max:2000,onInput:value=>{m.source=value;changed();}}));
+   box.append(field('사진 출처 · 선택 (주소 또는 설명)',m.source,{max:2000,onInput:value=>{m.source=value;changed();}}));
    const label=node('label','정보 전달이 없는 장식용 사진입니다 ');label.className='check-label';const check=node('input');check.type='checkbox';check.checked=!!m.decorative;check.addEventListener('change',()=>{m.decorative=check.checked;if(m.decorative&&hero===id)hero='';fillHero();changed();});label.prepend(check);box.append(label);$('image-metadata-list').append(box);
   });
  }

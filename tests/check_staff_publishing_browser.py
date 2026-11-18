@@ -22,12 +22,14 @@ with sync_playwright() as p:
  s.locator('#title').fill(title);s.locator('.ql-editor').fill('실제 학생이나 학교 정보가 아닌 직원 직접 발행 화면 검증용 가상 글입니다.\n');s.locator('#save').click();expect(s.locator('#save-state')).to_have_text(re.compile('^저장 완료'))
  s.locator('#image-file').set_input_files(str(photo));expect(s.locator('#notice')).to_have_text('사진과 글을 공동 DB에 저장했습니다.')
  s.locator('#image-metadata-panel > summary').click();s.get_by_label('독자에게 전달할 사진 설명',exact=True).fill('직접 생성한 가상 검증 이미지');s.get_by_label('사용 근거 · 예: 직접 촬영, 학교의 사용 허락',exact=True).fill('직접 생성한 가상 이미지')
+ source=s.get_by_label('사진 출처 · 선택 (주소 또는 설명)',exact=True);assert source.get_attribute('type')=='text';source.fill('www.example.org/학교사진')
  s.locator('#save').click();expect(s.locator('#save-state')).to_have_text(re.compile('^저장 완료'))
  with s.expect_popup() as popup:s.locator('#preview').click()
- preview=popup.value;preview.wait_for_load_state('networkidle');assert preview.locator('meta[name=robots]').get_attribute('content')=='noindex,nofollow';preview.close()
+ preview=popup.value;preview.wait_for_load_state('networkidle');assert preview.locator('meta[name=robots]').get_attribute('content')=='noindex,nofollow';expect(preview.locator('.image-source')).to_have_text('사진 출처: www.example.org/학교사진');assert preview.locator('.image-source a').count()==0;preview.close()
  s.once('dialog',lambda d:d.accept());s.locator('#publish').click();expect(s.locator('#notice')).to_have_text(re.compile('^공개했습니다'));expect(s.locator('#public-link')).to_be_visible();url=s.locator('#public-link').get_attribute('href');expect(s.locator('#publish')).to_have_text('수정 내용 발행하기')
  assert not any(u.endswith('/review') for u in actions)
  public=browser.new_context(java_script_enabled=False,viewport={'width':390,'height':844});v=public.new_page();assert v.goto(BASE+url,wait_until='networkidle').status==200;expect(v.get_by_role('heading',name=title,exact=True)).to_be_visible();expect(v.locator('.article-body img')).to_be_visible()
+ expect(v.locator('.image-source')).to_have_text('사진 출처: www.example.org/학교사진');assert v.locator('.image-source a').count()==0
  listing=public.new_page();listing.goto(BASE+'/blog/',wait_until='networkidle');expect(listing.get_by_role('link',name=title,exact=True)).to_be_visible()
  passed('a staff writer previews and directly publishes text and an owned photo; anonymous readers see the article and list without a review request')
 

@@ -24,7 +24,18 @@ assert.throws(()=>cleanTable({...table,rows:[['wrong']]}));assert.throws(()=>cle
 pass('tables preserve headers, text, sources and escaping; image traversal and hero dimensions handle mixed embeds');
 assert(publicationProblem(s,null).includes('사실 확인'));
 assert.equal(imageReadiness({...rich,imageMeta:{[id]:{}}}),'');
-assert(imageReadiness({...rich,imageMeta:{[id]:{source:'javascript:alert(1)'}}}).includes('주소'));
+for(const source of ['', '학교 홍보팀 제공', 'www.example.org/photos', 'https://', 'javascript:alert(1)', '<script>alert(1)</script>']){
+ const photo=cleanSnapshot({...rich,contentType:'news',requiresFactCheck:false,imageMeta:{[id]:{source}}},'가상 직원');
+ assert.equal(photo.imageMeta[id].source,source);assert.equal(imageReadiness(photo),'');assert.equal(publicationProblem(photo,null),'');
+ const rendered=renderDelta(photo.delta,photo.imageMeta,photo.heroImageId);
+ assert(!rendered.includes('<p class="image-source"><a '));assert(!rendered.includes('<script>'));assert(!rendered.includes('href="javascript:'));
+ if(source==='<script>alert(1)</script>')assert(rendered.includes('&lt;script&gt;alert(1)&lt;/script&gt;'));
+}
+const linked=renderDelta(rich.delta,{[id]:{source:'https://example.org/photos?a=1&b=2'}});
+assert(linked.includes('href="https://example.org/photos?a=1&amp;b=2"'));
+assert(imageReadiness({...rich,imageMeta:{[id]:{decorative:true}}}).includes('장식용'));
+assert(publicationProblem({...s,sourceDetails:[{url:'www.example.org/official'}]},null).includes('자료 주소'));
+pass('optional photo sources accept descriptions and partial addresses as escaped text; only valid web links are clickable and official-reference checks remain intact');
 const user={id:'admin-id',name:'가상 검토자'},post={owner_id:'writer-id',revision:3,published_at:null};
 const review={actor_id:user.id,name:user.name,created_at:'2026-11-05T01:00:00Z'};
 const first=sealPublication(s,post,null,review,user,'2026-11-05T02:00:00Z');

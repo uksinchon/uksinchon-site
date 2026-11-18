@@ -107,10 +107,7 @@ export function factReadiness(s) {
 }
 export function imageReadiness(s) {
   if(s.schemaVersion!==2)return '';
-  for(const id of imageIds(s)) {
-    const m=s.imageMeta?.[id];
-    if(m?.source&&!safeLink(m.source))return '사진 출처의 웹 주소를 완성하거나 지워 주세요.';
-  }
+  // Photo sources may be descriptions or partial addresses; links are checked when rendered.
   if(s.heroImageId&&s.imageMeta[s.heroImageId]?.decorative)return '장식용 사진은 대표 사진으로 선택할 수 없습니다.';
   return '';
 }
@@ -154,7 +151,9 @@ export function renderDelta(delta,imageMeta={},heroImageId='') {
       if(line||pendingImage)endLine();closeList();const id=op.insert.image.slice(7),m=imageMeta[id]||{},hero=id===heroImageId;
       const dimensions=m.width&&m.height?` width="${Number(m.width)}" height="${Number(m.height)}"`:'';
       const size=Number.isInteger(a.imageWidth)&&a.imageWidth>=10&&a.imageWidth<=100?` class="image-width-${a.imageWidth}"`:'';
-      pendingImage=`<figure class="article-image"><img${size} src="${esc(op.insert.image)}" alt="${esc(m.decorative?'':m.alt||'')}"${dimensions}${hero?' fetchpriority="high"':' loading="lazy"'} decoding="async">${m.caption?'<figcaption>'+esc(m.caption)+'</figcaption>':''}${safeLink(m.source)?'<p class="image-source"><a href="'+esc(m.source)+'" rel="noopener noreferrer">사진 출처</a></p>':''}</figure>`;continue;
+      const source=text(m.source,2000),sourceURL=safeLink(source);
+      const sourceHTML=source?'<p class="image-source">'+(sourceURL?'<a href="'+esc(sourceURL)+'" rel="noopener noreferrer">사진 출처</a>':'사진 출처: '+esc(source))+'</p>':'';
+      pendingImage=`<figure class="article-image"><img${size} src="${esc(op.insert.image)}" alt="${esc(m.decorative?'':m.alt||'')}"${dimensions}${hero?' fetchpriority="high"':' loading="lazy"'} decoding="async">${m.caption?'<figcaption>'+esc(m.caption)+'</figcaption>':''}${sourceHTML}</figure>`;continue;
     }
     if(validYouTubeId(op.insert?.youtube)){if(line||pendingImage)endLine();closeList();html+=`<figure class="youtube-video"><iframe src="https://www.youtube-nocookie.com/embed/${op.insert.youtube}" title="YouTube 영상" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></figure>`;continue;}
     if(op.insert?.comparisonTable){if(line||pendingImage)endLine();closeList();html+=renderTable(op.insert.comparisonTable);continue;}
