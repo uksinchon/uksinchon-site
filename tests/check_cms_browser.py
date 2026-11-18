@@ -42,7 +42,7 @@ with sync_playwright() as p:
   a.get_by_role('button',name='저장 후 미리보기 ↗',exact=True).click()
  preview=popup.value;preview.wait_for_load_state('networkidle');assert preview.get_by_role('heading',name=title,exact=True).is_visible();assert 'noindex' in preview.locator('meta[name=robots]').get_attribute('content');preview.close()
  passed('administrator opens authenticated preview of the staff draft')
- a.once('dialog',lambda d:d.accept());a.get_by_role('button',name='이 버전 공개 승인',exact=True).click();a.locator('#public-link').wait_for(state='visible');public_url=a.locator('#public-link').get_attribute('href')
+ a.once('dialog',lambda d:d.accept());a.locator('#publish').click();a.locator('#public-link').wait_for(state='visible');public_url=a.locator('#public-link').get_attribute('href')
  public=browser.new_context(viewport={'width':1440,'height':1050});v=public.new_page();r=v.goto(BASE+public_url,wait_until='networkidle');assert r.status==200;assert v.get_by_role('heading',name=title,exact=True).is_visible();expect(v.locator('.article-body img')).to_be_visible()
  v.screenshot(path='/workspace/신촌점_직원블로그_공개글.png',full_page=True)
  a.screenshot(path='/workspace/신촌점_직원글쓰기_관리자.png',full_page=True)

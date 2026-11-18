@@ -102,7 +102,7 @@ window.UK_EDITORIAL={
  },
  imageUploaded(data){imageMeta[data.id]={...imageMeta[data.id],width:data.width,height:data.height,...(typeof data.source==='string'?{source:data.source}:{}),...(typeof data.rights==='string'?{rights:data.rights}:{})};},
  status({user,post,dirty,revision,review,snapshot}){
-  $('fact-review-panel').hidden=user.role!=='admin';
+  $('fact-review-panel').hidden=false;
   if(dirty&&!lastDirty)for(const key of ['facts','conditions','rights'])$('fact-check-'+key).checked=false;
   lastDirty=dirty;
   const sealed=post.published_revision===revision?snapshot?.publication?.factCheck:null;

@@ -57,12 +57,12 @@ bind('logout',async()=>{if(!discardNaverText())return;if(state.dirty)await save(
 bind('password-button',async()=>{if(state.dirty)await save(true);show('password-view');notice();});
 bind('password-cancel',async()=>{if(state.user.mustChange)throw new Error('임시 비밀번호를 먼저 변경해 주세요.');await loadList();});
 $('password-form').addEventListener('submit',async event=>{event.preventDefault();try{if($('new-password').value!==$('new-password-again').value)throw new Error('새 비밀번호가 서로 다릅니다.');await api('password',{method:'POST',body:{currentPassword:$('old-password').value,password:$('new-password').value}});$('password-form').reset();state.user.mustChange=false;notice('비밀번호를 변경했습니다.');await enterWorkspace();}catch(e){notice(e.message,true);}});
-function statusText(post){if(post.is_trashed)return '휴지통';if(post.published_revision){if(post.published_revision===post.revision)return '공개 중';return post.status==='review'?'공개 중 · 수정 검토 요청':'공개 중 · 수정 초안';}return {draft:'초안',review:'검토 요청',published:'공개 승인됨'}[post.status]||'초안';}
+function statusText(post){if(post.is_trashed)return '휴지통';if(post.published_revision){if(post.published_revision===post.revision)return '공개 중';return post.status==='review'?'공개 중 · 수정 검토 요청':'공개 중 · 수정 초안';}return {draft:'초안',review:'검토 요청',published:'공개됨'}[post.status]||'초안';}
 async function moveListPost(post,restore,button){
  const title=post.title||'제목 없는 글';
- const message=restore?'‘'+title+'’ 글을 비공개 초안으로 복구할까요? 공개하려면 다시 승인해야 합니다.':'‘'+title+'’ 글을 삭제할까요?'+(post.published_revision?' 공개 글과 사진도 사이트에서 내려갑니다.':'')+' 휴지통에서 복구할 수 있습니다.';
+ const message=restore?'‘'+title+'’ 글을 비공개 초안으로 복구할까요? 공개하려면 다시 발행해야 합니다.':'‘'+title+'’ 글을 삭제할까요?'+(post.published_revision?' 공개 글과 사진도 사이트에서 내려갑니다.':'')+' 휴지통에서 복구할 수 있습니다.';
  if(!confirm(message))return;button.disabled=true;
- try{await api('posts/'+post.id+'/'+(restore?'restore':'trash'),{method:'POST',body:{revision:post.revision}});await loadList();notice(restore?'비공개 초안으로 복구했습니다. 공개하려면 다시 승인해 주세요.':'글을 삭제했습니다. 휴지통에서 복구할 수 있습니다.');}
+ try{await api('posts/'+post.id+'/'+(restore?'restore':'trash'),{method:'POST',body:{revision:post.revision}});await loadList();notice(restore?'비공개 초안으로 복구했습니다. 공개하려면 다시 발행해 주세요.':'글을 삭제했습니다. 휴지통에서 복구할 수 있습니다.');}
  catch(e){notice(e.message,true);}finally{button.disabled=false;}
 }
 async function loadList(){
@@ -110,7 +110,14 @@ function fillSnapshot(snapshot){state.loading=true;ensureEditor();state.snapshot
 async function openPost(id,{preservePosition=false}={}){
  if(state.dirty)await save(true);const data=await api('posts/'+id);state.post=data.post;state.naver=data.naver||null;state.factReview=data.factReview||null;state.revision=data.post.revision;state.dirty=false;state.changes=0;imagePosition=null;state.autoStopped=false;fillSnapshot(data.snapshot);$('version-list').replaceChildren();show('editor-view');fillNaverReview();updateState();notice();$('title').focus({preventScroll:preservePosition});
 }
-function updateState(){if(!state.post)return;updateNaverReviewState();extra.status({user:state.user,post:state.post,dirty:state.dirty,revision:state.revision,review:state.factReview,snapshot:state.snapshot});$('editor-state').textContent=statusText({...state.post,revision:state.revision});$('save-state').textContent=state.dirty?'저장할 변경 사항이 있습니다.':'저장 완료 · 버전 '+state.revision;$('publish').hidden=state.user.role!=='admin';$('unpublish').hidden=state.user.role!=='admin'||!state.post.published_revision;$('public-link').hidden=!state.post.published_revision;$('public-link').href='/blog/'+state.post.slug+'/';$('publication-note').textContent=state.post.published_revision?'현재 공개본은 별도로 유지됩니다. 관리자 승인 전에는 수정 내용이 공개되지 않습니다.':'초안은 로그인한 작성자와 관리자만 볼 수 있습니다.';}
+function updateState(){
+ if(!state.post)return;
+ updateNaverReviewState();extra.status({user:state.user,post:state.post,dirty:state.dirty,revision:state.revision,review:state.factReview,snapshot:state.snapshot});
+ $('editor-state').textContent=statusText({...state.post,revision:state.revision});$('save-state').textContent=state.dirty?'저장할 변경 사항이 있습니다.':'저장 완료 · 버전 '+state.revision;
+ $('publish').hidden=false;$('publish').textContent=state.post.published_revision?'수정 내용 발행하기':'발행하기';
+ $('unpublish').hidden=!state.post.published_revision;$('public-link').hidden=!state.post.published_revision;$('public-link').href='/blog/'+state.post.slug+'/';
+ $('publication-note').textContent=state.post.published_revision?'현재 공개본은 유지됩니다. ‘수정 내용 발행하기’를 누르면 수정한 버전이 공개됩니다.':'관리자 검토 요청 없이 직접 발행할 수 있습니다. ‘발행하기’를 누르기 전 초안은 비공개입니다.';
+}
 function changed(){if(state.loading||!state.post)return;state.dirty=true;state.changes++;updateState();clearTimeout(state.autoTimer);if(!state.autoStopped)state.autoTimer=setTimeout(()=>save(false).catch(e=>notice(e.message,true)),1800);}
 ['title','category','summary','sources','verified-at'].forEach(id=>$(id).addEventListener('input',changed));
 function currentSnapshot(){return {title:$('title').value,category:$('category').value,summary:$('summary').value,sources:$('sources').value,verifiedAt:$('verified-at').value,delta:editor.getContents(),revision:state.revision,...extra.snapshot()};}
@@ -129,7 +136,7 @@ bind('back-list',async()=>{await save(true);await loadList();notice();});
 bind('preview',async()=>{const popup=window.open('about:blank','_blank');if(!popup)throw new Error('미리보기를 위해 팝업을 허용해 주세요.');try{await save(true);popup.location.href='/api/cms/posts/'+state.post.id+'/preview';}catch(e){popup.close();throw e;}});
 async function action(kind){await save(true);if(kind==='publish'&&!confirm('저장된 이 버전을 공개하시겠습니까? 누구나 읽을 수 있습니다.'))return;if(kind==='unpublish'&&!confirm('현재 공개본을 내릴까요? 원고와 수정 이력은 보관됩니다.'))return;const data=await api('posts/'+state.post.id+'/'+kind,{method:'POST',body:{revision:state.revision}});await openPost(state.post.id,{preservePosition:true});notice(kind==='publish'?'공개했습니다. ‘현재 공개본 보기’에서 확인해 주세요.':kind==='review'?'관리자에게 검토를 요청했습니다. 별도 메일·메신저 알림은 발송하지 않습니다.':'공개를 내렸습니다. 원고와 이력은 유지됩니다.');return data;}
 bind('review',()=>action('review'));bind('publish',()=>action('publish'));bind('unpublish',()=>action('unpublish'));
-bind('record-facts',async()=>{await save(true);await api('posts/'+state.post.id+'/factcheck',{method:'POST',body:{revision:state.revision,checks:extra.checks()}});await openPost(state.post.id);notice('현재 버전의 사실 확인을 기록했습니다. 별도로 공개 승인해 주세요.');});
+bind('record-facts',async()=>{await save(true);await api('posts/'+state.post.id+'/factcheck',{method:'POST',body:{revision:state.revision,checks:extra.checks()}});await openPost(state.post.id,{preservePosition:true});notice('현재 버전의 사실 확인을 기록했습니다. ‘발행하기’로 직접 게시할 수 있습니다.');});
 async function webpImage(file){
  if(!['image/jpeg','image/png','image/webp'].includes(file.type))throw new Error('JPG·PNG·WebP 사진을 선택해 주세요.');if(file.size>20*1024*1024)throw new Error('사진 한 장은 20MB 이하로 선택해 주세요.');
  const bitmap=await createImageBitmap(file);let canvas;
@@ -232,7 +239,7 @@ bind('naver-fetch-source',async()=>{if(!discardNaverText())return;const id=state
 bind('naver-save-source',async()=>{const id=state.naverItem.id;await api('naver/items/'+id+'/text',{method:'POST',body:{text:$('naver-source-text').value,confirmed:$('naver-source-confirmed').checked}});naverTextDirty=false;await openNaverItem(id);notice('직접 확인한 전체 원문을 저장했습니다.');});
 async function makeNaverDraft(mode){if(naverTextDirty)throw new Error('입력한 원문을 먼저 저장해 주세요.');if(state.naverItem.post_id&&!confirm('재편집 결과를 현재 초안의 새 버전으로 만들까요? 기존 공개본은 유지됩니다.'))return;const button=$(mode==='ai'?'naver-ai-draft':'naver-manual-draft');button.disabled=true;notice(mode==='ai'?'AI가 원문을 바탕으로 재편집 중입니다. 공개하지 않습니다.':'원문 정리 초안을 만들고 있습니다.');try{const result=await api('naver/items/'+state.naverItem.id+'/draft',{method:'POST',body:{mode}});await openPost(result.postId);notice(mode==='ai'?'AI 초안을 만들었습니다. 원문과 대조하고 검수한 뒤 공개 승인해 주세요.':'AI 없이 원문 정리 초안을 만들었습니다. 직접 재편집·검수한 뒤 공개해 주세요.');}finally{button.disabled=false;}}
 bind('naver-ai-draft',()=>makeNaverDraft('ai'));bind('naver-manual-draft',()=>makeNaverDraft('manual'));bind('naver-open-draft',()=>{if(discardNaverText())return openPost(state.naverItem.post_id);});
-bind('naver-approve',async()=>{await save(true);const checks=Object.fromEntries(['facts','conditions','rights'].map(k=>[k,$('naver-check-'+k).checked]));await api('naver/items/'+state.naver.id+'/review',{method:'POST',body:{revision:state.revision,sourceHash:state.naver.source_hash,checks}});const draft=currentSnapshot();try{if(draft.requiresFactCheck||['guide','comparison'].includes(draft.contentType)||(draft.verifiedAt&&draft.reviewScope))await api('posts/'+state.post.id+'/factcheck',{method:'POST',body:{revision:state.revision,checks}});}finally{await openPost(state.post.id);}notice('현재 버전의 검수를 기록했습니다. 별도로 공개 승인하면 게시됩니다.');});
+bind('naver-approve',async()=>{await save(true);const checks=Object.fromEntries(['facts','conditions','rights'].map(k=>[k,$('naver-check-'+k).checked]));await api('naver/items/'+state.naver.id+'/review',{method:'POST',body:{revision:state.revision,sourceHash:state.naver.source_hash,checks}});const draft=currentSnapshot();try{if(draft.requiresFactCheck||['guide','comparison'].includes(draft.contentType)||(draft.verifiedAt&&draft.reviewScope))await api('posts/'+state.post.id+'/factcheck',{method:'POST',body:{revision:state.revision,checks}});}finally{await openPost(state.post.id);}notice('현재 버전의 검수를 기록했습니다. ‘발행하기’를 누르면 게시됩니다.');});
 bind('naver-make-cron-key',()=>{$('naver-cron-key').value=Array.from(crypto.getRandomValues(new Uint8Array(24)),b=>b.toString(16).padStart(2,'0')).join('');notice('예약용 키를 현재 기기에서 만들었습니다. Pages와 Worker 양쪽의 CMS_NAVER_CRON_TOKEN Secret에 같은 값을 저장해야 합니다.');});
 bind('naver-copy-cron-key',async()=>{const field=$('naver-cron-key');if(!field.value)throw new Error('현재 기기에서 키를 먼저 만들어 주세요.');try{await navigator.clipboard.writeText(field.value);notice('예약용 키를 복사했습니다.');}catch{field.focus();field.select();notice('키를 선택했습니다. 기기의 복사 기능을 사용해 주세요.');}});
 
