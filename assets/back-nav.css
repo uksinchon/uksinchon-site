@@ -1,0 +1,11 @@
+/* 휴대폰 화면 머리글 왼쪽의 뒤로가기 버튼 (본사 사이트와 같은 방식) */
+.uk-back{display:none}
+@media (max-width:768px){
+ .uk-back-wrap{display:flex;align-items:center;min-width:0}
+ header.top .brand small{letter-spacing:.04em}
+ .uk-back{display:inline-grid;place-items:center;flex:none;width:40px;height:40px;margin:0 6px 0 -8px;padding:0;border:0;border-radius:50%;background:transparent;color:#1A2E5A;cursor:pointer;-webkit-tap-highlight-color:transparent}
+ .uk-back:active{background:rgba(26,46,90,.08)}
+ .uk-back:focus-visible{outline:3px solid #E8432B;outline-offset:2px}
+ .uk-back svg{width:24px;height:24px}
+ .uk-back.floating{position:fixed;z-index:60;top:calc(10px + env(safe-area-inset-top));left:10px;margin:0;background:rgba(255,255,255,.94);box-shadow:0 4px 14px rgba(26,46,90,.18)}
+}

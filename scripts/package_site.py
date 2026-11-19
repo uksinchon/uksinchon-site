@@ -13,7 +13,7 @@ PUBLIC_FILES = (
     'preview/pharmacy/index.html', 'preview/pharmacy/styles.css', 'preview/pharmacy/contact.js',
     'pharmacy/index.html', 'pharmacy/styles.css', 'pharmacy/consultation.js',
     'assets/meta-pixel-config.js', 'assets/meta-pixel.js', 'assets/blog-entry.js',
-    'assets/home.css', 'assets/home.js',
+    'assets/home.css', 'assets/home.js', 'assets/back-nav.js', 'assets/back-nav.css',
     'assets/home/office.jpg', 'assets/home/team-jeongmin.jpg',
     'assets/home/team-kyungmin.png', 'assets/home/team-kyungho.png',
     'assets/home/london-1440.webp', 'assets/home/london-768.webp',
