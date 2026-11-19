@@ -21,6 +21,7 @@ PUBLIC_FILES = (
     'assets/home/london-river.webp', 'assets/home/photo-sources.json',
     'assets/home/campus-sunset-1440.webp', 'assets/home/campus-sunset-768.webp',
     'assets/home/ucl-portico-1440.webp', 'assets/home/ucl-portico-768.webp',
+    'assets/home/towerbridge-1440.webp', 'assets/home/towerbridge-768.webp',
     'assets/home/manchester.webp', 'assets/home/ucl.webp', 'assets/home/students-lunch.webp',
     'assets/home/city-square.webp', 'assets/home/lab.webp', 'assets/home/students-dinner.webp',
     'hello-uk/index.html', 'hello-uk/og.png',

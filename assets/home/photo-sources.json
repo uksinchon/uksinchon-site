@@ -153,6 +153,28 @@
       "height": 512,
       "bytes": 74226,
       "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "towerbridge-1440.webp",
+      "source": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad",
+      "description": "템스강과 런던 시내 전경 (메인 슬라이드)",
+      "provider": "Unsplash",
+      "license": "https://unsplash.com/license",
+      "width": 1440,
+      "height": 960,
+      "bytes": 206856,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "towerbridge-768.webp",
+      "source": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad",
+      "description": "템스강과 런던 시내 전경 (메인 슬라이드)",
+      "provider": "Unsplash",
+      "license": "https://unsplash.com/license",
+      "width": 768,
+      "height": 512,
+      "bytes": 63356,
+      "checkedAt": "2026-11-19"
     }
   ],
   "notes": "소개용 풍경·학업 이미지입니다. 학생 후기·수속 사례·제휴 학교를 증명하는 사진으로 사용하지 않습니다."
