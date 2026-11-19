@@ -1,16 +1,17 @@
-import {esc,imageIds} from './content.js';
+import {esc,imageIds,REVIEW_SQL} from './content.js';
 import {publicAuthor} from './pages.js';
 import {homeClips} from './clips.js';
 import {homeSeason} from './season.js';
 
 // Only approved snapshots are projected; private draft titles never reach the home page.
-export async function recentHomeNotes(db) {
+export async function recentHomeNotes(db,{reviews=false}={}) {
  if(!db)return null;
  try {
   const {results}=await db.prepare(`SELECT p.id,p.slug,p.published_at,v.snapshot,
    json_extract(v.snapshot,'$.title') AS title,json_extract(v.snapshot,'$.summary') AS summary,
    json_extract(v.snapshot,'$.category') AS category,json_extract(v.snapshot,'$.authorName') AS author_name
    FROM cms_posts p JOIN cms_versions v ON v.post_id=p.id AND v.revision=p.published_revision
+   WHERE ${reviews?'':'NOT '}${REVIEW_SQL}
    ORDER BY p.published_at DESC,p.id DESC LIMIT 3`).all();
   const rows=(results||[]).filter(p=>typeof p.title==='string'&&p.title.trim()&&/^[A-Za-z0-9][A-Za-z0-9_-]{0,199}$/.test(p.slug));
   if(!rows.length)return null;
@@ -41,9 +42,10 @@ export async function homePage({request,env,next}) {
  // Pages context.next serves the static template without another route lookup or binding.
  const asset=await next(new Request(request.url,{method:'GET'}));
  if(asset.status!==200||!asset.headers.get('Content-Type')?.includes('text/html'))return request.method==='HEAD'?new Response(null,{status:asset.status,headers:asset.headers}):asset;
- const template=await asset.text(),[notes,clips,season]=await Promise.all([recentHomeNotes(env.CMS_DB),homeClips(env),homeSeason(env.CMS_DB)]);
+ const template=await asset.text(),[notes,clips,season,reviews]=await Promise.all([recentHomeNotes(env.CMS_DB),homeClips(env),homeSeason(env.CMS_DB),recentHomeNotes(env.CMS_DB,{reviews:true})]);
  let html=notes?template.replace(/<!--home-notes:start-->[\s\S]*?<!--home-notes:end-->/,()=>'<!--home-notes:start-->'+notes+'<!--home-notes:end-->'):template;
  if(season)for(const [slot,card] of Object.entries(season))html=html.replace(new RegExp('<!--season-'+slot+':start-->[\\s\\S]*?<!--season-'+slot+':end-->'),()=>'<!--season-'+slot+':start-->'+card+'<!--season-'+slot+':end-->');
+ if(reviews)html=html.replace(/<!--home-reviews:start-->[\s\S]*?<!--home-reviews:end-->/,()=>'<!--home-reviews:start-->'+reviews+'<!--home-reviews:end-->');
  if(clips)html=html.replace(/<!--home-clips:start-->[\s\S]*?<!--home-clips:end-->/,()=>'<!--home-clips:start-->'+clips+'<!--home-clips:end-->').replace('<section id="clips" class="section soft" aria-labelledby="clips-title" hidden>','<section id="clips" class="section soft" aria-labelledby="clips-title">');
  const headers=new Headers(asset.headers);
  for(const name of ['Content-Length','Content-Encoding','ETag','Last-Modified','Age'])headers.delete(name);

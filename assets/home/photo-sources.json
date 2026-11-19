@@ -165,6 +165,30 @@
       "height": 860,
       "bytes": 9590,
       "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "team-banner-1600.webp",
+      "source": "https://www.ukcentre.co.kr/files/asset/image/sinchon-branch-banner-1785058161.jpg",
+      "description": "웨스트민스터 궁전과 빅벤, 영국 국기 (상담팀 페이지 배너)",
+      "provider": "영국유학센터 본사 홈페이지 (신촌지사 소개)",
+      "bytes": 101336,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "team-banner-768.webp",
+      "source": "https://www.ukcentre.co.kr/files/asset/image/sinchon-branch-banner-1785058161.jpg",
+      "description": "같은 배너의 휴대폰용",
+      "provider": "영국유학센터 본사 홈페이지 (신촌지사 소개)",
+      "bytes": 27952,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "sinchon-map.webp",
+      "source": "https://www.ukcentre.co.kr/files/asset/image/sinchon-naver-map-1785058162.png",
+      "description": "신촌점 위치 지도",
+      "provider": "영국유학센터 본사 홈페이지 (신촌지사 소개)",
+      "bytes": 113154,
+      "checkedAt": "2026-11-19"
     }
   ],
   "notes": "소개용 풍경·학업 이미지입니다. 학생 후기·수속 사례·제휴 학교를 증명하는 사진으로 사용하지 않습니다."

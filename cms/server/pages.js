@@ -1,4 +1,4 @@
-import {esc,renderDelta,CATEGORY_DEFINITIONS,safeLink,todayKorea} from './content.js';
+import {esc,renderDelta,CATEGORY_DEFINITIONS,NOTE_CATEGORIES,REVIEW_CODE,REVIEW_SQL,isReview,safeLink,todayKorea} from './content.js';
 import {publicationDates} from './publication.js';
 const ORIGIN='https://uksinchon.com';
 // Public attribution is distinct from the account that owns or reviews a draft.
@@ -34,13 +34,13 @@ export function articlePage(s,p,preview=false,{related=[]}={}) {
   ...(publishedAt?{datePublished:publishedAt}:{}),...(modifiedAt?{dateModified:modifiedAt}:{}),...(hero?{image:[hero.url]}:{}),
   author,
   publisher:{'@type':'Organization','@id':ORIGIN+'/#organization',name:'영국유학센터 신촌점',url:ORIGIN,logo:{'@type':'ImageObject',url:ORIGIN+'/logo.png'}},mainEntityOfPage:ORIGIN+path};
- const breadcrumbs={'@type':'BreadcrumbList',itemListElement:[{name:'홈',item:ORIGIN+'/'},{name:'신촌 UK 노트',item:ORIGIN+'/blog/'},{name:s.title,item:ORIGIN+path}].map((x,i)=>({'@type':'ListItem',position:i+1,...x}))};
+ const breadcrumbs={'@type':'BreadcrumbList',itemListElement:[{name:'홈',item:ORIGIN+'/'},(isReview(s)?{name:'신촌점 후기',item:ORIGIN+'/reviews/'}:{name:'신촌 UK 노트',item:ORIGIN+'/blog/'}),{name:s.title,item:ORIGIN+path}].map((x,i)=>({'@type':'ListItem',position:i+1,...x}))};
  const schema=preview?null:{'@context':'https://schema.org','@graph':[article,breadcrumbs]};
  const byline=preview?esc(author.name)+' · 공개 전 초안':esc(author.name)+' · '+time(publishedAt,'최초 발행')+(modifiedAt&&modifiedAt!==publishedAt?' · '+time(modifiedAt,'내용 수정'):'');
  const review=checked?`<section class="fact-review" aria-label="자료 확인"><p>${time(checked.checkedAt,'마지막 사실 확인')} · 검토 ${esc(checked.reviewerName)}</p><p>확인 범위: ${esc(checked.scope)}</p></section>`:'';
  const due=!preview&&s.reviewDueAt&&s.reviewDueAt<todayKorea()?'<p class="freshness-note">이 안내의 재확인 시점이 지났습니다. 현재 적용 조건은 공식 자료와 상담으로 다시 확인해 주세요.</p>':'';
  const relatedHTML=related.length?'<nav class="related" aria-label="함께 읽을 글"><h2>다음 질문도 함께 살펴보세요</h2><ul>'+related.map(row=>'<li><a href="/blog/'+esc(row.slug)+'/">'+esc(row.title)+'</a></li>').join('')+'</ul></nav>':'';
- const body=`${preview?'<aside class="preview-note">비공개 미리보기입니다. 저장된 현재 초안이며 공개본은 바뀌지 않았습니다.</aside>':''}<article class="article"><nav class="breadcrumbs" aria-label="현재 위치"><a href="/">홈</a><span aria-hidden="true"> / </span><a href="/blog/">신촌 UK 노트</a></nav><p class="eyebrow">${esc(s.category)}</p><h1>${esc(s.title||'제목 없는 초안')}</h1><p class="summary">${esc(s.summary)}</p><p class="byline">${byline}</p><p class="edit-entry" hidden><a id="edit-post" class="button" data-slug="${esc(p.slug)}">이 글 수정하기</a></p>${s.appliesTo?'<p class="applicability"><strong>적용 대상·시점</strong> '+esc(s.appliesTo)+'</p>':''}${review}${due}<div class="article-body">${renderDelta(s.delta,s.imageMeta||{},s.heroImageId||'')}</div>${sourcesHTML(s)}${relatedHTML}<aside class="consult"><h2>내 조건에 맞는 준비가 궁금하신가요?</h2><p>현재 학력, 희망 과정과 입학 시기를 알려주시면 다음 준비를 함께 정리해 드립니다.</p><a class="button" href="https://pf.kakao.com/_VNmTxd" rel="noopener noreferrer">카카오톡으로 상담하기 ↗</a></aside></article>`;
+ const body=`${preview?'<aside class="preview-note">비공개 미리보기입니다. 저장된 현재 초안이며 공개본은 바뀌지 않았습니다.</aside>':''}<article class="article"><nav class="breadcrumbs" aria-label="현재 위치"><a href="/">홈</a><span aria-hidden="true"> / </span>${isReview(s)?'<a href="/reviews/">신촌점 후기</a>':'<a href="/blog/">신촌 UK 노트</a>'}</nav><p class="eyebrow">${esc(s.category)}</p><h1>${esc(s.title||'제목 없는 초안')}</h1><p class="summary">${esc(s.summary)}</p><p class="byline">${byline}</p><p class="edit-entry" hidden><a id="edit-post" class="button" data-slug="${esc(p.slug)}">이 글 수정하기</a></p>${s.appliesTo?'<p class="applicability"><strong>적용 대상·시점</strong> '+esc(s.appliesTo)+'</p>':''}${review}${due}<div class="article-body">${renderDelta(s.delta,s.imageMeta||{},s.heroImageId||'')}</div>${sourcesHTML(s)}${relatedHTML}<aside class="consult"><h2>내 조건에 맞는 준비가 궁금하신가요?</h2><p>현재 학력, 희망 과정과 입학 시기를 알려주시면 다음 준비를 함께 정리해 드립니다.</p><a class="button" href="https://pf.kakao.com/_VNmTxd" rel="noopener noreferrer">카카오톡으로 상담하기 ↗</a></aside></article>`;
  return htmlResponse(shell(s.title||'초안 미리보기',s.summary,body,{path,schema,robots:preview?'noindex,nofollow':'',article:true,image:hero}),{privatePage:preview});
 }
 export async function relatedPosts(db,s,postId) {
@@ -74,18 +74,38 @@ export async function publicBlog({request,env}) {
   const normalized=new URLSearchParams(params);let normalize=false;
   if(rawPage!==null&&(page===1||String(page)!==rawPage)){if(page===1)normalized.delete('page');else normalized.set('page',String(page));normalize=true;}
   if(category&&rawCategory!==category.code){normalized.set('category',category.code);normalize=true;}
+  if(category?.code===REVIEW_CODE){const q=new URLSearchParams();if(page>1)q.set('page',String(page));return redirect('/reviews/'+(q.size?'?'+q.toString():''));}
   if(normalize)return redirect('/blog/'+(normalized.size?'?'+normalized.toString():''));
   let query='SELECT p.slug,p.published_at,v.snapshot FROM cms_posts p JOIN cms_versions v ON v.post_id=p.id AND v.revision=p.published_revision';const args=[];
   if(category){query+=" WHERE (json_extract(v.snapshot,'$.categoryCode')=? OR json_extract(v.snapshot,'$.category')=?)";args.push(category.code,category.label);}
+  else query+=' WHERE NOT '+REVIEW_SQL;
   query+=' ORDER BY p.published_at DESC,p.id DESC LIMIT 13 OFFSET ?';args.push((page-1)*12);
   const rows=(await env.CMS_DB.prepare(query).bind(...args).all()).results;
   if(page>1&&!rows.length)return head(missing(),request);
   const cards=rows.slice(0,12).map(row=>{const s=JSON.parse(row.snapshot);return `<article class="post-card"><p class="eyebrow">${esc(s.category)}</p><h2><a href="/blog/${esc(row.slug)}/">${esc(s.title)}</a></h2><p>${esc(s.summary)}</p><small>${esc(publicAuthor(s).name)} · ${time(row.published_at,'발행')}</small></article>`;}).join('');
   const paging=n=>{const q=new URLSearchParams();if(category)q.set('category',category.code);if(n>1)q.set('page',String(n));return '/blog/'+(q.size?'?'+q.toString():'');};
   const title=(category?category.label+' 글':'신촌 UK 노트')+(page>1?' · '+page+'페이지':'');
-  const body=`<section class="intro"><p class="eyebrow">FROM OUR CONSULTATIONS</p><h1>${category?esc(category.label)+' 안내와 이야기':'영국 유학, 궁금한 것부터 차근차근.'}</h1><p>신촌점에서 전하는 준비 안내와 상담 이야기입니다.</p></section><nav class="categories" aria-label="글 주제"><a href="/blog/" ${!category?'aria-current="page"':''}>전체</a>${CATEGORY_DEFINITIONS.map(c=>'<a href="/blog/?category='+c.code+'" '+(category?.code===c.code?'aria-current="page"':'')+'>'+esc(c.label)+'</a>').join('')}</nav><section class="post-list">${cards||'<p class="empty">아직 공개된 글이 없습니다. 첫 이야기를 준비하고 있습니다.</p>'}</section><nav class="pagination" aria-label="글 목록 페이지">${page>1?'<a rel="prev" href="'+esc(paging(page-1))+'">← 이전</a>':''}<span>${page}페이지</span>${rows.length>12?'<a rel="next" href="'+esc(paging(page+1))+'">다음 →</a>':''}</nav>`;
+  const body=`<section class="intro"><p class="eyebrow">FROM OUR CONSULTATIONS</p><h1>${category?esc(category.label)+' 안내와 이야기':'영국 유학, 궁금한 것부터 차근차근.'}</h1><p>신촌점에서 전하는 준비 안내와 상담 이야기입니다.</p></section><nav class="categories" aria-label="글 주제"><a href="/blog/" ${!category?'aria-current="page"':''}>전체</a>${NOTE_CATEGORIES.map(c=>'<a href="/blog/?category='+c.code+'" '+(category?.code===c.code?'aria-current="page"':'')+'>'+esc(c.label)+'</a>').join('')}</nav><section class="post-list">${cards||'<p class="empty">아직 공개된 글이 없습니다. 첫 이야기를 준비하고 있습니다.</p>'}</section><nav class="pagination" aria-label="글 목록 페이지">${page>1?'<a rel="prev" href="'+esc(paging(page-1))+'">← 이전</a>':''}<span>${page}페이지</span>${rows.length>12?'<a rel="next" href="'+esc(paging(page+1))+'">다음 →</a>':''}</nav>`;
   return head(htmlResponse(shell(title,'영국유학센터 신촌점의 어학연수·대학·대학원·비용 안내와 상담 이야기',body,{path:paging(page),robots:category||!rows.length?'noindex,follow':''})),request);
  }catch(e){console.error('Blog read failed',e?.name);return head(htmlResponse(shell('신촌 UK 노트 준비 중','','<section class="empty"><h1>신촌 UK 노트를 준비하고 있습니다.</h1><a href="/">홈페이지에서 상담하기</a></section>',{robots:'noindex,follow'}),{status:503}),request);}
+}
+export async function publicReviews({request,env}) {
+ const url=new URL(request.url),pathname=url.pathname;
+ if(!['GET','HEAD'].includes(request.method))return new Response('Method Not Allowed',{status:405,headers:{Allow:'GET, HEAD'}});
+ if(pathname!=='/reviews/')return pathname==='/reviews'?redirect('/reviews/'+url.search):head(missing(),request);
+ const notReady=()=>head(htmlResponse(shell('신촌점 후기 준비 중','','<section class="empty"><h1>신촌점 후기를 준비하고 있습니다.</h1><a href="/">홈으로</a></section>',{path:'/reviews/',robots:'noindex,follow'}),{status:503}),request);
+ if(!env.CMS_DB)return notReady();
+ try{
+  const params=url.searchParams;if(params.getAll('page').length>1)return head(missing(),request);
+  const rawPage=params.get('page');if(rawPage!==null&&(!/^\d+$/.test(rawPage)||Number(rawPage)<1||Number(rawPage)>10000))return head(missing(),request);
+  const page=Number(rawPage)||1;if(rawPage!==null&&(page===1||String(page)!==rawPage))return redirect('/reviews/'+(page>1?'?page='+page:''));
+  const rows=(await env.CMS_DB.prepare('SELECT p.slug,p.published_at,v.snapshot FROM cms_posts p JOIN cms_versions v ON v.post_id=p.id AND v.revision=p.published_revision WHERE '+REVIEW_SQL+' ORDER BY p.published_at DESC,p.id DESC LIMIT 13 OFFSET ?').bind((page-1)*12).all()).results;
+  if(page>1&&!rows.length)return head(missing(),request);
+  const cards=rows.slice(0,12).map(row=>{const s=JSON.parse(row.snapshot);return `<article class="post-card"><p class="eyebrow">신촌점 후기</p><h2><a href="/blog/${esc(row.slug)}/">${esc(s.title)}</a></h2><p>${esc(s.summary)}</p><small>${esc(publicAuthor(s).name)} · ${time(row.published_at,'발행')}</small></article>`;}).join('');
+  const link=n=>'/reviews/'+(n>1?'?page='+n:'');
+  const body=`<section class="intro"><p class="eyebrow">STORIES FROM SINCHON</p><h1>서로 다른 출발점, 신촌점과 함께한 이야기</h1><p>신촌점에서 상담하고 영국으로 떠난 학생들의 후기입니다.</p></section><section class="post-list">${cards||'<p class="empty">아직 공개된 후기가 없습니다. 곧 학생들의 이야기를 전해 드릴게요.</p>'}</section><nav class="pagination" aria-label="후기 목록 페이지">${page>1?'<a rel="prev" href="'+esc(link(page-1))+'">← 이전</a>':''}<span>${page}페이지</span>${rows.length>12?'<a rel="next" href="'+esc(link(page+1))+'">다음 →</a>':''}</nav>`;
+  return head(htmlResponse(shell('신촌점 후기'+(page>1?' · '+page+'페이지':''),'영국유학센터 신촌점에서 준비해 영국으로 떠난 학생들의 어학연수·대학·석사 후기',body,{path:link(page),robots:rows.length?'':'noindex,follow'})),request);
+ }catch(e){console.error('Reviews read failed',e?.name);return notReady();}
 }
 export async function publishedURLs(db) {
  if(!db)return [];

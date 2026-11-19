@@ -1,8 +1,14 @@
 import {validYouTubeId} from '../../assets/youtube.js';
 export const CATEGORY_DEFINITIONS = [
   ['english','어학연수'], ['undergraduate','대학·파운데이션'], ['postgraduate','석사·대학원'],
-  ['costs','비용·장학금'], ['preparation','유학 준비·생활'], ['stories','상담 사례·소식']
+  ['costs','비용·장학금'], ['preparation','유학 준비·생활'], ['stories','상담 사례·소식'], ['reviews','신촌점 후기']
 ].map(([code,label])=>({code,label}));
+// 신촌점 후기는 같은 글쓰기로 쓰지만 /reviews/ 게시판에 따로 모인다 (신촌 UK 노트 목록에서는 제외)
+export const REVIEW_CODE='reviews',REVIEW_LABEL='신촌점 후기';
+export const NOTE_CATEGORIES = CATEGORY_DEFINITIONS.filter(c=>c.code!==REVIEW_CODE);
+export const isReview = s => s?.categoryCode===REVIEW_CODE||s?.category===REVIEW_LABEL;
+// SQL 조건: 공개본 스냅샷(v)이 후기인지
+export const REVIEW_SQL = "(json_extract(v.snapshot,'$.categoryCode')='reviews' OR json_extract(v.snapshot,'$.category')='신촌점 후기')";
 export const CATEGORIES = CATEGORY_DEFINITIONS.map(c=>c.label);
 export const CONTENT_TYPES = ['news','guide','comparison','case'];
 export const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/;
