@@ -212,6 +212,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var
  .note-thumb{aspect-ratio:16/8}
  .hero-visual figcaption strong{font-size:18px}
  .mobile-contact{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.97);border-top:1px solid var(--line)}
+ html.js-bar .mobile-contact{transform:translateY(110%);visibility:hidden;transition:transform .3s ease,visibility 0s .3s}
+ html.js-bar body.bar-on .mobile-contact{transform:none;visibility:visible;transition:transform .3s ease}
  .mobile-contact a{flex:1;text-align:center;text-decoration:none;font-weight:700;padding:12px;border-radius:12px;background:var(--navy);color:#fff}
  .mobile-contact a+a{background:#FEE500;color:#191919}
  body{padding-bottom:72px}

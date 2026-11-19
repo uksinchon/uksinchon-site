@@ -32,7 +32,7 @@ export async function homeClips(env,fetcher=fetch){
   const [videos,hidden]=await Promise.all([channelShorts(fetcher),hiddenClips(env.CMS_DB)]);
   const list=videos.filter(v=>!hidden.has(v.id)).slice(0,4);
   if(!list.length)return null;
-  return list.map(v=>'<a class="clip" href="https://www.youtube.com/shorts/'+v.id+'" target="_blank" rel="noopener noreferrer" data-video="'+v.id+'"><img src="https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg" alt="" width="480" height="360" loading="lazy" decoding="async"><span class="clip-play" aria-hidden="true">▶</span><span class="clip-title">'+esc(v.title)+'</span></a>').join('');
+  return list.map(v=>'<a class="clip" href="https://www.youtube.com/shorts/'+v.id+'" target="_blank" rel="noopener noreferrer" data-video="'+v.id+'"><img src="https://i.ytimg.com/vi/'+v.id+'/maxresdefault.jpg" data-fallback="https://i.ytimg.com/vi/'+v.id+'/hqdefault.jpg" alt="" width="1280" height="720" loading="lazy" decoding="async"><span class="clip-play" aria-hidden="true">▶</span><span class="clip-title">'+esc(v.title)+'</span></a>').join('');
  }catch{return null;}
 }
 
