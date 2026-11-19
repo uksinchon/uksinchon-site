@@ -216,6 +216,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var
  .mobile-contact a+a{border-left:1px solid rgba(255,255,255,.16)}
  .mobile-contact .ico{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:#fff;transition:transform .15s}
  .mobile-contact .ico svg{width:24px;height:24px}
+ .mobile-contact a:not(.t-diag) .ico{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.55)}
+ .mobile-contact a:not(.t-diag) .ico svg{width:26px;height:26px}
  .mobile-contact .t-diag .ico{background:var(--coral);box-shadow:0 6px 16px rgba(232,67,43,.45)}
  .mobile-contact .t-diag .lbl{color:#ffd4c9;font-weight:700}
  .mobile-contact a:active .ico{transform:scale(.92)}
