@@ -54,7 +54,7 @@ with sync_playwright() as p:
  mobile_page=mobile.new_page();mobile_page.goto(BASE+'/',wait_until='networkidle')
  mobile_photo=mobile_page.locator('.hero-photo');expect(mobile_photo).to_have_js_property('complete',True)
  assert mobile_photo.bounding_box()['y']<120 and mobile_photo.bounding_box()['height']>200
- assert mobile_photo.evaluate('(e)=>e.currentSrc').endswith('/assets/home/london-768.webp')
+ assert mobile_photo.evaluate('(e)=>e.currentSrc').endswith('/assets/home/campus-sunset-768.webp')
  assert all(urlsplit(img.get_attribute('src')).netloc=='' for img in mobile_page.locator('img').all())
  mobile.close()
  passed('real photos load in the large PC hero and three course cards; mobile shows its smaller local photograph at the top without external image requests')

@@ -53,6 +53,86 @@
       "height": 576,
       "bytes": 189245,
       "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "campus-sunset-1440.webp",
+      "source": "https://www.ukcentre.co.kr/files/main/c9362d4388e96b34798a2fe81e3cac79.jpg",
+      "description": "노을 진 영국 대학 캠퍼스와 잔디밭",
+      "provider": "영국유학센터 본사 홈페이지",
+      "width": 1440,
+      "height": 960,
+      "bytes": 83436,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "campus-sunset-768.webp",
+      "source": "https://www.ukcentre.co.kr/files/main/c9362d4388e96b34798a2fe81e3cac79.jpg",
+      "description": "노을 진 영국 대학 캠퍼스와 잔디밭",
+      "provider": "영국유학센터 본사 홈페이지",
+      "width": 768,
+      "height": 512,
+      "bytes": 26922,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "manchester.webp",
+      "source": "https://www.ukcentre.co.kr/files/main/47ee2b3dc2f73eff91bcbea6dcfcc253.jpg",
+      "description": "맨체스터 대학교의 고딕 양식 건물",
+      "provider": "영국유학센터 본사 홈페이지",
+      "width": 760,
+      "height": 506,
+      "bytes": 115766,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "ucl.webp",
+      "source": "https://www.ukcentre.co.kr/files/main/e1a4bd96d599d0eee21369f1c832956f.jpg",
+      "description": "UCL 본관 포르티코와 정원",
+      "provider": "영국유학센터 본사 홈페이지",
+      "width": 760,
+      "height": 506,
+      "bytes": 73328,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "students-lunch.webp",
+      "source": "https://www.ukcentre.co.kr/files/main/043f4c0bc360709dfd9a41f8e54b2962.jpg",
+      "description": "영국에서 함께 식사하며 웃는 한국 학생들",
+      "provider": "영국유학센터 본사 홈페이지",
+      "width": 600,
+      "height": 400,
+      "bytes": 47928,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "city-square.webp",
+      "source": "https://www.ukcentre.co.kr/files/main/0b340f0ec7d640d67031c22db974ce66.jpg",
+      "description": "분수와 시청사가 있는 영국 도시 광장",
+      "provider": "영국유학센터 본사 홈페이지",
+      "width": 760,
+      "height": 506,
+      "bytes": 62994,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "lab.webp",
+      "source": "https://www.ukcentre.co.kr/files/main/c120858f85f765a55af6e38928753fc5.jpg",
+      "description": "영국 대학 실험실에서 실습하는 학생들",
+      "provider": "영국유학센터 본사 홈페이지",
+      "width": 760,
+      "height": 506,
+      "bytes": 56396,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "students-dinner.webp",
+      "source": "https://www.ukcentre.co.kr/files/main/3268ea992cc9cd72d0f080fcd8e96196.jpg",
+      "description": "영국에서 함께 저녁을 먹는 학생들",
+      "provider": "영국유학센터 본사 홈페이지",
+      "width": 600,
+      "height": 400,
+      "bytes": 39882,
+      "checkedAt": "2026-11-19"
     }
   ],
   "notes": "소개용 풍경·학업 이미지입니다. 학생 후기·수속 사례·제휴 학교를 증명하는 사진으로 사용하지 않습니다."
