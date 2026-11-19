@@ -211,10 +211,13 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var
  #diagnosis .section-heading>p{display:none}
  .note-thumb{aspect-ratio:16/8}
  .hero-visual figcaption strong{font-size:18px}
- .mobile-contact{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;gap:8px;padding:10px 12px calc(10px + env(safe-area-inset-bottom));background:rgba(255,255,255,.97);border-top:1px solid var(--line)}
+ .mobile-contact{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;padding:6px 4px calc(6px + env(safe-area-inset-bottom));background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -6px 24px rgba(26,46,90,.12)}
  html.js-bar .mobile-contact{transform:translateY(110%);visibility:hidden;transition:transform .3s ease,visibility 0s .3s}
  html.js-bar body.bar-on .mobile-contact{transform:none;visibility:visible;transition:transform .3s ease}
- .mobile-contact a{flex:1;text-align:center;text-decoration:none;font-weight:700;padding:12px;border-radius:12px;background:var(--navy);color:#fff}
- .mobile-contact a+a{background:#FEE500;color:#191919}
- body{padding-bottom:72px}
+ .mobile-contact a{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px;padding:8px 2px 6px;text-decoration:none;color:var(--ink);font-size:clamp(11px,3.2vw,13px);font-weight:600;letter-spacing:-.4px;line-height:1.2;text-align:center;white-space:nowrap}
+ .mobile-contact a+a{border-left:1px solid var(--line)}
+ .mobile-contact .kakao svg{stroke:var(--coral)}
+ .mobile-contact svg{width:30px;height:30px;fill:none;stroke:var(--navy);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+ .mobile-contact a:active{background:var(--cream)}
+ body{padding-bottom:84px}
 }

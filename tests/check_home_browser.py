@@ -65,7 +65,7 @@ with sync_playwright() as p:
  page.keyboard.press('Escape');assert not page.locator('.mobile-menu').evaluate('(e)=>e.open')
  assert page.locator('.mobile-menu summary').evaluate('(e)=>e===document.activeElement')
  page.locator('.mobile-menu summary').click();page.locator('.mobile-menu a[href="#team"]').click();assert not page.locator('.mobile-menu').evaluate('(e)=>e.open')
- assert page.url.endswith('#team');expect(page.locator('.mobile-contact')).to_be_visible();assert page.locator('.mobile-contact a').first.get_attribute('href')=='#diagnosis'
+ assert page.url.endswith('#team');expect(page.locator('.mobile-contact')).to_be_visible();assert page.locator('.mobile-contact a[href="#diagnosis"]').count()==1
  passed('mobile and tablet widths fit without horizontal overflow; the keyboard-accessible menu closes and the bottom contact bar remains available')
 
  page.locator('#team').scroll_into_view_if_needed()
@@ -150,7 +150,7 @@ with sync_playwright() as p:
  page.set_viewport_size({'width':390,'height':844});page.goto(BASE+'/',wait_until='networkidle')
  # The bottom bar stays out of the first screen next to the hero buttons and slides in after scrolling.
  assert not page.locator('.mobile-contact').is_visible()
- page.evaluate('scrollTo(0,1400)');expect(page.locator('.mobile-contact')).to_be_visible();page.wait_for_timeout(400);page.locator('.mobile-contact a').first.click()
+ page.evaluate('scrollTo(0,1400)');expect(page.locator('.mobile-contact')).to_be_visible();page.wait_for_timeout(400);page.locator('.mobile-contact a[href="#diagnosis"]').click()
  assert page.url.endswith('#diagnosis');expect(page.locator('.diagnosis-card')).to_have_count(2)
  cards=page.locator('.diagnosis-card');assert cards.nth(1).bounding_box()['y']+cards.nth(1).bounding_box()['height']<789
  page.screenshot(path='/workspace/신촌점_진단선택_모바일.png')
