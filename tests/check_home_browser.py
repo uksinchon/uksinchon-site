@@ -148,9 +148,8 @@ with sync_playwright() as p:
  page.evaluate('()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))')
  page.screenshot(path='/workspace/신촌점_진단선택_PC.png')
  page.set_viewport_size({'width':390,'height':844});page.goto(BASE+'/',wait_until='networkidle')
- # The bottom bar stays out of the first screen next to the hero buttons and slides in after scrolling.
- assert not page.locator('.mobile-contact').is_visible()
- page.evaluate('scrollTo(0,1400)');expect(page.locator('.mobile-contact')).to_be_visible();page.wait_for_timeout(400);page.locator('.mobile-contact a[href="#diagnosis"]').click()
+ # The icon bottom bar is visible from the first screen.
+ expect(page.locator('.mobile-contact')).to_be_visible();page.locator('.mobile-contact a[href="#diagnosis"]').click()
  assert page.url.endswith('#diagnosis');expect(page.locator('.diagnosis-card')).to_have_count(2)
  cards=page.locator('.diagnosis-card');assert cards.nth(1).bounding_box()['y']+cards.nth(1).bounding_box()['height']<789
  page.screenshot(path='/workspace/신촌점_진단선택_모바일.png')
