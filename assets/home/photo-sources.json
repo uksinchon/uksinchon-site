@@ -95,16 +95,6 @@
       "checkedAt": "2026-11-19"
     },
     {
-      "file": "students-lunch.webp",
-      "source": "https://www.ukcentre.co.kr/files/main/043f4c0bc360709dfd9a41f8e54b2962.jpg",
-      "description": "영국에서 함께 식사하며 웃는 한국 학생들",
-      "provider": "영국유학센터 본사 홈페이지",
-      "width": 600,
-      "height": 400,
-      "bytes": 47928,
-      "checkedAt": "2026-11-19"
-    },
-    {
       "file": "city-square.webp",
       "source": "https://www.ukcentre.co.kr/files/main/0b340f0ec7d640d67031c22db974ce66.jpg",
       "description": "분수와 시청사가 있는 영국 도시 광장",
@@ -122,16 +112,6 @@
       "width": 760,
       "height": 506,
       "bytes": 56396,
-      "checkedAt": "2026-11-19"
-    },
-    {
-      "file": "students-dinner.webp",
-      "source": "https://www.ukcentre.co.kr/files/main/3268ea992cc9cd72d0f080fcd8e96196.jpg",
-      "description": "영국에서 함께 저녁을 먹는 학생들",
-      "provider": "영국유학센터 본사 홈페이지",
-      "width": 600,
-      "height": 400,
-      "bytes": 39882,
       "checkedAt": "2026-11-19"
     },
     {
@@ -174,6 +154,16 @@
       "width": 768,
       "height": 512,
       "bytes": 63356,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "blackfriday.webp",
+      "source": "신촌점 제작 블랙프라이데이 홍보 이미지 (2026-11-10 기준)",
+      "description": "신촌점 블랙프라이데이 이미지의 네온 문구 부분을 카드용으로 재구성",
+      "provider": "영국유학센터 신촌점",
+      "width": 760,
+      "height": 860,
+      "bytes": 9590,
       "checkedAt": "2026-11-19"
     }
   ],

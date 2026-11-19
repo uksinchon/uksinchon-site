@@ -76,6 +76,8 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var
 .season-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .5s}
 .season-card::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(17,26,51,.05) 10%,rgba(17,26,51,.88) 72%)}
 .season-card:hover img{transform:scale(1.05)}
+.season-card.bf img{object-position:center top}
+.season-card.bf::after{background:linear-gradient(180deg,rgba(17,26,51,0) 45%,rgba(17,26,51,.55) 100%)}
 .season-body{position:absolute;left:0;right:0;bottom:0;padding:26px;display:flex;flex-direction:column;gap:10px}
 .season-body .tag{align-self:flex-start;background:var(--coral);color:#fff}
 .season-body strong{font-size:23px;line-height:1.35;letter-spacing:-.6px}
@@ -162,7 +164,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var
 .story-card a{margin-top:auto;color:var(--coral);font-weight:700;text-decoration:none}
 
 /* 상담·오시는 길 */
-.visit{position:relative;color:#fff;background:linear-gradient(100deg,rgba(17,26,51,.94) 35%,rgba(26,46,90,.72)),url(/assets/home/students-dinner.webp) center/cover no-repeat}
+.visit{position:relative;color:#fff;background:linear-gradient(100deg,rgba(17,26,51,.94) 35%,rgba(26,46,90,.72)),url(/assets/home/london-1440.webp) center/cover no-repeat}
 .visit-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
 .visit .eyebrow{color:#ffb4a3}
 .visit h2{font-size:36px;line-height:1.3;letter-spacing:-1px;margin-bottom:12px}
@@ -211,6 +213,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var
  .section-heading h2,.visit h2{font-size:25px}
  .season-grid,.note-grid,.guide-grid,.story-grid,.team-grid{grid-template-columns:1fr}
  .season-card{min-height:330px}
+ .season-card.bf{min-height:400px}
  .diagnosis-card{grid-template-columns:108px 1fr}
  .diagnosis-card img{min-height:0;height:100%}
  .diagnosis-card>div{padding:14px 16px;gap:4px}

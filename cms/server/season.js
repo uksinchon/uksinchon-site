@@ -7,7 +7,7 @@ const SCHEMA="CREATE TABLE IF NOT EXISTS cms_home_season (slot INTEGER PRIMARY K
 export const SLOT_PHOTOS=[
  {src:'/assets/home/manchester.webp',w:760,h:506},
  {src:'/assets/home/ucl.webp',w:760,h:506},
- {src:'/assets/home/students-lunch.webp',w:600,h:400}];
+ {src:'/assets/home/london-river.webp',w:760,h:507}];
 const PUBLISHED=`SELECT p.id,p.slug,json_extract(v.snapshot,'$.title') AS title,json_extract(v.snapshot,'$.summary') AS summary,json_extract(v.snapshot,'$.category') AS category,p.published_at
  FROM cms_posts p JOIN cms_versions v ON v.post_id=p.id AND v.revision=p.published_revision
  WHERE p.published_revision IS NOT NULL AND NOT EXISTS(SELECT 1 FROM cms_post_trash t WHERE t.post_id=p.id)`;
