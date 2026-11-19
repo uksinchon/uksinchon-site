@@ -96,7 +96,7 @@ window.fbq.callMethod=function(){window.__metaCalls.push(Array.from(arguments));
             passed('missing, numeric and invalid pixel IDs cannot initialize tracking')
 
             ctx,stats=context(enabled)
-            routes = ['/', '/index.html', '/#team', '/#notes', '/pharmacy/', '/pharmacy/index.html', '/seminar-2027/', '/seminar-2027/index.html#apply']
+            routes = ['/', '/index.html', '/#team', '/#notes', '/#diagnosis', '/pharmacy/', '/pharmacy/index.html', '/seminar-2027/', '/seminar-2027/index.html#apply']
             for suffix in routes:
                 page=ctx.new_page()
                 page.goto(base+suffix,wait_until='networkidle');calls(page)

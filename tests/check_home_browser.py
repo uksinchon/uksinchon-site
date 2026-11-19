@@ -6,6 +6,7 @@ import json
 
 BASE='http://127.0.0.1:8802'
 checks=[]
+mock_form_posts=[]
 def passed(name):checks.append(name);print('PASS',name,flush=True)
 with sync_playwright() as p:
  browser=p.chromium.launch(executable_path='/usr/bin/chromium',headless=True,args=['--no-sandbox'])
@@ -13,7 +14,10 @@ with sync_playwright() as p:
   c=browser.new_context(**options)
   def network(route):
    url=route.request.url
-   if urlsplit(url).netloc!=urlsplit(BASE).netloc:route.abort()
+   if urlsplit(url).netloc=='formspree.io':
+    mock_form_posts.append(route.request.post_data)
+    route.fulfill(status=200,content_type='application/json',body='{"ok":true}')
+   elif urlsplit(url).netloc!=urlsplit(BASE).netloc:route.abort()
    elif url.endswith('/assets/meta-pixel-config.js'):route.fulfill(status=200,content_type='application/javascript',body='window.UK_META_PIXEL_CONFIG={enabled:false};')
    else:route.continue_()
   c.route('**/*',network);return c
@@ -34,7 +38,8 @@ with sync_playwright() as p:
  for width,height in [(1280,720),(1366,768),(1440,900)]:
   page.set_viewport_size({'width':width,'height':height});page.evaluate('scrollTo(0,0)')
   button=page.locator('.hero-actions .primary').first;box=button.bounding_box();assert box['y']+box['height']<height,(width,box)
-  assert button.get_attribute('href')=='/counsel/'
+  assert button.get_attribute('href')=='#diagnosis'
+  assert '나에게 맞는 영국 유학, 먼저 알아보기' in button.inner_text()
   assert not page.evaluate('document.documentElement.scrollWidth>innerWidth'),width
  passed('the exact requested headline and working consultation entry are visible above the fold at three PC viewport sizes')
 
@@ -60,7 +65,7 @@ with sync_playwright() as p:
  page.keyboard.press('Escape');assert not page.locator('.mobile-menu').evaluate('(e)=>e.open')
  assert page.locator('.mobile-menu summary').evaluate('(e)=>e===document.activeElement')
  page.locator('.mobile-menu summary').click();page.locator('.mobile-menu a[href="#team"]').click();assert not page.locator('.mobile-menu').evaluate('(e)=>e.open')
- assert page.url.endswith('#team');expect(page.locator('.mobile-contact')).to_be_visible();assert page.locator('.mobile-contact a').first.get_attribute('href')=='/counsel/'
+ assert page.url.endswith('#team');expect(page.locator('.mobile-contact')).to_be_visible();assert page.locator('.mobile-contact a').first.get_attribute('href')=='#diagnosis'
  passed('mobile and tablet widths fit without horizontal overflow; the keyboard-accessible menu closes and the bottom contact bar remains available')
 
  page.locator('#team').scroll_into_view_if_needed()
@@ -82,9 +87,53 @@ with sync_playwright() as p:
  plain.reload(wait_until='networkidle');expect(plain.locator('.note-fallback')).to_have_count(3)
  passed('a published note appears in initial HTML with JavaScript disabled, then disappears after unpublishing and leaves truthful topic fallbacks')
 
- page.goto(BASE+'/',wait_until='networkidle');page.locator('.hero-actions .primary').first.click();expect(page.locator('#counsel-form')).to_be_visible()
- assert page.url==BASE+'/counsel/';assert not posts,posts
- passed('the primary button opens the existing consultation form without sending a form submission or any real Meta event')
+ for path,start in [('/hello-uk/','체크인 시작하기'),('/study-path/','진단 시작하기')]:
+  page.goto(BASE+'/',wait_until='networkidle');page.locator('.hero-actions .primary').first.click()
+  assert page.url.endswith('#diagnosis');expect(page.locator('#diagnosis')).to_be_in_viewport()
+  page.locator('.diagnosis-card[href="'+path+'"]').click()
+  assert page.url==BASE+path;expect(page.get_by_role('button',name=start)).to_be_visible()
+  assert page.locator('meta[name="robots"]').get_attribute('content')=='noindex,nofollow'
+ page.set_viewport_size({'width':1366,'height':768});page.goto(BASE+'/',wait_until='networkidle');page.locator('.desktop-nav .nav-cta').click()
+ expect(page.locator('#counsel-form')).to_be_visible();assert not posts,posts
+ passed('the main CTA offers Hello UK and Study Path; both actual tools load and direct consultation remains available')
+
+ diagnostics=context(viewport={'width':390,'height':844},reduced_motion='reduce')
+ dp=diagnostics.new_page();dp.on('pageerror',lambda e:errors.append(str(e)))
+ for path,result in [('/hello-uk/','.pass'),('/study-path/','.profile')]:
+  dp.goto(BASE+path,wait_until='networkidle');dp.locator('[data-act="start"]').click()
+  for step in range(12):
+   if dp.locator('#nm').count():break
+   q=dp.locator('.card[role="group"] h2');old=q.inner_text()
+   options=dp.locator('.opts .opt')
+   if path=='/study-path/' and step==0:options.filter(has_text='석사').first.click()
+   else:options.first.click()
+   dp.wait_for_function('(old)=>document.querySelector("#nm")||document.querySelector(".card[role=group] h2")?.innerText!==old',arg=old)
+  expect(dp.locator('#nm')).to_be_visible()
+  dp.locator('#nm').fill('가상 진단 검증')
+  if path=='/study-path/':
+   dp.locator('#ct').fill('diagnosis-fixture@example.test');dp.locator('#agree').check();dp.locator('[data-act="finish"]').click()
+  else:dp.locator('[data-act="skip"]').click()
+  expect(dp.locator('.view.done '+result)).to_be_visible()
+  inquiry=dp.locator('.diagnosis-inquiry');expect(inquiry).to_be_visible()
+  assert inquiry.locator('.inquiry-chat').get_attribute('href')=='https://pf.kakao.com/_VNmTxd'
+  assert inquiry.locator('a[href="/counsel/"]').count()==1
+  inquiry.locator('.inquiry-copy').click();expect(dp.locator('#copyText')).to_be_visible()
+  summary=dp.locator('#copyText').input_value();assert len(summary)>80
+  assert ('어학연수' if path=='/hello-uk/' else '석사') in summary
+  for width in [320,390,768,1366]:
+   dp.set_viewport_size({'width':width,'height':950});assert not dp.evaluate('document.documentElement.scrollWidth>innerWidth'),(path,width)
+  dp.set_viewport_size({'width':390,'height':844});inquiry.scroll_into_view_if_needed()
+  dp.screenshot(path='/workspace/'+('Hello_UK' if path=='/hello-uk/' else 'Study_Path')+'_진단후_문의.png')
+ assert len(mock_form_posts)==2
+ diagnostics.close()
+ passed('both real question flows complete, including a masters path; results copy and offer first-time Kakao enquiries with Formspree fully mocked')
+
+ plain.goto(BASE+'/',wait_until='networkidle');plain.locator('.hero-actions .primary').first.click()
+ assert plain.url.endswith('#diagnosis');expect(plain.locator('.diagnosis-card')).to_have_count(2)
+ for path in ['/hello-uk/','/study-path/']:
+  plain.goto(BASE+path,wait_until='networkidle');expect(plain.locator('.diagnosis-noscript')).to_be_visible()
+  assert plain.locator('.diagnosis-noscript a[href="/counsel/"]').count()==1
+ passed('without JavaScript the home chooser still works and both tools retain explicit consultation fallbacks')
 
  page.set_viewport_size({'width':1440,'height':1000});page.goto(BASE+'/',wait_until='networkidle')
  # Load below-the-fold photographs before exporting a full-page preview.
@@ -92,11 +141,18 @@ with sync_playwright() as p:
  for image in page.locator('img').all():
   image.scroll_into_view_if_needed();expect(image).to_have_js_property('complete',True)
   assert image.evaluate('(e)=>e.naturalWidth>0')
- page.evaluate('scrollTo(0,0)');page.screenshot(path='/workspace/신촌점_따뜻한_메인_PC.png',full_page=True)
- page.set_viewport_size({'width':1366,'height':768});page.screenshot(path='/workspace/신촌점_따뜻한_첫화면_PC.png')
- page.set_viewport_size({'width':390,'height':844});page.screenshot(path='/workspace/신촌점_따뜻한_메인_모바일.png',full_page=True)
- page.screenshot(path='/workspace/신촌점_따뜻한_첫화면_모바일.png')
+ page.evaluate('scrollTo(0,0)');page.screenshot(path='/workspace/신촌점_진단연결_메인_PC.png',full_page=True)
+ page.set_viewport_size({'width':1366,'height':768});page.goto(BASE+'/',wait_until='networkidle');page.screenshot(path='/workspace/신촌점_진단연결_첫화면_PC.png')
+ page.locator('.hero-actions .primary').first.click()
+ for image in page.locator('#diagnosis img').all():expect(image).to_have_js_property('complete',True)
+ page.evaluate('()=>new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)))')
+ page.screenshot(path='/workspace/신촌점_진단선택_PC.png')
+ page.set_viewport_size({'width':390,'height':844});page.goto(BASE+'/',wait_until='networkidle');page.locator('.mobile-contact a').first.click()
+ assert page.url.endswith('#diagnosis');expect(page.locator('.diagnosis-card')).to_have_count(2)
+ cards=page.locator('.diagnosis-card');assert cards.nth(1).bounding_box()['y']+cards.nth(1).bounding_box()['height']<789
+ page.screenshot(path='/workspace/신촌점_진단선택_모바일.png')
+ page.goto(BASE+'/',wait_until='networkidle');page.screenshot(path='/workspace/신촌점_진단연결_첫화면_모바일.png')
  assert not errors,errors
  browser.close()
-report={'passed':len(checks),'checks':checks,'testData':'fictional local CMS, real public staff assets; Meta disabled','productionDataModified':False}
-Path('/workspace/신촌점_따뜻한_메인_화면검증.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));print(json.dumps(report,ensure_ascii=False,indent=2))
+report={'passed':len(checks),'checks':checks,'testData':'fictional local CMS, real public staff assets; Meta disabled; all Formspree POSTs mocked','productionDataModified':False}
+Path('/workspace/신촌점_진단연결_화면검증.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));print(json.dumps(report,ensure_ascii=False,indent=2))

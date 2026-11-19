@@ -1,0 +1,15 @@
+/* Shared, explicit contact choices after a diagnosis; no new form or tracking. */
+.diagnosis-inquiry {margin:24px 0 12px;padding:24px 20px;border:1px solid #e5dfd5;border-radius:20px;background:#fffaf1;color:#293e36;word-break:keep-all;text-align:left}
+.diagnosis-inquiry h2 {margin:0 0 10px;font-size:19px;font-weight:750;line-height:1.6;letter-spacing:-.6px;color:#293e36}
+.diagnosis-inquiry p {margin:0;font-size:13px;line-height:1.9;color:#606c63}
+.diagnosis-inquiry .inquiry-actions {display:grid;gap:10px;margin-top:18px}
+.diagnosis-inquiry .inquiry-actions>* {display:flex;align-items:center;justify-content:center;min-height:48px;padding:12px 15px;border-radius:25px;font-family:inherit;font-size:13px;font-weight:700;line-height:1.6;text-decoration:none;text-align:center;cursor:pointer}
+.diagnosis-inquiry .inquiry-copy {border:1px solid #b4bdae;background:#fffefa;color:#334f46}
+.diagnosis-inquiry .inquiry-chat {border:1px solid #334f46;background:#334f46;color:#fffefa}
+.diagnosis-inquiry .inquiry-links {display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-top:17px}
+.diagnosis-inquiry .inquiry-links a {font-size:11px;font-weight:650;color:#334f46;text-decoration:underline;text-underline-offset:4px}
+.diagnosis-inquiry a:focus-visible,.diagnosis-inquiry button:focus-visible {outline:3px solid #ac4d3b;outline-offset:4px}
+.diagnosis-noscript {max-width:440px;margin:12vh auto 0;padding:30px 24px;background:#fffaf1;border-radius:20px;color:#293e36;font:15px/1.9 system-ui,sans-serif}
+.diagnosis-noscript h1 {font:750 24px/1.5 system-ui,sans-serif;margin:0 0 16px}
+.diagnosis-noscript a {display:inline-block;margin:12px 18px 0 0;color:#334f46;font-weight:700}
+@media(max-width:360px) {.diagnosis-inquiry {padding:21px 16px}.diagnosis-inquiry h2 {font-size:18px}}

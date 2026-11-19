@@ -22,7 +22,7 @@ export async function fixture({port,setupKey=SETUP_KEY,pilotPackets,naverHTML,im
    const item=imageResponses[u.href];return new Response(item.bytes??null,{status:item.status||200,headers:{'Content-Type':item.type||'image/png',...item.headers}});
   }
   if(u.hostname!=='fixture-assets.local')throw new Error('Unexpected external request: '+u.hostname);
-  const allowed=u.pathname==='/'||u.pathname==='/index.html'||u.pathname==='/logo.png'||u.pathname==='/favicon.ico'||u.pathname==='/robots.txt'||u.pathname==='/blog/styles.css'||u.pathname.startsWith('/admin/')||u.pathname.startsWith('/assets/')||u.pathname.startsWith('/counsel/');
+  const allowed=u.pathname==='/'||u.pathname==='/index.html'||u.pathname==='/logo.png'||u.pathname==='/favicon.ico'||u.pathname==='/robots.txt'||u.pathname==='/blog/styles.css'||u.pathname.startsWith('/admin/')||u.pathname.startsWith('/assets/')||u.pathname.startsWith('/counsel/')||u.pathname.startsWith('/hello-uk/')||u.pathname.startsWith('/study-path/');
   if(!allowed)return new Response('not found',{status:404});
   const target=path.resolve(root,'.'+decodeURIComponent(u.pathname)+(u.pathname.endsWith('/')?'index.html':''));if(!target.startsWith(root+'/')||!fs.existsSync(target)||!fs.statSync(target).isFile())return new Response('not found',{status:404});
   const type={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'application/javascript','.jpg':'image/jpeg','.jpeg':'image/jpeg','.webp':'image/webp','.png':'image/png','.ico':'image/x-icon','.txt':'text/plain'}[path.extname(target)]||'application/octet-stream';

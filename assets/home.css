@@ -46,16 +46,6 @@ a:focus-visible,summary:focus-visible {outline:3px solid var(--red);outline-offs
 .hero-visual figcaption {position:absolute;left:22px;bottom:22px;display:flex;align-items:center;gap:22px;padding:18px 22px;background:#fffefaf0;border:1px solid #fffefa;border-radius:13px;box-shadow:0 8px 25px #292d2312}
 .hero-visual figcaption>span {font:italic 36px/1.1 Georgia,"Times New Roman",serif;color:#9b5948;white-space:nowrap}
 .hero-visual figcaption strong {font-size:14px;line-height:1.7;font-weight:600;letter-spacing:-.4px}
-.trust-strip {border-bottom:1px solid var(--line);padding:23px 0;background:#fdfbf6}
-.trust-strip .container {display:flex;align-items:center;justify-content:space-between;gap:22px}
-.trust-strip p {flex-shrink:0;font-size:14px}
-.trust-strip p>span {display:block;color:var(--muted);font-size:11px;margin-top:3px}
-.quick-paths {display:flex;flex:1;justify-content:center;gap:26px}
-.quick-paths a {display:flex;align-items:center;gap:22px;font-size:13px;font-weight:650;text-decoration:none}
-.quick-paths a+a {border-left:1px solid var(--line);padding-left:26px}
-.quick-paths a:hover,.pharmacy-shortcut:hover {text-decoration:underline}
-.quick-paths a>span {color:#a26d51;font-size:16px}
-.pharmacy-shortcut {font-size:11px;color:var(--muted);text-decoration:none;white-space:nowrap}
 .section {padding-top:78px;padding-bottom:78px;scroll-margin-top:100px}
 .section-heading {display:flex;justify-content:space-between;align-items:flex-end;gap:28px;margin-bottom:30px}
 .section-heading .eyebrow {margin-bottom:9px}
@@ -63,6 +53,18 @@ a:focus-visible,summary:focus-visible {outline:3px solid var(--red);outline-offs
 .section-heading>p {font-size:13px;color:var(--muted)}
 .section-description {font-size:15px;color:var(--muted);line-height:1.95;margin-top:18px}
 .mobile-break {display:none}
+.diagnosis-section {background:#fcfaf5;border-bottom:1px solid var(--line)}
+.section.diagnosis-section {scroll-margin-top:0;padding-top:48px;padding-bottom:48px}
+.diagnosis-grid {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}
+.diagnosis-card {display:grid;grid-template-columns:140px 1fr;min-width:0;border:1px solid #dedbd0;border-radius:18px;overflow:hidden;background:var(--white);text-decoration:none;transition:border-color .15s,box-shadow .15s}
+.diagnosis-card:hover {border-color:#899b88;box-shadow:0 8px 24px #334f460a}
+.diagnosis-card>img {width:100%;height:100%;object-fit:cover}
+.diagnosis-card>div {padding:27px 25px;min-width:0}
+.diagnosis-label {font-size:11px;font-weight:650;color:#8d4c39;line-height:1.8;display:block}
+.diagnosis-card h3 {font:italic 34px/1.2 Georgia,"Times New Roman",serif;letter-spacing:-1px;margin:9px 0 13px}
+.diagnosis-card p {font-size:13px;line-height:1.9;color:var(--muted)}
+.diagnosis-card strong {display:flex;align-items:center;justify-content:space-between;gap:12px;font-size:13px;line-height:1.8;margin-top:21px;color:var(--navy)}
+.diagnosis-caption {font-size:12px;color:var(--muted);text-align:center;margin-top:23px}
 .guide-grid,.story-grid,.team-grid,.note-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
 .guide-card {min-width:0;border:1px solid var(--line);border-radius:18px;background:#fff;overflow:hidden;display:flex;flex-direction:column;scroll-margin-top:110px;box-shadow:0 7px 24px #51443005}
 .guide-photo {width:100%;height:186px;object-fit:cover}
@@ -135,7 +137,7 @@ a:focus-visible,summary:focus-visible {outline:3px solid var(--red);outline-offs
  .desktop-nav {gap:18px;font-size:12px}.brand strong {font-size:17px}.brand small {letter-spacing:1px;font-size:8px}
  .hero-grid {gap:36px}.hero h1 {font-size:43px;letter-spacing:-2.3px}.hero-visual {height:475px}
  .hero-visual figcaption {padding:16px;gap:16px}.hero-visual figcaption>span {font-size:30px}.hero-visual figcaption strong {font-size:12px}
- .quick-paths {gap:17px}.quick-paths a {gap:12px;font-size:12px}.quick-paths a+a {padding-left:17px}.pharmacy-shortcut {font-size:10px}
+ .diagnosis-card {grid-template-columns:112px 1fr}.diagnosis-card>div {padding:24px 20px}
  .team-card {gap:12px;padding:20px 14px}.team-card>img {width:72px;height:96px;flex-basis:72px}.team-card h3 {font-size:17px}.team-card p {font-size:11px}.team-card span {font-size:9px}
 }
 @media(max-width:1000px) {
@@ -146,7 +148,7 @@ a:focus-visible,summary:focus-visible {outline:3px solid var(--red);outline-offs
  .hero-grid {grid-template-columns:1fr 1fr;gap:25px}.hero {padding-top:32px}.hero h1 {font-size:35px;letter-spacing:-1.8px}.hero-description {font-size:13px}.desktop-break {display:none}
  .hero-visual {height:440px;border-top-left-radius:110px}.hero-visual figcaption {left:15px;right:15px;bottom:15px;gap:15px;padding:15px 12px}.hero-visual figcaption>span {font-size:27px}.hero-visual figcaption strong {font-size:11px}
  .button {font-size:12px;padding:12px 15px;gap:14px}
- .trust-strip .container {flex-wrap:wrap;gap:18px}.trust-strip p {flex-basis:100%;font-size:13px}.trust-strip p>span {display:inline;margin-left:12px}.quick-paths {justify-content:flex-start}
+ .diagnosis-grid {gap:18px}.diagnosis-card {grid-template-columns:95px 1fr}.diagnosis-card>div {padding:22px 18px}.diagnosis-card p {font-size:12px}
  .guide-body {padding:22px 18px}.guide-photo {height:155px}.guide-card h3 {font-size:18px}
  .team-grid {gap:15px}.team-card {display:block}.team-card>img {width:80px;height:100px;margin-bottom:15px}.team-intro {gap:35px}
  .section h2 {font-size:28px}.story-card {padding:21px}.story-card h3,.note-card h3 {font-size:18px}.visit-grid {gap:40px}
@@ -158,8 +160,7 @@ a:focus-visible,summary:focus-visible {outline:3px solid var(--red);outline-offs
  .photo-location {top:15px;right:15px;font-size:8px;padding:5px 10px}.hero-visual figcaption {left:14px;right:auto;bottom:14px;padding:10px 15px;gap:17px;border-radius:10px}.hero-visual figcaption>span {font-size:29px}.hero-visual figcaption strong {font-size:11px}
  .season-label {font-size:9px;padding:5px 10px;margin-bottom:14px}.hero .eyebrow {font-size:9px;letter-spacing:1.8px;margin-bottom:13px}.hero h1 {font-size:36px;letter-spacing:-1.7px;line-height:1.3}
  .hero-description {font-size:13px;line-height:1.95;margin-top:17px}.hero-actions {margin-top:21px;gap:10px}.button {font-size:13px;min-height:49px;padding:12px 16px}.hero-caption {font-size:10px;margin-top:16px}
- .trust-strip {padding:21px 0}.trust-strip .container {display:block}.trust-strip p>span {display:block;font-size:11px;margin:4px 0 0}.quick-paths {display:grid;grid-template-columns:1fr;gap:0;margin-top:17px}
- .quick-paths a {padding:10px 0;font-size:13px;justify-content:space-between}.quick-paths a+a {border:0;border-top:1px solid var(--line);padding-left:0}.pharmacy-shortcut {display:inline-block;font-size:11px;margin-top:11px}
+ .section.diagnosis-section {padding-top:30px;padding-bottom:34px}.diagnosis-grid {grid-template-columns:1fr;gap:14px}.diagnosis-card {grid-template-columns:84px 1fr}.diagnosis-card>div {padding:18px}.diagnosis-label {font-size:10px}.diagnosis-card h3 {font-size:28px;margin:7px 0 9px}.diagnosis-card p {font-size:11px;line-height:1.8}.diagnosis-card strong {font-size:11px;margin-top:13px}.diagnosis-caption {text-align:left;font-size:11px;margin-top:17px}
  .section {padding-top:49px;padding-bottom:49px;scroll-margin-top:90px}.section-heading {align-items:flex-start;display:block;margin-bottom:24px}.section-heading>p,.section-heading>.text-link {margin-top:15px}
  .section h2 {font-size:27px;line-height:1.5;letter-spacing:-1px}.section-description {font-size:13px;line-height:1.95}.eyebrow {font-size:10px}.mobile-break {display:block}
  .guide-grid,.story-grid,.note-grid {grid-template-columns:1fr;gap:20px}.guide-photo {height:192px}.guide-body {padding:24px}.guide-card h3 {font-size:21px}.guide-card p {font-size:13px}.guide-card ul {margin-block:15px}.guide-body>a {padding-top:5px}
