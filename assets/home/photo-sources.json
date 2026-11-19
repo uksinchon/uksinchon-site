@@ -133,6 +133,26 @@
       "height": 400,
       "bytes": 39882,
       "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "ucl-portico-1440.webp",
+      "source": "https://www.ukcentre.co.kr/files/main/e1a4bd96d599d0eee21369f1c832956f.jpg",
+      "description": "UCL 본관 포르티코와 계단의 학생들 (메인 첫 화면)",
+      "provider": "영국유학센터 본사 홈페이지",
+      "width": 1440,
+      "height": 960,
+      "bytes": 190824,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "ucl-portico-768.webp",
+      "source": "https://www.ukcentre.co.kr/files/main/e1a4bd96d599d0eee21369f1c832956f.jpg",
+      "description": "UCL 본관 포르티코와 계단의 학생들 (메인 첫 화면)",
+      "provider": "영국유학센터 본사 홈페이지",
+      "width": 768,
+      "height": 512,
+      "bytes": 74226,
+      "checkedAt": "2026-11-19"
     }
   ],
   "notes": "소개용 풍경·학업 이미지입니다. 학생 후기·수속 사례·제휴 학교를 증명하는 사진으로 사용하지 않습니다."
