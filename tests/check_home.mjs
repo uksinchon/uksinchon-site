@@ -64,7 +64,7 @@ try{
  for(const match of raw.matchAll(/<a\b[^>]*href="([^"]+)"/g)){
   const href=match[1];assert(!href.startsWith('javascript:'));
   if(href.startsWith('#'))assert(raw.includes('id="'+href.slice(1)+'"'),href);
-  else if(href.startsWith('/'))assert(['/','/blog/','/pharmacy/','/counsel/','/admin/','/hello-uk/','/study-path/'].some(prefix=>href.split('?')[0]===prefix)||href==='/counsel/privacy.html'||href.startsWith('/blog/?'),href);
+  else if(href.startsWith('/'))assert(['/','/blog/','/pharmacy/','/counsel/','/admin/','/hello-uk/','/study-path/'].some(prefix=>href.split('?')[0]===prefix)||href==='/counsel/privacy.html'||href.startsWith('/blog/?')||/^\/blog\/story-[a-f0-9-]{36}\/$/.test(href),href);
  }
  for(const match of raw.matchAll(/src="(\/assets\/home\/[^\"]+)"/g))assert(fs.existsSync('.'+match[1]));
  assert(!raw.includes('<form'));assert.equal((raw.match(/<!--home-notes:start-->/g)||[]).length,1);

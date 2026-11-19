@@ -1,6 +1,7 @@
 import {esc,imageIds} from './content.js';
 import {publicAuthor} from './pages.js';
 import {homeClips} from './clips.js';
+import {homeSeason} from './season.js';
 
 // Only approved snapshots are projected; private draft titles never reach the home page.
 export async function recentHomeNotes(db) {
@@ -40,8 +41,9 @@ export async function homePage({request,env,next}) {
  // Pages context.next serves the static template without another route lookup or binding.
  const asset=await next(new Request(request.url,{method:'GET'}));
  if(asset.status!==200||!asset.headers.get('Content-Type')?.includes('text/html'))return request.method==='HEAD'?new Response(null,{status:asset.status,headers:asset.headers}):asset;
- const template=await asset.text(),[notes,clips]=await Promise.all([recentHomeNotes(env.CMS_DB),homeClips(env)]);
+ const template=await asset.text(),[notes,clips,season]=await Promise.all([recentHomeNotes(env.CMS_DB),homeClips(env),homeSeason(env.CMS_DB)]);
  let html=notes?template.replace(/<!--home-notes:start-->[\s\S]*?<!--home-notes:end-->/,()=>'<!--home-notes:start-->'+notes+'<!--home-notes:end-->'):template;
+ if(season)for(const [slot,card] of Object.entries(season))html=html.replace(new RegExp('<!--season-'+slot+':start-->[\\s\\S]*?<!--season-'+slot+':end-->'),()=>'<!--season-'+slot+':start-->'+card+'<!--season-'+slot+':end-->');
  if(clips)html=html.replace(/<!--home-clips:start-->[\s\S]*?<!--home-clips:end-->/,()=>'<!--home-clips:start-->'+clips+'<!--home-clips:end-->').replace('<section id="clips" class="section soft" aria-labelledby="clips-title" hidden>','<section id="clips" class="section soft" aria-labelledby="clips-title">');
  const headers=new Headers(asset.headers);
  for(const name of ['Content-Length','Content-Encoding','ETag','Last-Modified','Age'])headers.delete(name);
