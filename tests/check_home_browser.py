@@ -38,6 +38,22 @@ with sync_playwright() as p:
   assert not page.evaluate('document.documentElement.scrollWidth>innerWidth'),width
  passed('the exact requested headline and working consultation entry are visible above the fold at three PC viewport sizes')
 
+ hero=page.locator('.hero-photo');expect(hero).to_have_js_property('complete',True)
+ assert hero.evaluate('(e)=>e.naturalWidth>0')
+ assert hero.bounding_box()['width']>400 and hero.bounding_box()['height']>350
+ assert hero.get_attribute('fetchpriority')=='high'
+ for photo in page.locator('.guide-photo').all():
+  photo.scroll_into_view_if_needed();expect(photo).to_have_js_property('complete',True)
+  assert photo.evaluate('(e)=>e.naturalWidth>0') and photo.get_attribute('loading')=='lazy'
+ mobile=context(viewport={'width':390,'height':844},device_scale_factor=2)
+ mobile_page=mobile.new_page();mobile_page.goto(BASE+'/',wait_until='networkidle')
+ mobile_photo=mobile_page.locator('.hero-photo');expect(mobile_photo).to_have_js_property('complete',True)
+ assert mobile_photo.bounding_box()['y']<120 and mobile_photo.bounding_box()['height']>200
+ assert mobile_photo.evaluate('(e)=>e.currentSrc').endswith('/assets/home/london-768.webp')
+ assert all(urlsplit(img.get_attribute('src')).netloc=='' for img in mobile_page.locator('img').all())
+ mobile.close()
+ passed('real photos load in the large PC hero and three course cards; mobile shows its smaller local photograph at the top without external image requests')
+
  for width in [320,360,390,430,768,1024]:
   page.set_viewport_size({'width':width,'height':950});assert not page.evaluate('document.documentElement.scrollWidth>innerWidth'),width
  page.set_viewport_size({'width':390,'height':844});page.locator('.mobile-menu summary').click();expect(page.locator('.mobile-menu nav')).to_be_visible()
@@ -70,10 +86,17 @@ with sync_playwright() as p:
  assert page.url==BASE+'/counsel/';assert not posts,posts
  passed('the primary button opens the existing consultation form without sending a form submission or any real Meta event')
 
- page.goto(BASE+'/',wait_until='networkidle');page.set_viewport_size({'width':1440,'height':1000});page.screenshot(path='/workspace/신촌점_메인_PC.png',full_page=True)
- page.set_viewport_size({'width':1366,'height':768});page.screenshot(path='/workspace/신촌점_메인_첫화면.png')
- page.set_viewport_size({'width':390,'height':844});page.screenshot(path='/workspace/신촌점_메인_모바일.png',full_page=True)
+ page.set_viewport_size({'width':1440,'height':1000});page.goto(BASE+'/',wait_until='networkidle')
+ # Load below-the-fold photographs before exporting a full-page preview.
+ # Taking a full-page screenshot alone can capture lazy images before download.
+ for image in page.locator('img').all():
+  image.scroll_into_view_if_needed();expect(image).to_have_js_property('complete',True)
+  assert image.evaluate('(e)=>e.naturalWidth>0')
+ page.evaluate('scrollTo(0,0)');page.screenshot(path='/workspace/신촌점_따뜻한_메인_PC.png',full_page=True)
+ page.set_viewport_size({'width':1366,'height':768});page.screenshot(path='/workspace/신촌점_따뜻한_첫화면_PC.png')
+ page.set_viewport_size({'width':390,'height':844});page.screenshot(path='/workspace/신촌점_따뜻한_메인_모바일.png',full_page=True)
+ page.screenshot(path='/workspace/신촌점_따뜻한_첫화면_모바일.png')
  assert not errors,errors
  browser.close()
 report={'passed':len(checks),'checks':checks,'testData':'fictional local CMS, real public staff assets; Meta disabled','productionDataModified':False}
-Path('/workspace/신촌점_메인_화면검증.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));print(json.dumps(report,ensure_ascii=False,indent=2))
+Path('/workspace/신촌점_따뜻한_메인_화면검증.json').write_text(json.dumps(report,ensure_ascii=False,indent=2));print(json.dumps(report,ensure_ascii=False,indent=2))

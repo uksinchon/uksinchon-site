@@ -16,6 +16,9 @@ PUBLIC_FILES = (
     'assets/home.css', 'assets/home.js',
     'assets/home/office.jpg', 'assets/home/team-jeongmin.jpg',
     'assets/home/team-kyungmin.png', 'assets/home/team-kyungho.png',
+    'assets/home/london-1440.webp', 'assets/home/london-768.webp',
+    'assets/home/uk-architecture.jpg', 'assets/home/study-library.webp',
+    'assets/home/london-river.webp', 'assets/home/photo-sources.json',
     'seminar-2027/index.html', 'seminar-2027/styles.css', 'seminar-2027/source.json',
     'docs/PHARMACY_LANDING.md', 'docs/META_PIXEL.md', 'docs/SEMINAR_2027.md',
     *(str(p.relative_to(ROOT)) for p in sorted((ROOT / 'seminar-2027/images').iterdir())

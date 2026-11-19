@@ -1,0 +1,59 @@
+{
+  "photos": [
+    {
+      "file": "london-1440.webp",
+      "source": "https://images.unsplash.com/photo-1486299267070-83823f5448dd?auto=format&fit=crop&w=1440&q=72&fm=webp",
+      "description": "런던 웨스트민스터 다리와 엘리자베스 타워",
+      "provider": "Unsplash",
+      "license": "https://unsplash.com/license",
+      "width": 1440,
+      "height": 960,
+      "bytes": 274562,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "london-768.webp",
+      "source": "https://images.unsplash.com/photo-1486299267070-83823f5448dd?auto=format&fit=crop&w=768&q=72&fm=webp",
+      "description": "런던 웨스트민스터 다리와 엘리자베스 타워",
+      "provider": "Unsplash",
+      "license": "https://unsplash.com/license",
+      "width": 768,
+      "height": 512,
+      "bytes": 82540,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "study-library.webp",
+      "source": "https://images.unsplash.com/photo-1498243691581-b145c3f54a5a?auto=format&fit=crop&w=760&q=72&fm=webp",
+      "description": "도서관의 책이 꽂힌 나무 서가",
+      "provider": "Unsplash",
+      "license": "https://unsplash.com/license",
+      "width": 760,
+      "height": 507,
+      "bytes": 70470,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "london-river.webp",
+      "source": "https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?auto=format&fit=crop&w=760&q=68&fm=webp",
+      "description": "런던 타워 브리지와 템스강",
+      "provider": "Unsplash",
+      "license": "https://unsplash.com/license",
+      "width": 760,
+      "height": 507,
+      "bytes": 117594,
+      "checkedAt": "2026-11-19"
+    },
+    {
+      "file": "uk-architecture.jpg",
+      "source": "https://www.ukcentre.co.kr/files/main/1a08ac832970010d8ac13ffa8ca49183.jpg",
+      "description": "햇살이 비치는 석조 건물의 기둥",
+      "provider": "영국유학센터 본사 메인 소개 이미지",
+      "width": 1024,
+      "height": 576,
+      "bytes": 189245,
+      "checkedAt": "2026-11-19"
+    }
+  ],
+  "notes": "소개용 풍경·학업 이미지입니다. 학생 후기·수속 사례·제휴 학교를 증명하는 사진으로 사용하지 않습니다."
+}
