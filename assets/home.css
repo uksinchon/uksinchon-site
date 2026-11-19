@@ -108,7 +108,13 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var
 
 /* 클립 */
 .clip-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px}
-.clip{aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#111a33}
+.clip{position:relative;display:block;aspect-ratio:9/16;border-radius:16px;overflow:hidden;background:#111a33;text-decoration:none;color:#fff;isolation:isolate}
+.clip img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;z-index:-2;transition:transform .5s}
+.clip::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,transparent 45%,rgba(17,26,51,.85))}
+.clip:hover img{transform:scale(1.05)}
+.clip-play{position:absolute;right:12px;top:12px;width:40px;height:40px;border-radius:50%;background:rgba(232,67,43,.95);display:grid;place-items:center;font-size:14px;padding-left:3px;box-shadow:0 6px 18px rgba(0,0,0,.3);transition:transform .2s}
+.clip:hover .clip-play{transform:scale(1.12)}
+.clip-title{position:absolute;left:14px;right:14px;bottom:14px;font-size:15px;font-weight:700;line-height:1.4;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .clip iframe{width:100%;height:100%;border:0}
 
 /* 과정 */

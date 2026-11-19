@@ -7,6 +7,7 @@ import {syncNaver,importedItem,guardNaverPublish,readSource} from './naver.js';
 import {pilotReview,CODEX_REVIEWER} from './reviewed-pilots.js';
 import {naverAdmin} from './naver-api.js';
 import {submitCounsel,counselAdmin} from './counsel.js';
+import {clipsAdmin} from './clips.js';
 const encoder=new TextEncoder();
 const now=()=>new Date().toISOString();
 const uuid=()=>crypto.randomUUID();
@@ -101,6 +102,10 @@ export async function handleCMS(context){
   if(parts[0]==='naver'){
    admin(user);try{const result=await naverAdmin(path,request.method,request.method==='GET'?Object.fromEntries(url.searchParams):await bodyOf(request),env,user);return result instanceof Response?result:json(result);}
    catch(e){fail(e.status||400,String(e.message).startsWith('D1_')?'네이버 연결 저장소를 처리하지 못했습니다.':e.message);}
+  }
+  if(parts[0]==='clips'){
+   admin(user);try{return json(await clipsAdmin(db,parts,request.method,request.method==='GET'?null:await bodyOf(request),user));}
+   catch(e){if(e instanceof Failure)throw e;if(e.status)fail(e.status,e.message);throw e;}
   }
   if(parts[0]==='counsel'){
    admin(user);try{return json(await counselAdmin(db,parts,request.method,url,request.method==='GET'?null:await bodyOf(request),user));}

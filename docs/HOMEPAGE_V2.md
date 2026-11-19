@@ -13,3 +13,15 @@
 ## 검증
 
 `node tests/check_home.mjs`(7), `node tests/check_home_images.mjs`(3, 새로 추가), `python3 tests/check_home_browser.py`(8), `node tests/check_seo.mjs`(11) 통과. 가상 로컬 D1·계정만 사용했다.
+
+## 1분 영상 (유튜브 쇼츠 자동 표시)
+
+- 채널: 영국 유학 읽어주는 남자 (`UCImGPdQRYjZlV_3tzNAgeXg`). 유튜브 공개 RSS에서 링크가 `/shorts/`인 영상만 골라 최신 4개를 홈에 서버 렌더링한다. API 키 불필요, Cloudflare가 RSS를 30분 캐시한다.
+- 관리자: `/admin/clips.html`(글쓰기 관리 상단 **메인 1분 영상**)에서 영상별 **숨기기/다시 보이기**. 테이블 `cms_clip_hidden`은 처음 사용할 때 자동 생성한다.
+- 방문자가 누를 때만 youtube-nocookie 플레이어를 불러온다. JavaScript가 없으면 유튜브로 이동한다. 썸네일은 `i.ytimg.com`에서 불러온다.
+- 유튜브 응답이 실패하거나 쇼츠가 없으면 영역을 숨긴 채 홈을 정상 표시한다. 테스트 환경은 `HOME_CLIPS=off`로 외부 요청을 하지 않는다.
+- 검증: `node tests/check_clips.mjs`(5). `CLIPS_LIVE=1`이면 실제 채널 RSS도 확인한다.
+
+## 배포와 되돌리기
+
+배포 직전 운영 main을 `backup/pre-home-v2-20261119` 브랜치·태그로 보관했다. 문제 시 그 커밋으로 되돌린다.
