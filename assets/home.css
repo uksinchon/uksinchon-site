@@ -211,13 +211,13 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var
  #diagnosis .section-heading>p{display:none}
  .note-thumb{aspect-ratio:16/8}
  .hero-visual figcaption strong{font-size:18px}
- .mobile-contact{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;padding:9px 6px calc(8px + env(safe-area-inset-bottom));background:rgba(255,255,255,.97);-webkit-backdrop-filter:blur(10px);backdrop-filter:blur(10px);border-radius:22px 22px 0 0;box-shadow:0 -8px 28px rgba(26,46,90,.12)}
- .mobile-contact a{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;padding:4px 2px 2px;text-decoration:none;color:#334155;font-size:clamp(11px,3.1vw,12.5px);font-weight:600;letter-spacing:-.3px;line-height:1.2;text-align:center;white-space:nowrap;-webkit-tap-highlight-color:transparent}
- .mobile-contact .ico{display:grid;place-items:center;width:42px;height:42px;border-radius:14px;background:#eef1f8;color:var(--navy);transition:transform .15s}
+ .mobile-contact{display:flex;position:fixed;left:0;right:0;bottom:0;z-index:40;padding:8px 4px calc(8px + env(safe-area-inset-bottom));background:var(--navy);border-radius:20px 20px 0 0;box-shadow:0 -8px 24px rgba(17,26,51,.25)}
+ .mobile-contact a{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;padding:4px 2px 2px;text-decoration:none;color:#e9edf6;font-size:clamp(11px,3.1vw,12.5px);font-weight:600;letter-spacing:-.3px;line-height:1.2;text-align:center;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+ .mobile-contact a+a{border-left:1px solid rgba(255,255,255,.16)}
+ .mobile-contact .ico{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;color:#fff;transition:transform .15s}
  .mobile-contact .ico svg{width:24px;height:24px}
- .mobile-contact .t-diag .ico{background:#fdece7}
- .mobile-contact .t-kakao .ico{background:#FEE500}
- .mobile-contact .t-call .ico{background:#eaf3ef;color:#1f5f4b}
+ .mobile-contact .t-diag .ico{background:var(--coral);box-shadow:0 6px 16px rgba(232,67,43,.45)}
+ .mobile-contact .t-diag .lbl{color:#ffd4c9;font-weight:700}
  .mobile-contact a:active .ico{transform:scale(.92)}
  body{padding-bottom:92px}
 }
