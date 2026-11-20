@@ -14,8 +14,8 @@ async function post(title,category,{publish=true}={}){
 try{
  let home=(await reader.request('/')).data;
  assert(home.includes('<!--home-reviews:start-->')&&home.includes('www.ukcentre.co.kr/review/'));
- assert(home.includes('href="/reviews/"')&&home.includes('href="/team/"'));
- pass('before any review the home keeps the three linked head-office stories and links to /reviews/ and /team/');
+ assert(home.includes('href="/reviews/"')&&home.includes('href="https://www.ukcentre.co.kr/intro/"'));
+ pass('before any review the home keeps the three linked head-office stories and links to /reviews/ and the head-office introduction');
 
  await admin.api('setup',{method:'POST',body:{setupToken:SETUP_KEY,name:'Admin',email:'reviews@example.test',password:PASSWORD}});
  const note=await post('가상 어학연수 노트','어학연수');
