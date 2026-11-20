@@ -1,7 +1,8 @@
-import {esc,imageIds,REVIEW_SQL} from './content.js';
+import {esc,REVIEW_SQL} from './content.js';
 import {publicAuthor} from './pages.js';
 import {homeClips} from './clips.js';
 import {homeSeason} from './season.js';
+import {noteImage} from './note-image.js';
 
 // Only approved snapshots are projected; private draft titles never reach the home page.
 export async function recentHomeNotes(db,{reviews=false}={}) {
@@ -27,15 +28,6 @@ export async function recentHomeNotes(db,{reviews=false}={}) {
  }catch{return null;}
 }
 
-// A published, non-decorative photo for the card: the chosen hero image first, else the first photo in the text.
-async function noteImage(db,p){
- try{
-  const snap=JSON.parse(p.snapshot||'{}');const meta=snap.imageMeta||{};
-  const ids=[snap.heroImageId,...(snap.delta?.ops?imageIds(snap):[])].filter((id,i,a)=>typeof id==='string'&&/^[a-f0-9-]{36}$/.test(id)&&a.indexOf(id)===i&&!meta[id]?.decorative);
-  for(const id of ids){if(await db.prepare('SELECT 1 FROM cms_public_media WHERE post_id=? AND media_id=?').bind(p.id,id).first())return {id};}
- }catch{}
- return null;
-}
 
 export async function homePage({request,env,next}) {
  if(!['GET','HEAD'].includes(request.method))return new Response('Method Not Allowed',{status:405,headers:{Allow:'GET, HEAD'}});

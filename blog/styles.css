@@ -9,3 +9,74 @@
 
 .youtube-video{margin:22px 0;max-width:100%}.youtube-video iframe{display:block;width:100%;aspect-ratio:16/9;border:0}#rich-editor .ql-editor img{cursor:pointer}#rich-editor .ql-editor img:focus{outline:3px solid #3579ad}#toolbar .ql-youtube{font-size:18px}#image-metadata-panel>summary{cursor:pointer;font-weight:650}
 .body-table{table-layout:fixed;width:100%}.body-table td{white-space:pre-wrap;min-width:72px;overflow-wrap:anywhere}
+
+/* ── 2026-11 신촌 UK 노트 리뉴얼: 홈과 같은 머리글, 사진 카드 3열, 남색·크림 톤 ── */
+:root{--navy:#1A2E5A;--coral:#E8432B;--cream:#fbf7f1;--cream-2:#f4ece1}
+body{background:#fff}
+.site-top{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.96);border-bottom:1px solid #e8e2da}
+.site-top .top{border-bottom:0;padding-top:14px;padding-bottom:14px;max-width:1160px}
+.brand{display:flex;align-items:center;gap:12px;color:var(--navy)}
+.brand img{width:46px;height:auto;display:block}
+.brand small{letter-spacing:.14em;color:#7a8394}
+.top nav{align-items:center;gap:22px;font-weight:600;color:#334155}
+.top nav a:hover{color:var(--coral)}
+.top nav .nav-cta{background:var(--coral);color:#fff;padding:8px 16px;border-radius:999px}
+.top nav .nav-cta:hover{color:#fff;opacity:.92}
+main.wrap{max-width:1160px}
+.notes-hero{margin:0 calc(50% - 50vw);padding:64px 24px 36px;background:linear-gradient(180deg,var(--cream) 0%,#fff 100%);border-bottom:1px solid #efe7dc}
+.notes-hero .hero-inner{max-width:1112px;margin:auto}
+.notes-hero .eyebrow{color:var(--coral);letter-spacing:.1em;font-weight:800}
+.notes-hero h1{color:var(--navy);font-size:clamp(32px,4.6vw,48px);margin:0 0 12px}
+.notes-hero .lead{color:#5b6474;font-size:17px;margin:0 0 26px}
+.notes-hero .categories{border-bottom:0;padding-bottom:0}
+.categories a{display:inline-flex;align-items:center;font-weight:600;color:#475569;border-color:#e8e2da}
+.categories a:hover{border-color:var(--coral);color:var(--coral)}
+.categories [aria-current]{background:var(--navy);border-color:var(--navy);color:#fff}
+.post-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;padding:40px 0 10px}
+.post-grid .empty{grid-column:1/-1}
+.post-card{position:relative;display:flex;flex-direction:column;padding:0;border:1px solid #e8e2da;border-radius:20px;overflow:hidden;background:#fff;transition:box-shadow .2s,transform .2s}
+.post-card:hover{box-shadow:0 18px 40px -20px rgba(26,46,90,.35);transform:translateY(-2px)}
+.post-card .thumb{display:block;aspect-ratio:16/10;overflow:hidden;background:var(--cream-2);text-decoration:none}
+.post-card .thumb img{width:100%;height:100%;object-fit:cover;object-position:center top;display:block;transition:transform .5s}
+.post-card:hover .thumb img{transform:scale(1.04)}
+.post-card .thumb span{display:grid;place-items:center;height:100%;background:linear-gradient(140deg,var(--navy),#24407a);color:#fff;font-weight:800;letter-spacing:.12em;font-size:13px}
+.card-body{display:flex;flex-direction:column;gap:6px;padding:20px 22px 22px;flex:1}
+.post-card .eyebrow{align-self:flex-start;margin:0;font-size:12px;font-weight:800;color:var(--coral);background:#fdebe6;padding:3px 10px;border-radius:999px}
+.post-card h2{margin:4px 0 0;font-size:19px;line-height:1.45;letter-spacing:-.3px;color:var(--ink)}
+.post-card h2 a{text-decoration:none}
+.post-card h2 a::after{content:"";position:absolute;inset:0}
+.post-card .excerpt{margin:0;font-size:14px;line-height:1.7;color:var(--muted);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.post-card small{margin-top:auto;padding-top:8px;font-size:12.5px;color:#8a93a3}
+.post-card.featured{grid-column:1/-1;flex-direction:row}
+.post-card.featured .thumb{flex:0 0 56%;aspect-ratio:16/9}
+.post-card.featured .card-body{justify-content:center;padding:34px 38px}
+.post-card.featured h2{font-size:clamp(22px,2.4vw,28px);line-height:1.4}
+.post-card.featured .excerpt{font-size:15.5px;-webkit-line-clamp:4}
+.pagination{display:flex;justify-content:center;align-items:center;gap:16px;padding:26px 0 10px;font-size:14px}
+.pagination a{padding:8px 16px;border:1px solid #e8e2da;border-radius:999px;text-decoration:none;background:#fff}
+.notes-cta{display:flex;align-items:center;justify-content:space-between;gap:28px;margin:44px 0 72px;padding:34px 38px;border-radius:24px;background:var(--navy);color:#fff}
+.notes-cta .eyebrow{color:#ffb4a3;letter-spacing:.1em;font-weight:800}
+.notes-cta h2{margin:0 0 6px;font-size:24px;line-height:1.4}
+.notes-cta p{margin:0;color:rgba(255,255,255,.82);font-size:15px}
+.cta-actions{display:flex;flex-wrap:wrap;gap:10px;flex:none}
+.notes-cta .button{display:inline-flex;align-items:center;justify-content:center;padding:13px 22px;border-radius:12px;background:var(--coral);color:#fff;font-weight:700;text-decoration:none;border:2px solid var(--coral)}
+.notes-cta .button.ghost{background:transparent;border-color:rgba(255,255,255,.7)}
+@media(max-width:960px){
+ .post-grid{grid-template-columns:1fr 1fr}
+ .post-card.featured{flex-direction:column}
+ .post-card.featured .thumb{flex:none;aspect-ratio:16/10}
+ .post-card.featured .card-body{padding:22px}
+ .notes-cta{flex-direction:column;align-items:flex-start}
+}
+@media(max-width:640px){
+ .top nav a:not(.nav-cta):not([href="/blog/"]){display:none}
+ .top nav{gap:12px;font-size:13px}
+ .brand img{width:38px}.brand{font-size:16px;gap:8px}.brand small{font-size:8.5px;letter-spacing:.08em}
+ .notes-hero{padding:40px 16px 26px}
+ .notes-hero .lead{font-size:15px}
+ .notes-hero .lead br{display:none}
+ .post-grid{grid-template-columns:1fr;gap:18px;padding-top:26px}
+ .notes-cta{padding:26px 22px;margin:32px 0 48px}
+ .notes-cta h2{font-size:20px}
+ .cta-actions{width:100%}.cta-actions .button{flex:1}
+}
