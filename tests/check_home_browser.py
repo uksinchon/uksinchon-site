@@ -64,17 +64,15 @@ with sync_playwright() as p:
  page.set_viewport_size({'width':390,'height':844});page.locator('.mobile-menu summary').click();expect(page.locator('.mobile-menu nav')).to_be_visible()
  page.keyboard.press('Escape');assert not page.locator('.mobile-menu').evaluate('(e)=>e.open')
  assert page.locator('.mobile-menu summary').evaluate('(e)=>e===document.activeElement')
- page.locator('.mobile-menu summary').click();page.locator('.mobile-menu a[href="#team"]').click();assert not page.locator('.mobile-menu').evaluate('(e)=>e.open')
- assert page.url.endswith('#team');expect(page.locator('.mobile-contact')).to_be_visible();assert page.locator('.mobile-contact a[href="#diagnosis"]').count()==1
+ page.locator('.mobile-menu summary').click();page.locator('.mobile-menu a[href="#about"]').click();assert not page.locator('.mobile-menu').evaluate('(e)=>e.open')
+ assert page.url.endswith('#about');expect(page.locator('.mobile-contact')).to_be_visible();assert page.locator('.mobile-contact a[href="#diagnosis"]').count()==1
  passed('mobile and tablet widths fit without horizontal overflow; the keyboard-accessible menu closes and the bottom contact bar remains available')
 
- page.locator('#team').scroll_into_view_if_needed()
- for name in ['이정민 지사장','이경민 실장','이경호 과장']:
-  image=page.get_by_alt_text(name,exact=True);image.scroll_into_view_if_needed();expect(image).to_be_visible();expect(image).to_have_js_property('complete',True);assert image.evaluate('(e)=>e.naturalWidth>0')
- assert page.locator('.team-card').count()==3;assert page.locator('.story-card').count()==3
+ page.locator('#about').scroll_into_view_if_needed()
+ assert page.locator('.team-card').count()==0;assert page.locator('#about a[href="https://www.ukcentre.co.kr/intro/"]').count()==1;assert page.locator('.stats a[href="https://ukvisa.kr"]').count()==1;assert page.locator('.story-card').count()==3
  for a in page.locator('.story-card a').all():assert a.get_attribute('href').startswith('https://www.ukcentre.co.kr/review/')
  assert '파고다' not in page.locator('body').inner_text()
- passed('three real staff photographs and the three verified Sinchon case links load; no placeholder portraits or removed seminar return')
+ passed('staff blocks removed from the home page; the centre introduction links to the head office page, the free visa card links to ukvisa.kr, and the three verified Sinchon case links load')
 
  note_id=api('posts',{},'POST')['id']
  api('posts/'+note_id,{'schemaVersion':2,'title':'가상 메인 노트 — 직원 발행 검증','summary':'실제 운영 원고가 아닌 공개 HTML 확인용 가상 요약','contentType':'guide','category':'대학·파운데이션','delta':{'ops':[{'insert':'검증용 가상 본문입니다.\n'}]},'revision':1},'PUT')

@@ -140,10 +140,17 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var
 .program-list{list-style:none;display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
 .program-list li{background:var(--cream);border-radius:999px;padding:9px 16px;font-size:14px;font-weight:600;color:#475569}
 .program-list a{color:var(--coral);text-decoration:none}
-.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:30px}
-.stats div{background:var(--navy);color:#fff;border-radius:18px;padding:24px}
-.stats b{display:block;font-size:30px;letter-spacing:-.6px}
+.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-top:30px}
+.stats div,.stats .stat-link{background:var(--navy);color:#fff;border-radius:18px;padding:24px;text-decoration:none}
+.stats .stat-link{transition:background .15s,transform .15s}.stats .stat-link:hover{background:#2a3a63;transform:translateY(-2px)}
+.stats b{display:block;font-size:clamp(22px,2.6vw,30px);letter-spacing:-.6px;word-break:keep-all;overflow-wrap:anywhere}
 .stats span{font-size:14px;opacity:.85}
+
+/* 영국유학센터 소개 */
+.about-band{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:var(--radius);padding:44px}
+.about-band h2{margin-top:6px}.about-band p:not(.eyebrow){color:#475569;line-height:1.85;margin:0 0 22px}
+.about-link{background:var(--navy);color:#fff}.about-link:hover{background:#2a3a63}
+@media(max-width:800px){.about-band{grid-template-columns:1fr;gap:16px;padding:28px 22px}}
 
 /* 상담팀 */
 .team-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
@@ -197,7 +204,7 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var
  .season-grid,.note-grid,.guide-grid,.story-grid,.team-grid{grid-template-columns:1fr 1fr}
  .diagnosis-grid{grid-template-columns:1fr}
  .clip-grid{grid-template-columns:repeat(2,1fr)}
- .stats{grid-template-columns:repeat(2,1fr)}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
  .visit-grid{grid-template-columns:1fr}
 }
 @media(max-width:640px){
@@ -235,3 +242,4 @@ a:focus-visible,button:focus-visible,summary:focus-visible{outline:3px solid var
  .mobile-contact a:active .ico{transform:scale(.92)}
  body{padding-bottom:92px}
 }
+@media(max-width:480px){.stats{grid-template-columns:1fr}}

@@ -14,7 +14,7 @@ try{
  const empty=(await reader.request('/')).data;
  assert(empty.includes('영국 유학, 어학연수'));assert(empty.includes('내 조건에서'));assert(empty.includes('class="note-card note-fallback"'));
  assert(!empty.includes('홈페이지를 준비하고 있습니다'));assert(!empty.includes('파고다'));
- for(const name of ['이정민','이경민','이경호'])assert(empty.includes(name));
+ for(const name of ['이정민','이경민','이경호'])assert(!empty.includes('alt="'+name));assert(empty.includes('href="https://www.ukcentre.co.kr/intro/"'));assert(empty.includes('영국문화원 인증 에이전트'));assert(!empty.includes('브리티시 카운슬'));
  const schema=JSON.parse(empty.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/)[1]);
  assert(schema['@graph'].some(x=>x['@id']==='https://uksinchon.com/#organization'));assert(!empty.includes('FAQPage'));assert(!empty.includes('aggregateRating'));
  assert(empty.includes('rel="canonical" href="https://uksinchon.com/"'));assert(!empty.includes('name="robots"'));
