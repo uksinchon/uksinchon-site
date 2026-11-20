@@ -6,4 +6,6 @@ assert.throws(()=>cleanTable({layout:'grid',columns:[''],rows:[['','']]}));
 const table=cleanTable({layout:'grid',columns:['<script>alert(1)</script>'],rows:[['a\nb']]});assert(renderTable(table).includes('&lt;script&gt;'));assert(!renderTable(table).includes('<script>'));
 const legacy=cleanTable({caption:'기존 비교',columns:['항목','조건'],rows:[['a','b']],source:'https://example.org',notes:'원문 보존'});assert(!legacy.layout);assert(renderTable(legacy).includes('<caption>기존 비교</caption>'));assert.throws(()=>cleanTable({columns:[''],rows:[]}));
 const s=cleanSnapshot({schemaVersion:2,title:'가상 표',delta:{ops:[{insert:{comparisonTable:table}},{insert:'\n'}]}},'가상 작성자');assert.equal(s.delta.ops[0].insert.comparisonTable.layout,'grid');
-console.log('PASS blank 1x1–10x50 grids, bounds, escaping, serialization and unchanged legacy table rendering');
+const sized=cleanTable({layout:'grid',widths:[50,20,30],columns:['','',''],rows:[]});assert.deepEqual(sized.widths,[50,20,30]);assert(renderTable(sized).includes('<colgroup><col class="cw-50"><col class="cw-20"><col class="cw-30"></colgroup>'));
+for(const bad of [[50,50],[2,48,50],[50,20,31],['50',20,30],[50.5,19.5,30]])assert(!cleanTable({layout:'grid',widths:bad,columns:['','',''],rows:[]}).widths);
+console.log('PASS column widths saved only when valid; blank 1x1–10x50 grids, bounds, escaping, serialization and unchanged legacy table rendering');

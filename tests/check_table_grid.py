@@ -13,6 +13,21 @@ with sync_playwright() as p:
  a.get_by_label('1행 1열',exact=True).fill('학교');a.get_by_label('1행 2열',exact=True).press_sequentially('Course',delay=30);expect(a.get_by_label('1행 2열',exact=True)).to_have_value('Course')
  a.get_by_label('2행 1열',exact=True).fill('한국어 입력');a.get_by_label('2행 2열',exact=True).fill('<script>alert(1)</script>\n둘째 줄')
  a.get_by_label('3행 1열',exact=True).evaluate("(e)=>{e.dispatchEvent(new CompositionEvent('compositionstart',{bubbles:true}));e.value='한글 조합';e.dispatchEvent(new InputEvent('input',{bubbles:true,isComposing:true}));if(!e.isConnected)throw Error('composition interrupted');e.dispatchEvent(new CompositionEvent('compositionend',{bubbles:true}));}");expect(a.get_by_label('3행 1열',exact=True)).to_have_value('한글 조합')
+ # 실제 한글 입력기처럼 초성·중성·종성을 조합하며 빠르게 입력해도 글자가 빠지거나 섞이지 않아야 한다.
+ cdp=a.context.new_cdp_session(a);cell=a.get_by_label('3행 2열',exact=True);cell.click()
+ for word in ['한국','어 ']:
+  for ch in word:
+   if ch==' ':cdp.send('Input.insertText',{'text':' '});continue
+   code=ord(ch)-0xAC00;cho,jung,jong=code//588,(code%588)//28,code%28
+   steps=[chr(0x1100+cho),chr(0xAC00+cho*588+jung*28)]+([ch] if jong else [])
+   for st in steps:cdp.send('Input.imeSetComposition',{'text':st,'selectionStart':1,'selectionEnd':1})
+   cdp.send('Input.insertText',{'text':ch})
+ a.keyboard.type('입력 OK',delay=15);expect(cell).to_have_value('한국어 입력 OK');expect(cell).to_be_focused()
+ # 열 경계를 끌어 너비를 바꾸면 값이 남고, 공개 글에도 같은 너비가 적용되어야 한다.
+ handle=a.locator('.col-resize').first;hb=handle.bounding_box();tb=a.locator('.comparison-table-blot table').bounding_box()
+ a.mouse.move(hb['x']+hb['width']/2,hb['y']+10);a.mouse.down();a.mouse.move(hb['x']+hb['width']/2+tb['width']*0.2,hb['y']+10,steps=6);a.mouse.up()
+ widths=a.evaluate('()=>JSON.parse(document.querySelector(".comparison-table-blot").dataset.table).widths');assert widths and sum(widths)==100 and widths[0]>=50,widths
+ handle.focus();a.keyboard.press('ArrowLeft');w2=a.evaluate('()=>JSON.parse(document.querySelector(".comparison-table-blot").dataset.table).widths');assert w2[0]==widths[0]-2,w2
  a.get_by_role('button',name='＋ 행',exact=True).click();expect(a.locator('.comparison-table-blot textarea')).to_have_count(12);a.get_by_role('button',name='＋ 열',exact=True).click();expect(a.locator('.comparison-table-blot textarea')).to_have_count(16)
  a.locator('#undo').click();expect(a.locator('.comparison-table-blot textarea')).to_have_count(12);a.locator('#redo').click();expect(a.locator('.comparison-table-blot textarea')).to_have_count(16)
  a.get_by_role('button',name='마지막 열 삭제',exact=True).click();a.get_by_role('button',name='마지막 행 삭제',exact=True).click();expect(a.locator('.comparison-table-blot textarea')).to_have_count(9)
@@ -20,10 +35,10 @@ with sync_playwright() as p:
  delta=a.evaluate('()=>Quill.find(document.querySelector("#rich-editor")).getContents()');assert delta['ops'][0]['insert']=='앞 문장\n',delta
  with a.expect_popup() as popup:a.locator('#preview').click()
  v=popup.value;v.wait_for_load_state('networkidle');expect(v.locator('.body-table td')).to_have_count(9);assert v.locator('.body-table td').nth(4).inner_text()=='<script>alert(1)</script>\n둘째 줄'
- a.once('dialog',lambda d:d.accept());a.locator('#publish').click();expect(a.locator('#notice')).to_contain_text('공개했습니다.');v.goto(BASE+a.locator('#public-link').get_attribute('href'),wait_until='networkidle');expect(v.locator('.body-table td')).to_have_count(9)
+ a.once('dialog',lambda d:d.accept());a.locator('#publish').click();expect(a.locator('#notice')).to_contain_text('공개했습니다.');v.goto(BASE+a.locator('#public-link').get_attribute('href'),wait_until='networkidle');expect(v.locator('.body-table td')).to_have_count(9);assert v.locator('.body-table col').count()==3;assert v.locator('.body-table td').first.evaluate('e=>getComputedStyle(e).borderTopColor')=='rgb(170, 181, 194)';col0=v.locator('.body-table td').first.bounding_box()['width'];col1=v.locator('.body-table td').nth(1).bounding_box()['width'];assert col0>col1*1.8,(col0,col1);assert v.locator('.body-table td').nth(7).inner_text()=='한국어 입력 OK'
  for width in [1440,768,390,320]:
   for page in [a,v]:
-   page.set_viewport_size({'width':width,'height':1000});assert not page.evaluate('document.documentElement.scrollWidth>innerWidth')
+   page.set_viewport_size({'width':width,'height':1000});o=page.evaluate('[document.documentElement.scrollWidth,innerWidth,[...document.querySelectorAll("body *")].filter(e=>e.getBoundingClientRect().right>innerWidth+1).slice(0,4).map(e=>e.tagName+"."+e.className)]');assert o[0]<=o[1],(width,page.url,o)
   a.locator('#insert-table').click();expect(a.locator('#table-grid-picker')).to_be_visible();rect=a.locator('#table-grid-picker').bounding_box();assert rect['x']>=0 and rect['x']+rect['width']<=width;a.keyboard.press('Escape')
  a.set_viewport_size({'width':1440,'height':1000});a.get_by_role('button',name='표 삭제',exact=True).click();expect(a.locator('.comparison-table-blot')).to_have_count(0);a.locator('#undo').click();expect(a.locator('.comparison-table-blot textarea')).to_have_count(9)
- assert not errors,errors;print('PASS picker hover/cursor insertion, direct Korean/text entry, row/column edits, undo/redo, reopen/preview/publish and mobile widths');b.close()
+ assert not errors,errors;print('PASS picker hover/cursor insertion, IME Korean composition, column resize, direct text entry, row/column edits, undo/redo, reopen/preview/publish and mobile widths');b.close()

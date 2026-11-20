@@ -32,7 +32,8 @@ export function cleanTable(value) {
   if((!grid&&!caption)||columns.length<(grid?1:2)||columns.length>(grid?10:8)||(!grid&&columns.some(x=>!x))||value.rows.length<(grid?0:1)||value.rows.length>(grid?49:50))throw new Error('표 제목, 2~8개 열 제목, 1~50개 행을 입력해 주세요.');
   const rows=value.rows.map(row=>{if(!Array.isArray(row)||row.length!==columns.length)throw new Error('표의 열 개수를 맞춰 주세요.');return row.map(x=>text(x,800));});
   const source=text(value.source,2000);if(source&&!safeLink(source))throw new Error('표의 출처 주소를 확인해 주세요.');
-  return {...(grid?{layout:'grid'}:{}),caption,columns,rows,source:source?safeLink(source):'',notes:text(value.notes,1500)};
+  const widths=grid&&Array.isArray(value.widths)&&value.widths.length===columns.length&&value.widths.every(w=>Number.isInteger(w)&&w>=5&&w<=95)&&value.widths.reduce((a,b)=>a+b,0)===100?value.widths:null;
+  return {...(grid?{layout:'grid'}:{}),...(widths?{widths}:{}),caption,columns,rows,source:source?safeLink(source):'',notes:text(value.notes,1500)};
 }
 function opText(op) {
   if(typeof op.insert==='string')return op.insert;
@@ -137,7 +138,7 @@ export function webpDimensions(buffer) {
   return null;
 }
 export function renderTable(t) {
-  if(t.layout==='grid')return '<figure class="comparison-figure"><div class="table-scroll" role="region" aria-label="본문 표" tabindex="0"><table class="body-table"><tbody>'+[t.columns,...t.rows].map(row=>'<tr>'+row.map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></figure>';
+  if(t.layout==='grid')return '<figure class="comparison-figure"><div class="table-scroll" role="region" aria-label="본문 표" tabindex="0"><table class="body-table">'+(t.widths?'<colgroup>'+t.widths.map(w=>'<col class="cw-'+Number(w)+'">').join('')+'</colgroup>':'')+'<tbody>'+[t.columns,...t.rows].map(row=>'<tr>'+row.map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></figure>';
   return `<figure class="comparison-figure"><p class="table-hint">표가 넓으면 좌우로 밀어 확인해 주세요.</p><div class="table-scroll" role="region" aria-label="${esc(t.caption)}" tabindex="0"><table><caption>${esc(t.caption)}</caption><thead><tr>${t.columns.map(c=>'<th scope="col">'+esc(c)+'</th>').join('')}</tr></thead><tbody>${t.rows.map(row=>'<tr>'+row.map((v,i)=>i?'<td>'+esc(v)+'</td>':'<th scope="row">'+esc(v)+'</th>').join('')+'</tr>').join('')}</tbody></table></div>${t.notes?'<figcaption>'+esc(t.notes)+'</figcaption>':''}${t.source?'<p class="table-source">표 출처: <a href="'+esc(t.source)+'">'+esc(t.source)+'</a></p>':''}</figure>`;
 }
 export function renderDelta(delta,imageMeta={},heroImageId='') {
