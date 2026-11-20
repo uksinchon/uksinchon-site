@@ -8,4 +8,5 @@ const legacy=cleanTable({caption:'기존 비교',columns:['항목','조건'],row
 const s=cleanSnapshot({schemaVersion:2,title:'가상 표',delta:{ops:[{insert:{comparisonTable:table}},{insert:'\n'}]}},'가상 작성자');assert.equal(s.delta.ops[0].insert.comparisonTable.layout,'grid');
 const sized=cleanTable({layout:'grid',widths:[50,20,30],columns:['','',''],rows:[]});assert.deepEqual(sized.widths,[50,20,30]);assert(renderTable(sized).includes('<colgroup><col class="cw-50"><col class="cw-20"><col class="cw-30"></colgroup>'));
 for(const bad of [[50,50],[2,48,50],[50,20,31],['50',20,30],[50.5,19.5,30]])assert(!cleanTable({layout:'grid',widths:bad,columns:['','',''],rows:[]}).widths);
-console.log('PASS column widths saved only when valid; blank 1x1–10x50 grids, bounds, escaping, serialization and unchanged legacy table rendering');
+{const {renderBody}=await import('../cms/server/content.js').catch(()=>({}));const d=cleanSnapshot({schemaVersion:2,title:'가상 구분선',delta:{ops:[{insert:'위\n'},{insert:{divider:true}},{insert:'아래\n'}]}},'가상 작성자');assert.deepEqual(d.delta.ops[1].insert,{divider:true});assert.throws(()=>cleanSnapshot({schemaVersion:2,title:'x',delta:{ops:[{insert:{divider:'<b>'}},{insert:'\n'}]}},'가상'));}
+console.log('PASS divider kept and validated; column widths saved only when valid; blank 1x1–10x50 grids, bounds, escaping, serialization and unchanged legacy table rendering');

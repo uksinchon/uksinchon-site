@@ -52,6 +52,7 @@ export function cleanSnapshot(input,authorName) {
     if(typeof op.insert==='string')insert=op.insert;
     else if(typeof op.insert?.image==='string'&&/^\/media\/[a-f0-9-]{36}$/.test(op.insert.image)&&UUID.test(op.insert.image.slice(7)))insert={image:op.insert.image};
     else if(validYouTubeId(op.insert?.youtube))insert={youtube:op.insert.youtube};
+    else if(op.insert?.divider===true)insert={divider:true};
     else if(v2&&op.insert?.comparisonTable)insert={comparisonTable:cleanTable(op.insert.comparisonTable)};
     else throw new Error('사진·표는 편집기의 추가 버튼으로 등록해 주세요.');
     const attributes={},a=op.attributes||{};
@@ -162,6 +163,7 @@ export function renderDelta(delta,imageMeta={},heroImageId='') {
       pendingImage=`<figure class="article-image"><img${size} src="${esc(op.insert.image)}" alt="${esc(m.decorative?'':m.alt||'')}"${dimensions}${hero?' fetchpriority="high"':' loading="lazy"'} decoding="async">${m.caption?'<figcaption>'+esc(m.caption)+'</figcaption>':''}${sourceHTML}</figure>`;continue;
     }
     if(validYouTubeId(op.insert?.youtube)){if(line||pendingImage)endLine();closeList();html+=`<figure class="youtube-video"><iframe src="https://www.youtube-nocookie.com/embed/${op.insert.youtube}" title="YouTube 영상" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></figure>`;continue;}
+    if(op.insert?.divider===true){if(line||pendingImage)endLine();closeList();html+='<hr class="note-divider">';continue;}
     if(op.insert?.comparisonTable){if(line||pendingImage)endLine();closeList();html+=renderTable(op.insert.comparisonTable);continue;}
     if(typeof op.insert!=='string')continue;
     const parts=op.insert.split('\n');
