@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>쇼릴 제작실 | 영국유학센터 신촌점</title><link rel="icon" href="/favicon.ico"><link rel="stylesheet" href="/admin/editor.css"><link rel="stylesheet" href="/admin/counsel.css"><link rel="stylesheet" href="/admin/reels.css?v=20261124"><script defer src="/admin/reels.js?v=20261124"></script></head>
+<body>
+<header class="top"><a class="brand" href="/admin/">영국유학센터 신촌점<small>쇼릴 제작실</small></a><nav><span id="account-name"></span><a href="/admin/reels.html">쇼릴 목록</a><a href="/admin/">← 글쓰기 관리</a></nav></header>
+<main>
+<p id="notice" class="notice" role="status" aria-live="polite">불러오는 중입니다.</p>
+
+<section id="list-view" hidden>
+ <div class="heading"><div><p class="eyebrow">BLOG → 45s REEL</p><h1>쇼릴 제작실</h1></div><a href="/admin/reels-help.html" target="_blank" rel="noopener">사용 안내 ↗</a></div>
+ <p class="muted">네이버 블로그 새 글로 45초 쇼릴을 만듭니다. <b>기획안 만들기 → 문구·원고 검토 → 음악·내레이션 선택 → 영상 만들기 → 확인 후 승인</b> 순서로 진행하면, 승인한 쇼릴은 유튜브·인스타·틱톡·스레드에 예약됩니다.</p>
+ <div id="setup-warn" class="card warn" hidden></div>
+ <div class="card">
+  <h2 class="r-h2">새 블로그 글</h2>
+  <div id="fresh" class="r-fresh"></div>
+  <form id="url-form" class="c-search" style="margin-top:12px"><input id="url-input" type="url" placeholder="네이버 글 주소로 추가 (https://blog.naver.com/pedu2/...)" required><button type="submit">쇼릴 만들기</button></form>
+ </div>
+ <div class="card c-table-wrap"><table class="c-table"><thead><tr><th>만든 날</th><th>상태</th><th>블로그 글</th></tr></thead><tbody id="rows"></tbody></table><p id="empty" class="muted" hidden>아직 만든 쇼릴이 없습니다.</p></div>
+</section>
+
+<section id="detail-view" hidden>
+ <div class="heading"><div><p class="eyebrow" id="d-status">상태</p><h1 id="d-title"></h1><a id="d-blog" href="#" target="_blank" rel="noopener" class="muted">블로그 원문 ↗</a></div></div>
+ <ol class="r-steps" id="steps"><li>기획안</li><li>문구·원고 검토</li><li>음악·내레이션</li><li>영상 확인</li><li>승인·예약</li></ol>
+ <p id="d-error" class="notice error" hidden></p>
+
+ <div class="card">
+  <div class="r-row"><h2 class="r-h2">① 기획안</h2><button id="plan-btn" type="button">AI 기획안 만들기</button></div>
+  <p class="muted" id="plan-help">블로그 본문을 읽고 장면 구성, 화면 문구, 내레이션, 채널별 문구를 한 번에 만듭니다. 1~2분 걸립니다.</p>
+  <div id="plan-area" hidden>
+   <label class="r-inline">화면 스타일 <select id="theme"><option value="board">초록 게시판</option><option value="navy">네이비·골드</option><option value="paper">따뜻한 종이</option><option value="plum">플럼·코랄</option><option value="teal">딥 틸·민트</option></select></label>
+   <div id="facts" class="card warn" hidden></div>
+   <div id="scenes"></div>
+  </div>
+ </div>
+
+ <div class="card" id="narr-card" hidden>
+  <h2 class="r-h2">② 내레이션 원고 <small class="muted">한 줄 = 한 장면 · 숫자는 숫자로, 영어는 영어로</small></h2>
+  <textarea id="narration" rows="10" class="r-mono"></textarea>
+  <p class="muted" id="narr-count"></p>
+  <div class="r-row"><div><b>음성 파일</b> <span id="narr-file" class="muted">없음 (음악만으로도 만들 수 있어요)</span></div>
+   <label class="button">mp3 올리기<input id="narr-upload" type="file" accept="audio/mpeg,.mp3" hidden></label></div>
+  <p class="muted">타입캐스트에서 원고 전체를 한 파일로 만들어 올려 주세요. 문장 사이 쉼으로 장면을 나눕니다. (자동 생성은 2단계에 연결됩니다)</p>
+ </div>
+
+ <div class="card" id="copy-card" hidden>
+  <h2 class="r-h2">③ 채널별 문구</h2>
+  <div id="copy"></div>
+ </div>
+
+ <div class="card" id="music-card" hidden>
+  <h2 class="r-h2">④ 배경음악 <small class="muted">방패(Content ID) 표시가 없는 것을 확인한 곡만 있습니다</small></h2>
+  <div id="music"></div>
+  <details class="r-add"><summary>곡 추가하기</summary>
+   <form id="music-form">
+    <label>곡 제목 <input name="title" required maxlength="80"></label>
+    <label>아티스트 <input name="artist" maxlength="60"></label>
+    <label>Pixabay 곡 페이지 주소 <input name="page" type="url" placeholder="https://pixabay.com/music/..."></label>
+    <label>분위기 <input name="mood" maxlength="40" placeholder="밝은 업비트, 피아노, 시네마틱…"></label>
+    <label>mp3 파일 <input name="file" type="file" accept="audio/mpeg,.mp3" required></label>
+    <label class="r-check"><input name="noShield" type="checkbox" required> Pixabay 곡 페이지에 <b>방패(Content ID Registered) 표시가 없는 것</b>을 확인했습니다</label>
+    <button type="submit">곡 추가</button>
+   </form>
+  </details>
+ </div>
+
+ <div class="r-save" id="save-bar" hidden><span id="save-state" class="muted"></span><button id="save" type="button">저장</button></div>
+
+ <div class="card" id="render-card" hidden>
+  <div class="r-row"><h2 class="r-h2">⑤ 영상</h2><button id="render-btn" type="button">저장하고 영상 만들기</button></div>
+  <p class="muted" id="render-help">GitHub 렌더 서버가 5~10분 동안 영상과 썸네일을 만듭니다. 이 화면은 닫아도 됩니다.</p>
+  <div id="preview" class="r-preview" hidden><video id="video" controls playsinline preload="metadata"></video><img id="thumb" alt="썸네일"></div>
+  <div id="approve-area" hidden>
+   <h3>승인하고 예약하기</h3>
+   <p class="muted">승인하면 유튜브·인스타그램·틱톡·스레드 예약 대기열에 올라갑니다. Claude가 1시간 안에 Metricool에 예약하고 결과를 여기에 기록합니다. 네이버 클립·카카오톡 소식은 위 문구로 직접 올려 주세요.</p>
+   <div class="r-row"><select id="when"><option value="best">채널별 최적 시간(보통 인스타·틱톡·스레드 10시, 유튜브 16시)</option><option value="now">바로 (승인 후 처리 시점부터 2분 간격)</option><option value="at">날짜·시간 지정</option></select><input id="when-at" type="datetime-local" hidden><button id="approve-btn" type="button" class="primary">승인</button></div>
+  </div>
+  <div id="schedule" hidden></div>
+  <div class="r-row" style="margin-top:12px"><button id="reopen-btn" type="button" hidden>수정으로 되돌리기 (관리자)</button><button id="skip-btn" type="button" class="c-danger">이 글은 건너뛰기</button></div>
+ </div>
+ <details class="card"><summary>작업 기록</summary><ul id="events" class="muted"></ul></details>
+</section>
+</main>
+</body></html>

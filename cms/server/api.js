@@ -9,6 +9,8 @@ import {naverAdmin} from './naver-api.js';
 import {submitCounsel,counselAdmin} from './counsel.js';
 import {clipsAdmin} from './clips.js';
 import {seasonAdmin} from './season.js';
+import {reelsAdmin,reelsAgent} from './reels.js';
+const REEL_BINARY=/^reels\/(music\/upload|[^/]+\/narration)$/;
 const encoder=new TextEncoder();
 const now=()=>new Date().toISOString();
 const uuid=()=>crypto.randomUUID();
@@ -60,11 +62,21 @@ export async function handleCMS(context){
    if(!db||!await ready(db))fail(503,'관리자 설정과 DB 연결이 필요합니다.');
    return json(await syncNaver(env,{cron:true}));
   }
+  if(parts[0]==='reels'&&parts[1]==='agent'&&parts[2]){
+   // 렌더 서버(GitHub Actions)·예약 작업 전용. 브라우저 세션 대신 별도 키로 인증한다.
+   if(!local(request,env)&&url.protocol!=='https:')fail(403,'HTTPS가 필요합니다.');
+   const expected=env.REEL_AGENT_TOKEN;
+   if(typeof expected!=='string'||expected.length<32)fail(503,'쇼릴 렌더 키가 설정되지 않았습니다.');
+   if(!equal(request.headers.get('Authorization')||'','Bearer '+expected))fail(401,'쇼릴 렌더 인증이 필요합니다.');
+   if(!db||!await ready(db))fail(503,'관리자 설정과 DB 연결이 필요합니다.');
+   try{return json(await reelsAgent(env,parts,request.method,request.method==='GET'?null:await bodyOf(request)));}
+   catch(e){if(e instanceof Failure)throw e;fail(e.status||400,e.message);}
+  }
   if(!['GET','POST','PUT'].includes(request.method))fail(405,'지원하지 않는 요청입니다.');
   if(request.method!=='GET'){
    if(request.headers.get('Origin')!==url.origin)fail(403,'다른 사이트에서 보낸 요청은 처리하지 않습니다. 새로고침해 주세요.');
    if(!local(request,env)&&url.protocol!=='https:')fail(403,'HTTPS 주소에서 접속해 주세요.');
-   if(!path.endsWith('/images')&&!request.headers.get('Content-Type')?.startsWith('application/json'))fail(415,'요청 형식을 확인해 주세요.');
+   if(!path.endsWith('/images')&&!REEL_BINARY.test(path)&&!request.headers.get('Content-Type')?.startsWith('application/json'))fail(415,'요청 형식을 확인해 주세요.');
   }
   if(path==='status'&&request.method==='GET')return json({storageConfigured:!!db,setupKeyConfigured:typeof env.CMS_SETUP_TOKEN==='string'&&env.CMS_SETUP_TOKEN.length>=32,initialized:db?await ready(db):false});
   if(!db)fail(503,'공동 저장 DB가 아직 연결되지 않았습니다. 관리자에게 연결을 요청해 주세요.');
@@ -111,6 +123,11 @@ export async function handleCMS(context){
   if(parts[0]==='clips'){
    admin(user);try{return json(await clipsAdmin(db,parts,request.method,request.method==='GET'?null:await bodyOf(request),user));}
    catch(e){if(e instanceof Failure)throw e;if(e.status)fail(e.status,e.message);throw e;}
+  }
+  if(parts[0]==='reels'){
+   // 쇼릴 제작실: 직원 누구나 검토·편집할 수 있고, 되돌리기는 관리자만 (reels.js)
+   try{const body=request.method==='GET'||REEL_BINARY.test(path)?null:await bodyOf(request);const result=await reelsAdmin(env,parts,request.method,body,user,request);return result instanceof Response?result:json(result);}
+   catch(e){if(e instanceof Failure)throw e;fail(e.status||400,String(e.message).startsWith('D1_')?'쇼릴 저장소를 처리하지 못했습니다.':e.message);}
   }
   if(parts[0]==='counsel'){
    admin(user);try{return json(await counselAdmin(db,parts,request.method,url,request.method==='GET'?null:await bodyOf(request),user));}
