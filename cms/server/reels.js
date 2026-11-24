@@ -183,7 +183,9 @@ export async function reelsAdmin(env,parts,method,body,user,request,fetcher=fetc
   const force=new URL(request.url).searchParams.get('refresh')==='1';
   const feed=await refreshNaverFeed(env,{fetcher,minutes:force?0.5:2});
   const reels=(await db.prepare('SELECT * FROM cms_reels ORDER BY created_at DESC LIMIT 60').all()).results.map(view).map(x=>({...x,plan:undefined,copy:undefined}));
-  const fresh=(await db.prepare("SELECT i.id,i.url,i.title,i.published_at,i.discovered_at FROM cms_naver_items i WHERE NOT EXISTS(SELECT 1 FROM cms_reels r WHERE r.naver_id=i.id) ORDER BY COALESCE(i.published_at,i.discovered_at) DESC LIMIT 15").all()).results;
+  // 날짜가 글마다 다른 형식(시간대 표기 등)으로 저장돼 있어도 실제 시각으로 최신순 정렬한다.
+  const when=it=>{const t=Date.parse(it.published_at||'');return Number.isFinite(t)?t:Date.parse(it.discovered_at||'')||0;};
+  const fresh=(await db.prepare("SELECT i.id,i.url,i.title,i.published_at,i.discovered_at FROM cms_naver_items i WHERE NOT EXISTS(SELECT 1 FROM cms_reels r WHERE r.naver_id=i.id) ORDER BY i.discovered_at DESC LIMIT 400").all()).results.sort((a,b)=>when(b)-when(a)).slice(0,15);
   return {reels,fresh,configured:cfg,statuses:STATUSES,feed:{added:feed.added||0,error:feed.error||null,checkedAt:feed.checkedAt||null}};
  }
  if(parts[1]==='music'){

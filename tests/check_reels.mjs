@@ -56,6 +56,9 @@ try{
  x=await call('reels');assert.equal(x.status,200);assert.equal(x.data.feed.added,1);assert.equal(x.data.fresh[0].title,'가상 최신 글: 영국 겨울 어학연수');assert.equal(feedCalls,1);
  assert(x.data.feed.checkedAt);
  {const again=await call('reels');assert.equal(again.data.feed.added,0);assert.equal(feedCalls,1);assert.equal(again.data.feed.checkedAt,x.data.feed.checkedAt);}
+ {const db=await mf.getD1Database('CMS_DB');const st=new Date().toISOString();
+  await db.prepare("INSERT INTO cms_naver_items(id,url,title,published_at,excerpt,feed_hash,status,discovered_at,updated_at) VALUES('224400000001','https://blog.naver.com/pedu2/224400000001','가상 예전 글','2026-11-17T18:00:00+09:00','','','seen',?,?),('224400000002','https://blog.naver.com/pedu2/224400000002','가상 중간 글','2026-11-18T06:11:00.000Z','','','seen','2026-11-18T06:11:00.000Z',?),('224400000003','https://blog.naver.com/pedu2/224400000003','가상 날짜 없는 글','', '','','seen','2026-11-20T01:00:00.000Z',?)").bind(st,st,st,st).run();
+  const sorted=(await call('reels')).data.fresh.map(f=>f.title);assert.deepEqual(sorted.slice(0,4),['가상 최신 글: 영국 겨울 어학연수','가상 날짜 없는 글','가상 중간 글','가상 예전 글'],JSON.stringify(sorted));}
  pass('opening the reels page pulls the latest blog posts from the Naver feed, at most once every two minutes, and reports when it last checked');
  x=await call('reels');assert.equal(x.status,200);assert.deepEqual([x.data.configured.ai,x.data.configured.github,x.data.configured.agent,x.data.configured.aiProvider],[true,true,true,'anthropic']);
  x=await call('reels',{method:'POST',body:{url:'https://blog.naver.com/pedu2/224482286410'}});assert.equal(x.status,200,JSON.stringify(x.data));const id=x.data.id;
