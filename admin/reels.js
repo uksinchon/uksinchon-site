@@ -26,7 +26,8 @@ async function list(){
   $('setup-warn').hidden=!miss.length;$('setup-warn').textContent=miss.length?'아직 연결되지 않은 설정: '+miss.join(', ')+'. 연결 전에는 해당 단계를 진행할 수 없습니다.':'';
   const f=$('fresh');f.replaceChildren();
   for(const it of d.fresh)f.append(el('div',{class:'it'},el('small',{text:day(it.published_at||it.discovered_at)}),el('span',{text:it.title}),el('button',{type:'button',text:'쇼릴 만들기',onclick:()=>create({naverId:it.id})})));
-  if(!d.fresh.length)f.append(el('p',{class:'muted',text:'쇼릴로 만들지 않은 새 글이 없습니다. (네이버 가져오기에서 새 글 확인 후 표시됩니다)'}));
+  if(d.feed?.error)f.append(el('p',{class:'muted',text:'네이버 블로그 최신 글을 지금 확인하지 못했습니다. 잠시 후 새로고침해 주세요.'}));
+  if(!d.fresh.length)f.append(el('p',{class:'muted',text:'쇼릴로 만들지 않은 새 글이 없습니다.'}));
   const rows=$('rows');rows.replaceChildren();
   for(const r of d.reels){const tr=el('tr',{tabindex:0,onclick:()=>go(r.id),onkeydown:e=>e.key==='Enter'&&go(r.id)},el('td',{text:day(r.createdAt)}),el('td',{},el('span',{class:'c-badge '+(r.status==='published'?'done':['failed'].includes(r.status)?'new':'contacting'),text:r.statusLabel})),el('td',{text:r.title}));rows.append(tr);}
   $('empty').hidden=d.reels.length>0;

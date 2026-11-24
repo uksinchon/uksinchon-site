@@ -1,6 +1,6 @@
 // 쇼릴 제작실: 네이버 새 글 → AI 45초 기획안 → 담당자 검토(문구·원고·음악·내레이션) → GitHub Actions 렌더 → 승인 → 예약 대기열
 // 영상은 uksinchon-shorts 저장소의 GitHub Actions가 만들고, Metricool 예약은 Claude 정기 작업이 대기열(같은 저장소 queue/)을 읽어 처리한다.
-import {ensureNaver,registerURL,readSource} from './naver.js';
+import {ensureNaver,registerURL,readSource,refreshNaverFeed} from './naver.js';
 import {naverImageURL} from './naver-images.js';
 import {aiConfigured as openaiConfigured} from './naver-content.js';
 
@@ -180,9 +180,10 @@ export async function reelsAdmin(env,parts,method,body,user,request,fetcher=fetc
  const db=env.CMS_DB;await ensureReels(db);const cfg=reelsConfigured(env);
  // 목록 + 아직 쇼릴로 만들지 않은 최근 네이버 글
  if(parts.length===1&&method==='GET'){
+  const feed=await refreshNaverFeed(env,{fetcher});
   const reels=(await db.prepare('SELECT * FROM cms_reels ORDER BY created_at DESC LIMIT 60').all()).results.map(view).map(x=>({...x,plan:undefined,copy:undefined}));
   const fresh=(await db.prepare("SELECT i.id,i.url,i.title,i.published_at,i.discovered_at FROM cms_naver_items i WHERE NOT EXISTS(SELECT 1 FROM cms_reels r WHERE r.naver_id=i.id) ORDER BY COALESCE(i.published_at,i.discovered_at) DESC LIMIT 15").all()).results;
-  return {reels,fresh,configured:cfg,statuses:STATUSES};
+  return {reels,fresh,configured:cfg,statuses:STATUSES,feed:{added:feed.added||0,error:feed.error||null}};
  }
  if(parts[1]==='music'){
   if(parts.length===2&&method==='GET')return {music:(await db.prepare('SELECT * FROM cms_reel_music WHERE active=1 ORDER BY added_at DESC').all()).results};
