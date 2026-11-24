@@ -23,7 +23,7 @@ async function list(force=false){
  $('detail-view').hidden=true;
  try{
   const d=await api('reels'+(force?'?refresh=1':''));notice('');listedAt=Date.now();
-  $('fresh-checked').textContent=d.feed?.checkedAt?'네이버 블로그 확인: '+day(d.feed.checkedAt):'';$('list-view').hidden=false;
+  $('fresh-checked').textContent=(d.feed?.checkedAt?'네이버 블로그 확인: '+day(d.feed.checkedAt):'')+(d.feed?.newest?' · 네이버가 알려준 최신 글: '+day(d.feed.newest.publishedAt)+' '+d.feed.newest.title.slice(0,24):'');$('list-view').hidden=false;
   const c=d.configured;const miss=[!c.ai&&'AI 기획(ANTHROPIC_API_KEY)',!c.github&&'렌더 서버(REEL_GITHUB_TOKEN)',!c.agent&&'렌더 인증키(REEL_AGENT_TOKEN)'].filter(Boolean);
   $('setup-warn').hidden=!miss.length;$('setup-warn').textContent=miss.length?'아직 연결되지 않은 설정: '+miss.join(', ')+'. 연결 전에는 해당 단계를 진행할 수 없습니다.':'';
   const f=$('fresh');f.replaceChildren();

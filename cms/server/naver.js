@@ -11,7 +11,7 @@ const now=()=>new Date().toISOString();
 const token=()=>crypto.randomUUID();
 export async function ensureNaver(db){await db.batch(NAVER_SCHEMA.map(sql=>db.prepare(sql)));}
 export async function digest(text){const value=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(text));return Array.from(new Uint8Array(value),b=>b.toString(16).padStart(2,'0')).join('');}
-async function fetchText(url,fetcher){const response=await fetcher(url,{headers:{Accept:'text/html, application/xml, text/xml'},redirect:'manual',signal:AbortSignal.timeout(20000)});if(!response.ok)throw new Error('네이버 자료를 읽지 못했습니다. HTTP '+response.status);const reader=response.body.getReader();let length=0;const chunks=[];while(true){const {value,done}=await reader.read();if(done)break;length+=value.length;if(length>2000000){await reader.cancel();throw new Error('네이버 응답이 처리 범위를 넘었습니다.');}chunks.push(value);}const bytes=new Uint8Array(length);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length;}return new TextDecoder().decode(bytes);}
+async function fetchText(url,fetcher,{fresh=false}={}){const response=await fetcher(url,{headers:{Accept:'text/html, application/xml, text/xml',...(fresh?{'Cache-Control':'no-cache',Pragma:'no-cache'}:{})},redirect:'manual',signal:AbortSignal.timeout(20000),...(fresh?{cf:{cacheTtl:-1}}:{})});if(!response.ok)throw new Error('네이버 자료를 읽지 못했습니다. HTTP '+response.status);const reader=response.body.getReader();let length=0;const chunks=[];while(true){const {value,done}=await reader.read();if(done)break;length+=value.length;if(length>2000000){await reader.cancel();throw new Error('네이버 응답이 처리 범위를 넘었습니다.');}chunks.push(value);}const bytes=new Uint8Array(length);let offset=0;for(const chunk of chunks){bytes.set(chunk,offset);offset+=chunk.length;}return new TextDecoder().decode(bytes);}
 export async function readSource(db,id,fetcher=fetch){
  const item=await db.prepare('SELECT * FROM cms_naver_items WHERE id=?').bind(id).first();if(!item)throw new Error('수집한 글을 찾을 수 없습니다.');
  try {const html=await fetchText('https://blog.naver.com/PostView.naver?blogId=pedu2&logNo='+id+'&redirect=Dlog&widgetTypeCall=true&directAccess=false',fetcher);const body=extractPost(html);if(body.title){item.title=body.title;await db.prepare('UPDATE cms_naver_items SET title=? WHERE id=?').bind(body.title.slice(0,200),id).run();}await saveSource(db,item,body.text,body.images,body.coverage);return await db.prepare('SELECT * FROM cms_naver_items WHERE id=?').bind(id).first();}
@@ -53,14 +53,16 @@ export async function refreshNaverFeed(env,{fetcher=fetch,minutes=2}={}){
  if(cfg.last_checked_at&&Date.now()-Date.parse(cfg.last_checked_at)<minutes*60000)return {skipped:true,checkedAt:cfg.last_checked_at};
  const lease=token();const acquired=await db.prepare('UPDATE cms_naver_source SET poll_token=?,poll_until=? WHERE id=1 AND (poll_until IS NULL OR poll_until<?)').bind(lease,new Date(Date.now()+120000).toISOString(),now()).run();if(acquired.meta.changes!==1)return {busy:true,checkedAt:cfg.last_checked_at};
  try{
-  const items=parseFeed(await fetchText(NAVER_FEED,fetcher));const stamp=now();let added=0;
+  // 네이버·Cloudflare 중간 캐시를 거치지 않도록 매번 새로 읽는다.
+  const items=parseFeed(await fetchText(NAVER_FEED+'?_='+Date.now(),fetcher,{fresh:true}));const stamp=now();let added=0;
+  const newest=items.reduce((a,b)=>Date.parse(b.publishedAt||0)>Date.parse(a?.publishedAt||0)?b:a,null);
   // 자동 가져오기가 켜져 있고 기준점이 잡힌 경우에만 'new'(다음 정기 확인 때 초안 후보), 아니면 'seen'
   const status=cfg.enabled&&cfg.baseline_at?'new':'seen';
   for(const entry of items){const old=await db.prepare('SELECT id FROM cms_naver_items WHERE id=?').bind(entry.id).first();if(old)continue;
    const hash=await digest(JSON.stringify([entry.title,entry.excerpt,entry.publishedAt]));
    await db.prepare('INSERT INTO cms_naver_items(id,url,title,published_at,excerpt,feed_hash,status,discovered_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?)').bind(entry.id,entry.url,entry.title,entry.publishedAt,entry.excerpt,hash,status,stamp,stamp).run();added++;}
   await db.prepare('UPDATE cms_naver_source SET last_checked_at=?,last_error=NULL WHERE id=1').bind(stamp).run();
-  return {count:items.length,added,checkedAt:stamp};
+  return {count:items.length,added,checkedAt:stamp,newest:newest?{title:newest.title,publishedAt:newest.publishedAt}:null};
  }catch(e){await db.prepare('UPDATE cms_naver_source SET last_error=? WHERE id=1').bind(e.message).run();return {error:e.message,checkedAt:cfg.last_checked_at};}
  finally{await db.prepare('UPDATE cms_naver_source SET poll_token=NULL,poll_until=NULL WHERE id=1 AND poll_token=?').bind(lease).run();}
 }
