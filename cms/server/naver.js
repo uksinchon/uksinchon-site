@@ -47,11 +47,11 @@ export async function createNaverDraft(db,id,mode,env,actor,fetcher=fetch){
  finally {await db.prepare('UPDATE cms_naver_items SET processing_token=NULL,processing_until=NULL WHERE id=? AND processing_token=?').bind(id,lease).run();}
 }
 // 네이버 RSS만 읽어 새 글을 목록에 추가한다(AI 초안은 만들지 않음). 쇼릴 화면을 열 때 최신 글을 보여주기 위해 쓴다.
-// 다른 확인이 진행 중이거나 최근 minutes분 안에 확인했다면 건너뛴다.
-export async function refreshNaverFeed(env,{fetcher=fetch,minutes=5}={}){
+// 다른 확인이 진행 중이거나 최근 minutes분 안에 확인했다면 건너뛴다(직원이 '새로고침'을 누르면 30초).
+export async function refreshNaverFeed(env,{fetcher=fetch,minutes=2}={}){
  const db=env.CMS_DB;await ensureNaver(db);const cfg=await db.prepare('SELECT * FROM cms_naver_source WHERE id=1').first();
- if(cfg.last_checked_at&&Date.now()-Date.parse(cfg.last_checked_at)<minutes*60000)return {skipped:true};
- const lease=token();const acquired=await db.prepare('UPDATE cms_naver_source SET poll_token=?,poll_until=? WHERE id=1 AND (poll_until IS NULL OR poll_until<?)').bind(lease,new Date(Date.now()+120000).toISOString(),now()).run();if(acquired.meta.changes!==1)return {busy:true};
+ if(cfg.last_checked_at&&Date.now()-Date.parse(cfg.last_checked_at)<minutes*60000)return {skipped:true,checkedAt:cfg.last_checked_at};
+ const lease=token();const acquired=await db.prepare('UPDATE cms_naver_source SET poll_token=?,poll_until=? WHERE id=1 AND (poll_until IS NULL OR poll_until<?)').bind(lease,new Date(Date.now()+120000).toISOString(),now()).run();if(acquired.meta.changes!==1)return {busy:true,checkedAt:cfg.last_checked_at};
  try{
   const items=parseFeed(await fetchText(NAVER_FEED,fetcher));const stamp=now();let added=0;
   // 자동 가져오기가 켜져 있고 기준점이 잡힌 경우에만 'new'(다음 정기 확인 때 초안 후보), 아니면 'seen'
@@ -60,8 +60,8 @@ export async function refreshNaverFeed(env,{fetcher=fetch,minutes=5}={}){
    const hash=await digest(JSON.stringify([entry.title,entry.excerpt,entry.publishedAt]));
    await db.prepare('INSERT INTO cms_naver_items(id,url,title,published_at,excerpt,feed_hash,status,discovered_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?)').bind(entry.id,entry.url,entry.title,entry.publishedAt,entry.excerpt,hash,status,stamp,stamp).run();added++;}
   await db.prepare('UPDATE cms_naver_source SET last_checked_at=?,last_error=NULL WHERE id=1').bind(stamp).run();
-  return {count:items.length,added};
- }catch(e){await db.prepare('UPDATE cms_naver_source SET last_error=? WHERE id=1').bind(e.message).run();return {error:e.message};}
+  return {count:items.length,added,checkedAt:stamp};
+ }catch(e){await db.prepare('UPDATE cms_naver_source SET last_error=? WHERE id=1').bind(e.message).run();return {error:e.message,checkedAt:cfg.last_checked_at};}
  finally{await db.prepare('UPDATE cms_naver_source SET poll_token=NULL,poll_until=NULL WHERE id=1 AND poll_token=?').bind(lease).run();}
 }
 export async function syncNaver(env,{fetcher=fetch,cron=false}={}){

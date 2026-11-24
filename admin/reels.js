@@ -18,10 +18,12 @@ let S={reel:null,dirty:false,me:null};
 function fail(e){if(e.status===401)notice('로그인이 필요합니다. 글쓰기 관리 화면에서 로그인한 뒤 다시 들어와 주세요.',true);else notice(e.message,true);}
 
 // ---------- 목록 ----------
-async function list(){
+let listedAt=0;
+async function list(force=false){
  $('detail-view').hidden=true;
  try{
-  const d=await api('reels');notice('');$('list-view').hidden=false;
+  const d=await api('reels'+(force?'?refresh=1':''));notice('');listedAt=Date.now();
+  $('fresh-checked').textContent=d.feed?.checkedAt?'네이버 블로그 확인: '+day(d.feed.checkedAt):'';$('list-view').hidden=false;
   const c=d.configured;const miss=[!c.ai&&'AI 기획(ANTHROPIC_API_KEY)',!c.github&&'렌더 서버(REEL_GITHUB_TOKEN)',!c.agent&&'렌더 인증키(REEL_AGENT_TOKEN)'].filter(Boolean);
   $('setup-warn').hidden=!miss.length;$('setup-warn').textContent=miss.length?'아직 연결되지 않은 설정: '+miss.join(', ')+'. 연결 전에는 해당 단계를 진행할 수 없습니다.':'';
   const f=$('fresh');f.replaceChildren();
@@ -165,5 +167,10 @@ window.addEventListener('beforeunload',e=>{if(S.dirty){e.preventDefault();e.retu
 window.addEventListener('hashchange',route);
 function route(){const id=location.hash.slice(1);if(id)open(id);else list();}
 api('me').then(d=>{S.me=d.user;$('account-name').textContent=d.user.name;}).catch(()=>{});
+// 휴대폰은 다른 앱을 갔다 오면 예전 화면을 그대로 보여 주므로, 목록 화면으로 돌아오면 다시 불러온다.
+const listShown=()=>!location.hash.slice(1)&&!$('list-view').hidden;
+$('fresh-refresh').addEventListener('click',()=>list(true));
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&listShown()&&Date.now()-listedAt>30000)list();});
+window.addEventListener('pageshow',e=>{if(e.persisted&&listShown())list();});
 route();
 })();

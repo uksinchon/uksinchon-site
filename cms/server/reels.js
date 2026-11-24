@@ -180,10 +180,11 @@ export async function reelsAdmin(env,parts,method,body,user,request,fetcher=fetc
  const db=env.CMS_DB;await ensureReels(db);const cfg=reelsConfigured(env);
  // 목록 + 아직 쇼릴로 만들지 않은 최근 네이버 글
  if(parts.length===1&&method==='GET'){
-  const feed=await refreshNaverFeed(env,{fetcher});
+  const force=new URL(request.url).searchParams.get('refresh')==='1';
+  const feed=await refreshNaverFeed(env,{fetcher,minutes:force?0.5:2});
   const reels=(await db.prepare('SELECT * FROM cms_reels ORDER BY created_at DESC LIMIT 60').all()).results.map(view).map(x=>({...x,plan:undefined,copy:undefined}));
   const fresh=(await db.prepare("SELECT i.id,i.url,i.title,i.published_at,i.discovered_at FROM cms_naver_items i WHERE NOT EXISTS(SELECT 1 FROM cms_reels r WHERE r.naver_id=i.id) ORDER BY COALESCE(i.published_at,i.discovered_at) DESC LIMIT 15").all()).results;
-  return {reels,fresh,configured:cfg,statuses:STATUSES,feed:{added:feed.added||0,error:feed.error||null}};
+  return {reels,fresh,configured:cfg,statuses:STATUSES,feed:{added:feed.added||0,error:feed.error||null,checkedAt:feed.checkedAt||null}};
  }
  if(parts[1]==='music'){
   if(parts.length===2&&method==='GET')return {music:(await db.prepare('SELECT * FROM cms_reel_music WHERE active=1 ORDER BY added_at DESC').all()).results};

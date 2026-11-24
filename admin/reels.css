@@ -36,3 +36,5 @@
 button.primary{background:var(--ink);color:#fff}
 #events li{font-size:13px;margin:4px 0}
 @media(max-width:640px){.r-preview video,.r-preview img{width:100%}}
+.r-fresh-head{display:flex;justify-content:space-between;align-items:center;gap:10px}.r-fresh-head .r-h2{margin:0}#fresh-refresh{font-size:13px;min-height:36px;padding:4px 12px;white-space:nowrap}.r-checked{font-size:12px;margin:4px 0 10px}
+@media(max-width:600px){.r-fresh .it{flex-wrap:wrap;row-gap:4px}.r-fresh .it small{flex-basis:100%;margin:0}.r-fresh .it span{flex:1 1 0;min-width:0}.r-fresh .it button{white-space:nowrap}}

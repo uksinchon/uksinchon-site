@@ -54,8 +54,9 @@ async function call(p,{method='GET',body,type,headers={}}={}){
 try{
  let x=await call('setup',{method:'POST',body:{setupToken:'fixture-reels-setup-key-not-for-production-2026',email:'admin@example.test',name:'관리자',password:'FictionalReelsPassword123!'}});assert.equal(x.status,200);
  x=await call('reels');assert.equal(x.status,200);assert.equal(x.data.feed.added,1);assert.equal(x.data.fresh[0].title,'가상 최신 글: 영국 겨울 어학연수');assert.equal(feedCalls,1);
- {const again=await call('reels');assert.equal(again.data.feed.added,0);assert.equal(feedCalls,1);}
- pass('opening the reels page pulls the latest blog posts from the Naver feed, at most once every five minutes');
+ assert(x.data.feed.checkedAt);
+ {const again=await call('reels');assert.equal(again.data.feed.added,0);assert.equal(feedCalls,1);assert.equal(again.data.feed.checkedAt,x.data.feed.checkedAt);}
+ pass('opening the reels page pulls the latest blog posts from the Naver feed, at most once every two minutes, and reports when it last checked');
  x=await call('reels');assert.equal(x.status,200);assert.deepEqual([x.data.configured.ai,x.data.configured.github,x.data.configured.agent,x.data.configured.aiProvider],[true,true,true,'anthropic']);
  x=await call('reels',{method:'POST',body:{url:'https://blog.naver.com/pedu2/224482286410'}});assert.equal(x.status,200,JSON.stringify(x.data));const id=x.data.id;
  x=await call('reels',{method:'POST',body:{url:'https://blog.naver.com/pedu2/224482286410'}});assert.equal(x.data.id,id);assert(x.data.existing);
