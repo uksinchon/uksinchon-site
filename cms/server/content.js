@@ -154,7 +154,7 @@ export function promoBanners(html){
   const parts=[...run.matchAll(/\u0000(\/[a-z0-9-]+\/)\u0001([^\u0000]*)\u0000/g)];
   let out='';for(let i=0;i<parts.length;){const path=parts[i][1];const texts=[];while(i<parts.length&&parts[i][1]===path){if(parts[i][2])texts.push(parts[i][2]);i++;}
    const b=PROMO_BANNERS[path],alt=[b.label,...texts].join(' · ');
-   out+=`<p class="promo-banner"><a href="${path}"><picture><source media="(max-width:600px)" srcset="${b.narrow}" width="${b.nw}" height="${b.nh}"><img src="${b.wide}" alt="${alt}" width="${b.w}" height="${b.h}" loading="lazy" decoding="async"></picture></a></p>`;}
+   out+=`<p class="promo-banner"><a href="${path}" target="_blank" rel="noopener"><picture><source media="(max-width:600px)" srcset="${b.narrow}" width="${b.nw}" height="${b.nh}"><img src="${b.wide}" alt="${alt}" width="${b.w}" height="${b.h}" loading="lazy" decoding="async"></picture></a></p>`;}
   return out;});
 }
 export function renderDelta(delta,imageMeta={},heroImageId='') {

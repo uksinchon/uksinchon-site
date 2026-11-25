@@ -7,5 +7,5 @@ assert.equal((html.match(/promo-banner/g)||[]).length,1);
 assert(html.includes('alt="블랙프라이데이 어학원 체크인 · 블랙프라이데이 프로모션 · 끌리는 학교 쉽게 문의하기"'));
 assert(html.includes('<a href="https://uksinchon.com/black-friday/" rel="noopener noreferrer">본문 속 링크</a>'));
 assert(html.includes('<a href="https://uksinchon.com/hello-uk/"'));
-assert(!html.includes('\u0000'));
+assert(!html.includes('\u0000'));assert(html.includes('<a href="/black-friday/" target="_blank" rel="noopener">'));
 console.log('PASS link-only lines to the Black Friday check-in become one banner; inline and other links stay as text');
