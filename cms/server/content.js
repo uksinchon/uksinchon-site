@@ -142,6 +142,21 @@ export function renderTable(t) {
   if(t.layout==='grid')return '<figure class="comparison-figure"><div class="table-scroll" role="region" aria-label="본문 표" tabindex="0"><table class="body-table">'+(t.widths?'<colgroup>'+t.widths.map(w=>'<col class="cw-'+Number(w)+'">').join('')+'</colgroup>':'')+'<tbody>'+[t.columns,...t.rows].map(row=>'<tr>'+row.map(v=>'<td>'+esc(v)+'</td>').join('')+'</tr>').join('')+'</tbody></table></div></figure>';
   return `<figure class="comparison-figure"><p class="table-hint">표가 넓으면 좌우로 밀어 확인해 주세요.</p><div class="table-scroll" role="region" aria-label="${esc(t.caption)}" tabindex="0"><table><caption>${esc(t.caption)}</caption><thead><tr>${t.columns.map(c=>'<th scope="col">'+esc(c)+'</th>').join('')}</tr></thead><tbody>${t.rows.map(row=>'<tr>'+row.map((v,i)=>i?'<td>'+esc(v)+'</td>':'<th scope="row">'+esc(v)+'</th>').join('')+'</tr>').join('')}</tbody></table></div>${t.notes?'<figcaption>'+esc(t.notes)+'</figcaption>':''}${t.source?'<p class="table-source">표 출처: <a href="'+esc(t.source)+'">'+esc(t.source)+'</a></p>':''}</figure>`;
 }
+// 본문에서 체크인 페이지로만 연결된 줄(제목·문단)은 배너 이미지로 바꿔 보여 준다.
+// 같은 페이지로 연결된 줄이 연달아 있으면 배너 하나로 합친다. (원고는 그대로 두고 화면에서만 바뀜)
+const PROMO_BANNERS={
+ '/black-friday/':{wide:'/black-friday/banner.webp',w:1200,h:560,narrow:'/black-friday/banner-m.webp',nw:800,nh:760,label:'블랙프라이데이 어학원 체크인'}
+};
+const PROMO_LINE=/<(h2|h3|p)(?: class="[^"]*")?><a href="(?:https:\/\/(?:www\.)?uksinchon\.com)?(\/[a-z0-9-]+\/)" rel="noopener noreferrer">((?:(?!<\/a>)(?:<[^>]+>|[^<]))*)<\/a><\/\1>/g;
+export function promoBanners(html){
+ html=html.replace(PROMO_LINE,(m,tag,path,inner)=>{const b=PROMO_BANNERS[path];if(!b)return m;return '\u0000'+path+'\u0001'+inner.replace(/<[^>]+>/g,'').trim()+'\u0000';});
+ return html.replace(/(?:\u0000(\/[a-z0-9-]+\/)\u0001[^\u0000]*\u0000)+/g,run=>{
+  const parts=[...run.matchAll(/\u0000(\/[a-z0-9-]+\/)\u0001([^\u0000]*)\u0000/g)];
+  let out='';for(let i=0;i<parts.length;){const path=parts[i][1];const texts=[];while(i<parts.length&&parts[i][1]===path){if(parts[i][2])texts.push(parts[i][2]);i++;}
+   const b=PROMO_BANNERS[path],alt=[b.label,...texts].join(' · ');
+   out+=`<p class="promo-banner"><a href="${path}"><picture><source media="(max-width:600px)" srcset="${b.narrow}" width="${b.nw}" height="${b.nh}"><img src="${b.wide}" alt="${alt}" width="${b.w}" height="${b.h}" loading="lazy" decoding="async"></picture></a></p>`;}
+  return out;});
+}
 export function renderDelta(delta,imageMeta={},heroImageId='') {
   let html='',line='',list=null,pendingImage='';
   const closeList=()=>{if(list){html+=`</${list}>`;list=null;}};
@@ -177,5 +192,5 @@ export function renderDelta(delta,imageMeta={},heroImageId='') {
       line+=value;if(i<parts.length-1)endLine(a);
     });
   }
-  if(line||pendingImage)endLine();closeList();return html;
+  if(line||pendingImage)endLine();closeList();return promoBanners(html);
 }
