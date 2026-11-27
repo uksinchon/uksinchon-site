@@ -145,7 +145,7 @@ export function renderTable(t) {
 // 본문에서 체크인 페이지로만 연결된 줄(제목·문단)은 배너 이미지로 바꿔 보여 준다.
 // 같은 페이지로 연결된 줄이 연달아 있으면 배너 하나로 합친다. (원고는 그대로 두고 화면에서만 바뀜)
 const PROMO_BANNERS={
- '/black-friday/':{wide:'/black-friday/banner.webp',w:1200,h:560,narrow:'/black-friday/banner-m.webp',nw:800,nh:760,label:'블랙프라이데이 어학원 체크인'}
+ '/black-friday/':{wide:'/black-friday/banner.webp?v=7',w:1200,h:560,narrow:'/black-friday/banner-m.webp?v=7',nw:800,nh:760,label:'블랙프라이데이 어학원 체크인'}
 };
 const PROMO_LINE=/<(h2|h3|p)(?: class="[^"]*")?><a href="(?:https:\/\/(?:www\.)?uksinchon\.com)?(\/[a-z0-9-]+\/)" rel="noopener noreferrer">((?:(?!<\/a>)(?:<[^>]+>|[^<]))*)<\/a><\/\1>/g;
 export function promoBanners(html){
